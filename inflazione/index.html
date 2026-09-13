@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quanto vale davvero il tuo denaro? | Inflazione mensile</title>
+<style>
+  :root{
+    --ink:#172235;
+    --ink-2:#26364e;
+    --paper:#ffffff;
+    --soft:#f5f6f8;
+    --line:#e4e8ee;
+    --muted:#687386;
+    --loss:#a93434;
+    --gain:#2f6b4f;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    padding:24px 14px;
+    background:#f0f2f4;
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  .calculator{
+    width:min(980px,100%);
+    margin:0 auto;
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:28px;
+    overflow:hidden;
+    box-shadow:0 14px 40px rgba(23,34,53,.10);
+  }
+  .hero{
+    background:var(--ink);
+    color:#fff;
+    padding:32px 34px 28px;
+  }
+  .eyebrow{
+    font-size:.78rem;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    opacity:.72;
+    margin-bottom:10px;
+  }
+  h1{
+    margin:0;
+    font-size:clamp(1.8rem,4vw,2.6rem);
+    line-height:1.08;
+    letter-spacing:-.03em;
+  }
+  .hero p{
+    margin:12px 0 0;
+    max-width:740px;
+    font-size:1rem;
+    line-height:1.55;
+    opacity:.84;
+  }
+  .body{
+    display:grid;
+    grid-template-columns:1fr 1.15fr;
+  }
+  .controls{
+    padding:30px 30px 32px;
+    border-right:1px solid var(--line);
+    background:#fff;
+  }
+  .results{
+    padding:30px 30px 32px;
+    background:var(--soft);
+  }
+  .field{margin-bottom:20px}
+  label{
+    display:block;
+    font-size:.88rem;
+    font-weight:700;
+    margin-bottom:8px;
+  }
+  input,select{
+    width:100%;
+    border:1px solid #cdd4de;
+    border-radius:14px;
+    padding:13px 14px;
+    font-size:1.02rem;
+    color:var(--ink);
+    background:#fff;
+  }
+  input:focus,select:focus{
+    outline:none;
+    border-color:#6d7f99;
+    box-shadow:0 0 0 3px rgba(38,54,78,.10);
+  }
+  .date-block{
+    margin-bottom:18px;
+  }
+  .date-row{
+    display:grid;
+    grid-template-columns:1.2fr .8fr;
+    gap:10px;
+  }
+  .date-title{
+    font-size:.88rem;
+    font-weight:800;
+    margin-bottom:8px;
+  }
+  .micro{
+    margin-top:18px;
+    font-size:.78rem;
+    line-height:1.5;
+    color:var(--muted);
+  }
+  .result-main{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:22px;
+    margin-bottom:14px;
+  }
+  .result-label{
+    font-size:.76rem;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    color:var(--muted);
+  }
+  .big-number{
+    margin-top:8px;
+    font-size:clamp(2rem,6vw,3.2rem);
+    font-weight:850;
+    line-height:1;
+    letter-spacing:-.04em;
+  }
+  .sentence{
+    margin-top:12px;
+    font-size:1rem;
+    line-height:1.55;
+    color:#354258;
+  }
+  .mini-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+  }
+  .mini-card{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:18px;
+  }
+  .mini-card strong{
+    display:block;
+    margin-top:6px;
+    font-size:1.35rem;
+  }
+  .loss{color:var(--loss)}
+  .gain{color:var(--gain)}
+  .explain{
+    margin-top:14px;
+    padding:16px 18px;
+    border-radius:16px;
+    background:#fff;
+    border:1px solid var(--line);
+    font-size:.85rem;
+    line-height:1.55;
+    color:#4d596b;
+  }
+  .status{
+    display:inline-block;
+    margin-top:12px;
+    padding:6px 10px;
+    border-radius:999px;
+    background:rgba(255,255,255,.12);
+    font-size:.74rem;
+    opacity:.9;
+  }
+  .error{
+    color:var(--loss);
+    font-weight:700;
+  }
+  .footer{
+    padding:18px 28px 20px;
+    border-top:1px solid var(--line);
+    font-size:.75rem;
+    line-height:1.55;
+    color:#687386;
+    background:#fff;
+  }
+  .footer a{color:var(--ink-2)}
+  @media(max-width:760px){
+    body{padding:10px}
+    .calculator{border-radius:20px}
+    .hero{padding:24px 20px}
+    .body{grid-template-columns:1fr}
+    .controls{border-right:0;border-bottom:1px solid var(--line);padding:24px 20px}
+    .results{padding:24px 20px}
+    .mini-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="calculator">
+  <header class="hero">
+    <div class="eyebrow">Fai due conti · Inflazione</div>
+    <h1>Quanto vale davvero il tuo denaro?</h1>
+    <p>Scegli due mesi e scopri quanto una somma avrebbe dovuto crescere per mantenere lo stesso potere d'acquisto.</p>
+    <div class="status">Dati mensili FOI · gennaio 1996 – luglio 2026</div>
+  </header>
+
+  <main class="body">
+    <section class="controls">
+      <div class="field">
+        <label for="capitale">Capitale</label>
+        <input id="capitale" type="number" min="0" step="1000" value="10000" inputmode="decimal">
+      </div>
+
+      <div class="date-block">
+        <div class="date-title">Da</div>
+        <div class="date-row">
+          <select id="meseInizio" aria-label="Mese iniziale"></select>
+          <select id="annoInizio" aria-label="Anno iniziale"></select>
+        </div>
+      </div>
+
+      <div class="date-block">
+        <div class="date-title">A</div>
+        <div class="date-row">
+          <select id="meseFine" aria-label="Mese finale"></select>
+          <select id="annoFine" aria-label="Anno finale"></select>
+        </div>
+      </div>
+
+      <div class="micro" id="notaInput">
+        Il calcolo si aggiorna automaticamente e usa l'indice ISTAT FOI senza tabacchi. I cambi di base vengono raccordati automaticamente.
+      </div>
+    </section>
+
+    <section class="results" aria-live="polite">
+      <div class="result-main">
+        <div class="result-label">Per mantenere lo stesso potere d'acquisto</div>
+        <div class="big-number" id="capitaleRivalutato">—</div>
+        <div class="sentence" id="frasePrincipale">—</div>
+      </div>
+
+      <div class="mini-grid">
+        <div class="mini-card">
+          <div class="result-label">Potere d'acquisto perso</div>
+          <strong class="loss" id="perditaPotere">—</strong>
+        </div>
+        <div class="mini-card">
+          <div class="result-label">Rendimento annuo equivalente</div>
+          <strong id="rendimentoDifesa">—</strong>
+        </div>
+      </div>
+
+      <div class="explain" id="spiegazione">
+        Il risultato confronta l'indice FOI del mese iniziale con quello del mese finale. Non è una previsione: mostra soltanto ciò che è accaduto ai prezzi nel periodo scelto.
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    Fonte dati: indice nazionale dei prezzi al consumo per le famiglie di operai e impiegati (FOI), al netto dei tabacchi. Serie mensile 1996–luglio 2026. Coefficienti di raccordo tra basi ISTAT applicati automaticamente. Per rivalutazioni ufficiali, contratti e adempimenti utilizzare il servizio <a href="https://rivaluta.istat.it/Rivaluta/" target="_blank" rel="noopener">Rivaluta ISTAT</a>. Strumento a finalità informativa e didattica; non costituisce consulenza o raccomandazione finanziaria.
+  </footer>
+</div>
+
+<script>
+const mesi = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
+
+// Serie FOI mensile senza tabacchi.
+// 1996-2010: base 1995=100
+// 2011-2015: base 2010=100
+// 2016-2025: base 2015=100
+// 2026: base 2025=100 (ultimo dato disponibile: luglio 2026)
+const foi = {
+  1996:[102.4,102.7,103.0,103.6,104.0,104.2,104.0,104.1,104.4,104.5,104.8,104.9],
+  1997:[105.1,105.2,105.3,105.4,105.7,105.7,105.7,105.7,105.9,106.2,106.5,106.5],
+  1998:[106.8,107.1,107.1,107.3,107.5,107.6,107.6,107.7,107.8,108.0,108.1,108.1],
+  1999:[108.2,108.4,108.6,109.0,109.2,109.2,109.4,109.4,109.7,109.9,110.3,110.4],
+  2000:[110.5,111.0,111.3,111.4,111.7,112.1,112.3,112.3,112.5,112.8,113.3,113.4],
+  2001:[113.9,114.3,114.4,114.8,115.1,115.3,115.3,115.3,115.4,115.7,115.9,116.0],
+  2002:[116.5,116.9,117.2,117.5,117.7,117.9,118.0,118.2,118.4,118.7,119.0,119.1],
+  2003:[119.6,119.8,120.2,120.4,120.5,120.6,120.9,121.1,121.4,121.5,121.8,121.8],
+  2004:[122.0,122.4,122.5,122.8,123.0,123.3,123.4,123.6,123.6,123.6,123.9,123.9],
+  2005:[123.9,124.3,124.5,124.9,125.1,125.3,125.6,125.8,125.9,126.1,126.1,126.3],
+  2006:[126.6,126.9,127.1,127.4,127.8,127.9,128.2,128.4,128.4,128.2,128.3,128.4],
+  2007:[128.5,128.8,129.0,129.2,129.6,129.9,130.2,130.4,130.4,130.8,131.3,131.8],
+  2008:[132.2,132.5,133.2,133.5,134.2,134.8,135.4,135.5,135.2,135.2,134.7,134.5],
+  2009:[134.2,134.5,134.5,134.8,135.1,135.3,135.3,135.8,135.4,135.5,135.6,135.8],
+  2010:[136.0,136.2,136.5,137.0,137.1,137.1,137.6,137.9,137.5,137.8,137.9,138.4],
+  2011:[101.2,101.5,101.9,102.4,102.5,102.6,102.9,103.2,103.2,103.6,103.7,104.0],
+  2012:[104.4,104.8,105.2,105.7,105.6,105.8,105.9,106.4,106.4,106.4,106.2,106.5],
+  2013:[106.7,106.7,106.9,106.9,106.9,107.1,107.2,107.6,107.2,107.1,106.8,107.1],
+  2014:[107.3,107.2,107.2,107.4,107.3,107.4,107.3,107.5,107.1,107.2,107.0,107.0],
+  2015:[106.5,106.8,107.0,107.1,107.2,107.3,107.2,107.4,107.0,107.2,107.0,107.0],
+  2016:[99.7,99.5,99.6,99.6,99.7,99.9,100.0,100.2,100.0,100.0,100.0,100.3],
+  2017:[100.6,101.0,101.0,101.3,101.1,101.0,101.0,101.4,101.1,100.9,100.8,101.1],
+  2018:[101.5,101.5,101.7,101.7,102.0,102.2,102.5,102.9,102.4,102.4,102.2,102.1],
+  2019:[102.2,102.3,102.5,102.6,102.7,102.7,102.7,103.2,102.5,102.4,102.3,102.5],
+  2020:[102.7,102.5,102.6,102.5,102.3,102.4,102.3,102.5,101.9,102.0,102.0,102.3],
+  2021:[102.9,103.0,103.3,103.7,103.6,103.8,104.2,104.7,104.5,105.1,105.7,106.2],
+  2022:[107.7,108.8,109.9,109.7,110.6,111.9,112.3,113.2,113.5,117.2,117.9,118.2],
+  2023:[118.3,118.5,118.0,118.4,118.6,118.6,118.7,119.1,119.3,119.2,118.7,118.9],
+  2024:[119.3,119.3,119.4,119.3,119.5,119.5,120.0,120.1,120.0,120.1,120.1,120.2],
+  2025:[120.9,121.1,121.4,121.3,121.2,121.3,121.8,121.8,121.7,121.4,121.3,121.5],
+  2026:[100.4,100.9,101.5,102.5,102.8,102.8,103.1]
+};
+
+const raccordi = {
+  "1995>2010":1.373,
+  "2010>2015":1.071,
+  "2015>2025":1.214
+};
+const basi = ["1995","2010","2015","2025"];
+
+function baseAnno(y){
+  if(y <= 2010) return "1995";
+  if(y <= 2015) return "2010";
+  if(y <= 2025) return "2015";
+  return "2025";
+}
+
+function coeffRaccordo(baseStart, baseEnd){
+  if(baseStart === baseEnd) return 1;
+  const iStart = basi.indexOf(baseStart);
+  const iEnd = basi.indexOf(baseEnd);
+  if(iStart < 0 || iEnd < 0) return 1;
+  let c = 1;
+  if(iStart < iEnd){
+    for(let i=iStart; i<iEnd; i++) c *= raccordi[`${basi[i]}>${basi[i+1]}`];
+  } else {
+    for(let i=iStart; i>iEnd; i--) c /= raccordi[`${basi[i-1]}>${basi[i]}`];
+  }
+  return c;
+}
+
+function indice(y,m){
+  const arr = foi[y];
+  return arr && arr[m] != null ? arr[m] : null;
+}
+
+function serialMonth(y,m){ return y*12 + m; }
+
+function formatEuro(v){
+  return new Intl.NumberFormat('it-IT',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(v);
+}
+
+function formatPct(v,d=1){
+  return new Intl.NumberFormat('it-IT',{minimumFractionDigits:d,maximumFractionDigits:d}).format(v) + '%';
+}
+
+const capitaleEl = document.getElementById('capitale');
+const annoInizioEl = document.getElementById('annoInizio');
+const annoFineEl = document.getElementById('annoFine');
+const meseInizioEl = document.getElementById('meseInizio');
+const meseFineEl = document.getElementById('meseFine');
+const capitaleRivalutatoEl = document.getElementById('capitaleRivalutato');
+const frasePrincipaleEl = document.getElementById('frasePrincipale');
+const perditaPotereEl = document.getElementById('perditaPotere');
+const rendimentoDifesaEl = document.getElementById('rendimentoDifesa');
+const spiegazioneEl = document.getElementById('spiegazione');
+const notaInputEl = document.getElementById('notaInput');
+
+function populateYears(){
+  Object.keys(foi).map(Number).sort((a,b)=>a-b).forEach(y=>{
+    annoInizioEl.add(new Option(y,y));
+    annoFineEl.add(new Option(y,y));
+  });
+  annoInizioEl.value = '2000';
+  annoFineEl.value = '2026';
+}
+
+function populateMonths(select){
+  mesi.forEach((nome,i)=>select.add(new Option(nome,i)));
+}
+
+function syncMonths(){
+  const yStart = +annoInizioEl.value;
+  const yEnd = +annoFineEl.value;
+  [...meseInizioEl.options].forEach(o=>o.disabled = indice(yStart,+o.value) == null);
+  [...meseFineEl.options].forEach(o=>o.disabled = indice(yEnd,+o.value) == null);
+
+  if(indice(yStart,+meseInizioEl.value) == null){
+    const first = [...meseInizioEl.options].find(o=>!o.disabled);
+    if(first) meseInizioEl.value = first.value;
+  }
+  if(indice(yEnd,+meseFineEl.value) == null){
+    const valid = [...meseFineEl.options].filter(o=>!o.disabled);
+    if(valid.length) meseFineEl.value = valid[valid.length-1].value;
+  }
+}
+
+function calcola(){
+  syncMonths();
+  const capitale = Math.max(0, parseFloat(capitaleEl.value) || 0);
+  const ys = +annoInizioEl.value, ms = +meseInizioEl.value;
+  const ye = +annoFineEl.value, me = +meseFineEl.value;
+  const s = serialMonth(ys,ms), e = serialMonth(ye,me);
+
+  if(e < s){
+    capitaleRivalutatoEl.textContent = '—';
+    frasePrincipaleEl.innerHTML = '<span class="error">La data finale deve essere successiva a quella iniziale.</span>';
+    perditaPotereEl.textContent = '—';
+    rendimentoDifesaEl.textContent = '—';
+    return;
+  }
+
+  const iStart = indice(ys,ms), iEnd = indice(ye,me);
+  if(iStart == null || iEnd == null){
+    capitaleRivalutatoEl.textContent = '—';
+    frasePrincipaleEl.innerHTML = '<span class="error">Dato non disponibile per uno dei mesi selezionati.</span>';
+    return;
+  }
+
+  const raccordo = coeffRaccordo(baseAnno(ys), baseAnno(ye));
+  const factor = (iEnd / iStart) * raccordo;
+  const rivalutato = capitale * factor;
+  const inflazione = (factor - 1) * 100;
+  const poterePerso = (1 - 1/factor) * 100;
+  const months = e - s;
+  const annualizzato = months >= 12 ? (Math.pow(factor,12/months)-1)*100 : null;
+
+  capitaleRivalutatoEl.textContent = formatEuro(rivalutato);
+  frasePrincipaleEl.innerHTML = `${formatEuro(capitale)} di <strong>${mesi[ms].toLowerCase()} ${ys}</strong> equivalgono a circa <strong>${formatEuro(rivalutato)}</strong> in ${mesi[me].toLowerCase()} ${ye} per mantenere lo stesso potere d'acquisto. Nel periodo i prezzi sono variati di <strong>${inflazione>=0?'+':''}${formatPct(inflazione)}</strong>.`;
+
+  if(poterePerso >= 0){
+    perditaPotereEl.className = 'loss';
+    perditaPotereEl.textContent = '−' + formatPct(poterePerso);
+  } else {
+    perditaPotereEl.className = 'gain';
+    perditaPotereEl.textContent = '+' + formatPct(Math.abs(poterePerso));
+  }
+
+  rendimentoDifesaEl.textContent = annualizzato == null ? '—' : (annualizzato>=0?'+':'') + formatPct(annualizzato,2);
+
+  spiegazioneEl.innerHTML = annualizzato == null
+    ? `Periodo inferiore a 12 mesi: il rendimento annuo equivalente non viene mostrato per evitare una lettura fuorviante.`
+    : `Per non perdere potere d'acquisto nel periodo selezionato sarebbe servito, in media, un rendimento composto equivalente di <strong>${annualizzato>=0?'+':''}${formatPct(annualizzato,2)} all'anno</strong>. È un dato storico, non una previsione di rendimento futuro.`;
+
+  notaInputEl.textContent = `Indice iniziale: ${iStart.toFixed(1)} · indice finale: ${iEnd.toFixed(1)} · base raccordata automaticamente.`;
+}
+
+populateYears();
+populateMonths(meseInizioEl);
+populateMonths(meseFineEl);
+meseInizioEl.value = '0';
+meseFineEl.value = '6';
+syncMonths();
+
+[capitaleEl,annoInizioEl,annoFineEl,meseInizioEl,meseFineEl].forEach(el=>{
+  el.addEventListener(el.tagName==='INPUT'?'input':'change',calcola);
+});
+calcola();
+</script>
+</body>
+</html>
