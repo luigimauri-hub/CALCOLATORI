@@ -37,6 +37,35 @@
     color:#fff;
     padding:32px 34px 28px;
   }
+  .hero-top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    margin-bottom:10px;
+  }
+  .hero-top .eyebrow{
+    margin-bottom:0;
+  }
+  .back-calculators{
+    flex:0 0 auto;
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    padding:8px 13px;
+    border:1px solid rgba(255,255,255,.28);
+    border-radius:999px;
+    color:#fff;
+    text-decoration:none;
+    font-size:.78rem;
+    font-weight:750;
+    background:rgba(255,255,255,.08);
+    transition:.18s ease;
+  }
+  .back-calculators:hover{
+    background:rgba(255,255,255,.16);
+    border-color:rgba(255,255,255,.45);
+  }
   .eyebrow{
     font-size:.78rem;
     letter-spacing:.12em;
@@ -191,6 +220,8 @@
     body{padding:10px}
     .calculator{border-radius:20px}
     .hero{padding:24px 20px}
+    .hero-top{align-items:flex-start}
+    .back-calculators{font-size:.73rem;padding:7px 10px}
     .body{grid-template-columns:1fr}
     .controls{border-right:0;border-bottom:1px solid var(--line);padding:24px 20px}
     .results{padding:24px 20px}
@@ -201,7 +232,10 @@
 <body>
 <div class="calculator">
   <header class="hero">
-    <div class="eyebrow">Fai due conti · Inflazione</div>
+    <div class="hero-top">
+      <div class="eyebrow">Fai due conti · Inflazione</div>
+      <a class="back-calculators" href="/" aria-label="Torna alla pagina di tutti i calcolatori">← Tutti i calcolatori</a>
+    </div>
     <h1>Quanto vale davvero il tuo denaro?</h1>
     <p>Scegli due mesi e scopri quanto una somma avrebbe dovuto crescere per mantenere lo stesso potere d'acquisto.</p>
     <div class="status">Dati mensili FOI · gennaio 1996 – luglio 2026</div>
