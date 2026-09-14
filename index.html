@@ -1,44 +1,296 @@
-from pathlib import Path
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Fai due conti: calcolatori finanziari semplici per capire inflazione, rendimento, obiettivi finanziari e capitale necessario per vivere di rendita.">
+  <title>Fai due conti | Luigi Mauri</title>
+  <style>
+    :root{
+      --navy:#172235;
+      --navy2:#26364e;
+      --paper:#ffffff;
+      --bg:#f2f4f6;
+      --soft:#f7f8fa;
+      --line:#e2e7ed;
+      --muted:#697487;
+      --green:#2f6b4f;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--navy);
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    }
+    a{color:inherit}
+    .wrap{
+      width:min(1120px,calc(100% - 28px));
+      margin:0 auto;
+    }
 
-src = Path("/mnt/data/index-11.html")
-html = src.read_text(encoding="utf-8")
+    header{
+      background:#fff;
+      border-bottom:1px solid var(--line);
+      padding:18px 0;
+    }
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:18px;
+    }
+    .brand{
+      text-decoration:none;
+      font-weight:850;
+      letter-spacing:-.015em;
+    }
+    .brand small{
+      display:block;
+      margin-top:2px;
+      font-size:.74rem;
+      color:var(--muted);
+      font-weight:550;
+    }
+    .site-link{
+      text-decoration:none;
+      font-size:.86rem;
+      font-weight:700;
+      color:var(--navy2);
+    }
 
-needle = """      <div class="note">
-        I risultati hanno finalità esclusivamente informative e didattiche.
-        Non costituiscono consulenza, raccomandazione personalizzata o promessa di rendimento.
-      </div>"""
+    .hero{
+      padding:68px 0 42px;
+    }
+    .eyebrow{
+      margin-bottom:14px;
+      color:var(--muted);
+      font-size:.78rem;
+      font-weight:850;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+    }
+    h1{
+      margin:0;
+      font-size:clamp(3rem,8vw,6rem);
+      line-height:.92;
+      letter-spacing:-.06em;
+    }
+    .lead{
+      max-width:760px;
+      margin:24px 0 0;
+      color:#46536a;
+      font-size:clamp(1.06rem,2.2vw,1.28rem);
+      line-height:1.6;
+    }
+    .principle{
+      margin-top:24px;
+      font-weight:850;
+      font-size:1rem;
+    }
 
-insert = """      <div class="section-head" style="margin-top:46px;">
+    .section{
+      padding:16px 0 68px;
+    }
+    .section-head{
+      display:flex;
+      justify-content:space-between;
+      gap:18px;
+      align-items:end;
+      margin-bottom:18px;
+    }
+    .section-head h2{
+      margin:0;
+      font-size:1.5rem;
+      letter-spacing:-.025em;
+    }
+    .section-head p{
+      margin:0;
+      color:var(--muted);
+      font-size:.88rem;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:16px;
+    }
+    .card{
+      min-height:240px;
+      display:flex;
+      flex-direction:column;
+      padding:25px;
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:23px;
+      text-decoration:none;
+      transition:.18s ease;
+      box-shadow:0 8px 26px rgba(23,34,53,.035);
+    }
+    .card:hover{
+      transform:translateY(-3px);
+      box-shadow:0 14px 34px rgba(23,34,53,.08);
+      border-color:#ccd5df;
+    }
+    .tag{
+      font-size:.71rem;
+      text-transform:uppercase;
+      letter-spacing:.095em;
+      font-weight:850;
+      color:var(--muted);
+    }
+    .card h3{
+      margin:17px 0 10px;
+      font-size:clamp(1.55rem,3vw,2rem);
+      line-height:1.05;
+      letter-spacing:-.04em;
+    }
+    .card p{
+      max-width:500px;
+      margin:0;
+      color:#566276;
+      font-size:.94rem;
+      line-height:1.55;
+    }
+    .cta{
+      margin-top:auto;
+      padding-top:24px;
+      font-size:.88rem;
+      font-weight:850;
+    }
+
+    .card.dark{
+      background:var(--navy);
+      color:#fff;
+      border-color:var(--navy);
+    }
+    .card.dark .tag,
+    .card.dark p{
+      color:rgba(255,255,255,.72);
+    }
+
+    .note{
+      margin-top:18px;
+      padding:18px 20px;
+      border-radius:17px;
+      background:#e9edf2;
+      color:#566276;
+      font-size:.8rem;
+      line-height:1.55;
+    }
+
+    footer{
+      padding:24px 0 34px;
+      background:#fff;
+      border-top:1px solid var(--line);
+      color:var(--muted);
+      font-size:.78rem;
+    }
+
+    @media(max-width:760px){
+      .hero{padding:48px 0 32px}
+      .grid{grid-template-columns:1fr}
+      .section-head{display:block}
+      .section-head p{margin-top:7px}
+      .card{min-height:205px}
+      .site-link{font-size:.78rem}
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="wrap topbar">
+    <a class="brand" href="https://www.luigimauri.com/">
+      Luigi Mauri
+      <small>Consulente dal 1995</small>
+    </a>
+    <a class="site-link" href="https://www.luigimauri.com/">← Torna a luigimauri.com</a>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <div class="eyebrow">Calcolatori finanziari</div>
+      <h1>Fai due conti.</h1>
+      <p class="lead">
+        Strumenti semplici per capire meglio alcuni concetti finanziari prima di prendere una decisione.
+        Pochi dati, un risultato leggibile e una spiegazione in italiano normale.
+      </p>
+      <div class="principle">Capire prima. Decidere dopo.</div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
         <div>
-          <div class="eyebrow">Pianificare</div>
-          <h2>Parti da un obiettivo concreto</h2>
+          <div class="eyebrow">Disponibili</div>
+          <h2>Scegli da dove iniziare</h2>
         </div>
-        <p>Quanto deve rendere il tuo piano per arrivare dove vuoi?</p>
+        <p>Ogni calcolatore risponde a una sola domanda.</p>
       </div>
 
       <div class="grid">
-        <a class="card active" href="/rendimento-obiettivo/">
-          <div class="tag">Disponibile</div>
-          <h3>Quanto deve rendere il tuo piano?</h3>
+
+        <a class="card dark" href="/inflazione/">
+          <div class="tag">Inflazione</div>
+          <h3>Quanto vale davvero il tuo denaro?</h3>
           <p>
-            Inserisci il capitale che vuoi raggiungere, il tempo disponibile,
-            ciò che hai già e quanto vuoi versare. Il calcolatore trova il
-            rendimento medio annuo necessario.
+            Confronta due mesi e scopri quanto una somma avrebbe dovuto crescere
+            per mantenere lo stesso potere d'acquisto.
           </p>
           <div class="cta">Apri il calcolatore →</div>
         </a>
+
+        <a class="card" href="/quanto-mi-ha-reso/">
+          <div class="tag">Rendimento</div>
+          <h3>Quanto mi ha reso?</h3>
+          <p>
+            Inserisci quanto hai investito, quanto vale oggi e il periodo:
+            scopri rendimento complessivo e rendimento annualizzato.
+          </p>
+          <div class="cta">Apri il calcolatore →</div>
+        </a>
+
+        <a class="card" href="/rendimento-obiettivo/">
+          <div class="tag">Obiettivo</div>
+          <h3>Quanto deve rendere il tuo piano?</h3>
+          <p>
+            Parti dal capitale che vuoi raggiungere, dal tempo disponibile,
+            da ciò che hai già e dai versamenti: calcoliamo il rendimento necessario.
+          </p>
+          <div class="cta">Apri il calcolatore →</div>
+        </a>
+
+        <a class="card" href="/fire-vivere-di-rendita/">
+          <div class="tag">Vivere di rendita · FIRE</div>
+          <h3>Quanto capitale ti serve per vivere di rendita?</h3>
+          <p>
+            Parti dalla spesa mensile che desideri sostenere e confronta
+            diversi livelli di prudenza nel prelievo dal patrimonio.
+          </p>
+          <div class="cta">Apri il calcolatore →</div>
+        </a>
+
       </div>
 
       <div class="note">
-        I risultati hanno finalità esclusivamente informative e didattiche.
-        Non costituiscono consulenza, raccomandazione personalizzata o promessa di rendimento.
-      </div>"""
+        I calcolatori hanno finalità esclusivamente informative e didattiche.
+        Utilizzano ipotesi e formule semplificate e non costituiscono consulenza,
+        raccomandazione personalizzata, previsione o promessa di rendimento.
+      </div>
+    </div>
+  </section>
+</main>
 
-if needle not in html:
-    raise RuntimeError("Punto di inserimento non trovato nel file.")
+<footer>
+  <div class="wrap">
+    Luigi Mauri · Investimenti · Previdenza · Patrimonio · Milano · Monza · Da te · Online
+  </div>
+</footer>
 
-html = html.replace(needle, insert, 1)
-
-out = Path("/mnt/data/index.html")
-out.write_text(html, encoding="utf-8")
-print(out)
+</body>
+</html>
