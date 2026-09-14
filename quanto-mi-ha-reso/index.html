@@ -1,1 +1,501 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Quanto mi ha reso? | Fai due conti — Luigi Mauri</title>
+<meta name="description" content="Calcola il rendimento complessivo e annualizzato di un capitale investito e stima l'impatto fiscale con aliquota 26%, 12,5% o 0%.">
+<style>
+:root{
+  --navy:#172235;
+  --navy2:#23324a;
+  --blue:#111184;
+  --paper:#ffffff;
+  --bg:#f3f5f7;
+  --line:#e2e7ed;
+  --muted:#697487;
+  --soft:#eef2f6;
+  --softblue:#f1f1ff;
+  --green:#0c7452;
+  --red:#a03d3d;
+  --radius:24px;
+  --shadow:0 18px 60px rgba(23,34,53,.08);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  color:var(--navy);
+  background:var(--bg);
+  line-height:1.5;
+}
+.wrap{width:min(1120px,calc(100% - 28px));margin:0 auto}
+header{
+  padding:20px 0;background:#fff;border-bottom:1px solid var(--line)
+}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:20px}
+.brand{text-decoration:none;font-weight:800;letter-spacing:-.01em}
+.brand small{display:block;margin-top:2px;font-weight:500;color:var(--muted);font-size:.75rem}
+.back{text-decoration:none;font-size:.88rem;color:var(--navy2)}
+.hero{padding:58px 0 32px}
+.eyebrow{
+  font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;
+  font-weight:800;color:var(--muted);margin-bottom:14px
+}
+h1{
+  margin:0;font-size:clamp(2.8rem,7vw,5.2rem);
+  line-height:.95;letter-spacing:-.055em
+}
+.lead{
+  margin:20px 0 0;max-width:760px;
+  font-size:clamp(1.05rem,2vw,1.25rem);
+  line-height:1.58;color:#445168
+}
+.section{padding:22px 0 70px}
+.calc{
+  background:#fff;border:1px solid var(--line);border-radius:30px;
+  overflow:hidden;box-shadow:var(--shadow)
+}
+.inputs{
+  padding:28px;
+  display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;
+  border-bottom:1px solid var(--line)
+}
+.field label{
+  display:block;font-size:.78rem;font-weight:800;color:#536074;margin-bottom:8px
+}
+.box{
+  height:58px;border:1px solid var(--line);border-radius:16px;background:#fff;
+  display:flex;align-items:center;overflow:hidden
+}
+.box span{
+  padding-left:16px;font-weight:800;color:var(--muted)
+}
+.box input{
+  width:100%;height:100%;border:0;outline:0;background:transparent;
+  padding:0 16px;font:inherit;font-size:1.15rem;font-weight:800;color:var(--navy)
+}
+.box input[type=date]{font-size:1rem;font-weight:700}
+.results{
+  display:grid;grid-template-columns:.85fr 1.15fr;min-height:390px
+}
+.hero-result{
+  background:var(--blue);color:#fff;padding:34px;
+  display:flex;flex-direction:column;justify-content:space-between
+}
+.hero-result .tag{
+  font-size:.72rem;text-transform:uppercase;letter-spacing:.12em;
+  font-weight:800;opacity:.72
+}
+.big-rate{
+  font-size:clamp(4.5rem,10vw,8rem);
+  line-height:.86;letter-spacing:-.075em;font-weight:900;margin:18px 0
+}
+.big-rate small{font-size:.34em;letter-spacing:-.01em}
+.hero-result h2{margin:0 0 10px;font-size:1.3rem}
+.hero-result p{margin:0;opacity:.84;max-width:350px}
+.hero-result .foot{
+  margin-top:28px;padding-top:18px;border-top:1px solid rgba(255,255,255,.2);
+  font-size:.76rem;opacity:.7
+}
+.dashboard{padding:28px}
+.kpis{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px
+}
+.kpi{
+  background:var(--soft);border-radius:17px;padding:17px
+}
+.kpi span{display:block;font-size:.72rem;color:var(--muted);margin-bottom:7px}
+.kpi strong{
+  display:block;font-size:clamp(1.25rem,2.4vw,2rem);
+  line-height:1;letter-spacing:-.035em
+}
+.kpi strong.pos{color:var(--green)}
+.kpi strong.neg{color:var(--red)}
+.timeline{
+  border:1px solid var(--line);border-radius:20px;padding:22px
+}
+.timeline-head{
+  display:flex;justify-content:space-between;gap:20px;align-items:end;margin-bottom:20px
+}
+.timeline-head h3{margin:0;font-size:1.05rem}
+.timeline-head span{font-size:.78rem;color:var(--muted)}
+.track{
+  height:12px;background:#e8ebef;border-radius:999px;position:relative
+}
+.track::before,.track::after{
+  content:"";position:absolute;top:50%;width:18px;height:18px;border-radius:50%;
+  background:var(--blue);transform:translateY(-50%)
+}
+.track::before{left:0}.track::after{right:0}
+.dates{display:flex;justify-content:space-between;margin-top:12px;font-size:.78rem;color:var(--muted)}
+.tax-section{margin-top:28px}
+.section-title{
+  display:flex;justify-content:space-between;gap:20px;align-items:end;margin-bottom:16px
+}
+.section-title h2{margin:0;font-size:1.6rem;letter-spacing:-.03em}
+.section-title p{margin:0;color:var(--muted);font-size:.88rem}
+.tax-card{
+  background:#fff;border:1px solid var(--line);border-radius:26px;padding:26px;
+  box-shadow:var(--shadow)
+}
+.tax-options{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:22px
+}
+.tax-option{
+  position:relative;border:1px solid var(--line);border-radius:18px;padding:18px;
+  cursor:pointer;background:#fff
+}
+.tax-option input{position:absolute;opacity:0;pointer-events:none}
+.tax-option.active{border:2px solid var(--blue);background:var(--softblue)}
+.tax-option strong{display:block;font-size:1.4rem;color:var(--blue)}
+.tax-option span{display:block;font-size:.78rem;color:var(--muted);margin-top:4px}
+.tax-results{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:12px
+}
+.tax-kpi{
+  background:var(--soft);border-radius:16px;padding:16px
+}
+.tax-kpi span{display:block;font-size:.72rem;color:var(--muted);margin-bottom:6px}
+.tax-kpi strong{font-size:1.2rem;letter-spacing:-.02em}
+.note{
+  margin-top:22px;padding:18px 20px;border-radius:16px;background:var(--soft);
+  font-size:.82rem;line-height:1.55;color:#566276
+}
+details{margin-top:18px;font-size:.82rem;color:#566276}
+summary{cursor:pointer;font-weight:800;color:var(--navy)}
+footer{
+  border-top:1px solid var(--line);background:#fff;
+  padding:24px 0 34px;font-size:.78rem;color:var(--muted)
+}
+@media(max-width:850px){
+  .inputs{grid-template-columns:1fr}
+  .results{grid-template-columns:1fr}
+  .hero-result{min-height:330px}
+  .kpis{grid-template-columns:1fr}
+  .tax-results{grid-template-columns:1fr 1fr}
+}
+@media(max-width:580px){
+  .hero{padding-top:42px}
+  .inputs,.dashboard,.tax-card{padding:20px}
+  .tax-options{grid-template-columns:1fr}
+  .tax-results{grid-template-columns:1fr}
+  .timeline-head{display:block}.timeline-head span{display:block;margin-top:6px}
+}
+</style>
+</head>
+<body>
 
+<header>
+  <div class="wrap topbar">
+    <a class="brand" href="https://www.luigimauri.com/">
+      Luigi Mauri
+      <small>Consulente dal 1995</small>
+    </a>
+    <a class="back" href="/">← Fai due conti</a>
+  </div>
+</header>
+
+<main>
+<section class="hero">
+  <div class="wrap">
+    <div class="eyebrow">Rendimento · Fai due conti</div>
+    <h1>Quanto mi ha reso?</h1>
+    <p class="lead">
+      Inserisci quanto avevi investito, quando hai iniziato e quanto vale oggi.
+      Il calcolatore misura il rendimento complessivo del periodo e il rendimento medio annuo composto.
+    </p>
+  </div>
+</section>
+
+<section class="section">
+<div class="wrap">
+
+  <div class="calc">
+    <div class="inputs">
+      <div class="field">
+        <label for="initial">Capitale investito</label>
+        <div class="box"><span>€</span><input id="initial" type="number" min="0.01" step="1000" value="100000"></div>
+      </div>
+
+      <div class="field">
+        <label for="startDate">Data dell'investimento</label>
+        <div class="box"><input id="startDate" type="date"></div>
+      </div>
+
+      <div class="field">
+        <label for="current">Valore oggi</label>
+        <div class="box"><span>€</span><input id="current" type="number" min="0" step="1000" value="125000"></div>
+      </div>
+    </div>
+
+    <div class="results">
+      <div class="hero-result">
+        <div>
+          <div class="tag">Rendimento complessivo del periodo</div>
+          <div class="big-rate"><span id="periodReturn">—</span><small>%</small></div>
+          <div style="margin:-2px 0 22px;">
+            <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.11em;font-weight:800;opacity:.68;margin-bottom:5px;">
+              Rendimento annualizzato
+            </div>
+            <div style="font-size:clamp(1.8rem,4vw,3rem);font-weight:850;letter-spacing:-.04em;">
+              <span id="annualizedHero">—</span>
+            </div>
+          </div>
+          <h2 id="headline">—</h2>
+          <p id="headlineText">—</p>
+        </div>
+        <div class="foot">
+          Il rendimento annualizzato è un rendimento medio composto equivalente: non descrive l'andamento effettivo anno per anno.
+        </div>
+      </div>
+
+      <div class="dashboard">
+        <div class="kpis">
+          <div class="kpi">
+            <span>Guadagno / perdita</span>
+            <strong id="gain">—</strong>
+          </div>
+          <div class="kpi">
+            <span>Rendimento annualizzato</span>
+            <strong id="annualized">—</strong>
+          </div>
+          <div class="kpi">
+            <span>Durata investimento</span>
+            <strong id="duration">—</strong>
+          </div>
+        </div>
+
+        <div class="timeline">
+          <div class="timeline-head">
+            <h3>Dal capitale iniziale al valore di oggi</h3>
+            <span id="todayLabel">—</span>
+          </div>
+          <div class="track"></div>
+          <div class="dates">
+            <span id="startLabel">—</span>
+            <span>oggi</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section class="tax-section">
+    <div class="section-title">
+      <div>
+        <div class="eyebrow">Stima fiscale semplificata</div>
+        <h2>Quanto resta dopo le tasse?</h2>
+      </div>
+      <p>La tassazione viene applicata solo all'eventuale guadagno positivo.</p>
+    </div>
+
+    <div class="tax-card">
+      <div class="tax-options">
+        <label class="tax-option active">
+          <input type="radio" name="tax" value="0.26" checked>
+          <strong>26%</strong>
+          <span>Aliquota selezionata</span>
+        </label>
+        <label class="tax-option">
+          <input type="radio" name="tax" value="0.125">
+          <strong>12,5%</strong>
+          <span>Aliquota selezionata</span>
+        </label>
+        <label class="tax-option">
+          <input type="radio" name="tax" value="0">
+          <strong>0%</strong>
+          <span>Nessuna tassazione nella simulazione</span>
+        </label>
+      </div>
+
+      <div class="tax-results">
+        <div class="tax-kpi">
+          <span>Plusvalenza imponibile</span>
+          <strong id="taxableGain">—</strong>
+        </div>
+        <div class="tax-kpi">
+          <span>Tasse stimate</span>
+          <strong id="taxAmount">—</strong>
+        </div>
+        <div class="tax-kpi">
+          <span>Guadagno netto stimato</span>
+          <strong id="netGain">—</strong>
+        </div>
+        <div class="tax-kpi">
+          <span>Valore dopo tasse</span>
+          <strong id="netValue">—</strong>
+        </div>
+      </div>
+
+      <div class="note" id="taxNote">
+        Stima puramente matematica. La fiscalità effettiva dipende dalla natura dello strumento, dalla composizione dei rendimenti,
+        da eventuali minusvalenze compensabili e dalle regole fiscali applicabili al caso concreto.
+      </div>
+
+      <details>
+        <summary>Come viene calcolato il rendimento annualizzato?</summary>
+        <p>
+          Il calcolo confronta il capitale iniziale con il valore finale e determina il tasso medio composto che,
+          applicato per la durata effettiva dell'investimento, porterebbe dal primo importo al secondo.
+          Il calcolo è adatto a un singolo investimento senza versamenti aggiuntivi, prelievi, cedole o dividendi esterni.
+          Se nel periodo ci sono stati flussi intermedi, è necessario un calcolo diverso (ad esempio TIR/XIRR).
+        </p>
+      </details>
+    </div>
+  </section>
+
+</div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">Luigi Mauri · Milano · Monza · Da te · Online</div>
+</footer>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+
+  const initial = $('initial');
+  const current = $('current');
+  const startDate = $('startDate');
+
+  const periodReturn = $('periodReturn');
+  const gain = $('gain');
+  const annualized = $('annualized');
+  const annualizedHero = $('annualizedHero');
+  const duration = $('duration');
+  const headline = $('headline');
+  const headlineText = $('headlineText');
+  const startLabel = $('startLabel');
+  const todayLabel = $('todayLabel');
+
+  const taxableGain = $('taxableGain');
+  const taxAmount = $('taxAmount');
+  const netGain = $('netGain');
+  const netValue = $('netValue');
+
+  const euro = v => new Intl.NumberFormat('it-IT',{
+    style:'currency',currency:'EUR',maximumFractionDigits:0
+  }).format(v);
+
+  const pct = v => new Intl.NumberFormat('it-IT',{
+    minimumFractionDigits:2,maximumFractionDigits:2
+  }).format(v);
+
+  const fmtDate = d => new Intl.DateTimeFormat('it-IT',{
+    day:'2-digit',month:'2-digit',year:'numeric'
+  }).format(d);
+
+  function dateOnly(d){
+    return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  }
+
+  function setDefaults(){
+    const today = dateOnly(new Date());
+    const past = new Date(today);
+    past.setFullYear(today.getFullYear()-5);
+
+    const toISO = d => {
+      const y=d.getFullYear();
+      const m=String(d.getMonth()+1).padStart(2,'0');
+      const day=String(d.getDate()).padStart(2,'0');
+      return `${y}-${m}-${day}`;
+    };
+
+    startDate.value = toISO(past);
+    startDate.max = toISO(today);
+  }
+
+  function selectedTax(){
+    return +(document.querySelector('input[name="tax"]:checked')?.value || 0);
+  }
+
+  function updateTaxOptions(){
+    document.querySelectorAll('.tax-option').forEach(label=>{
+      const input=label.querySelector('input');
+      label.classList.toggle('active',input.checked);
+    });
+  }
+
+  function update(){
+    const init = Math.max(0,+initial.value||0);
+    const curr = Math.max(0,+current.value||0);
+    const start = startDate.value ? new Date(startDate.value+'T00:00:00') : null;
+    const today = dateOnly(new Date());
+
+    todayLabel.textContent = fmtDate(today);
+
+    if(!start || init<=0 || start>=today){
+      periodReturn.textContent='—';
+      gain.textContent='—';
+      annualized.textContent='—';
+      annualizedHero.textContent='—';
+      duration.textContent='—';
+      headline.textContent='Inserisci dati validi';
+      headlineText.textContent='La data iniziale deve essere precedente a oggi e il capitale investito deve essere maggiore di zero.';
+      startLabel.textContent='—';
+      taxableGain.textContent='—';
+      taxAmount.textContent='—';
+      netGain.textContent='—';
+      netValue.textContent='—';
+      return;
+    }
+
+    const days = (today-start)/(1000*60*60*24);
+    const years = days/365.2425;
+    const totalReturn = curr/init - 1;
+    const g = curr-init;
+
+    let ann = null;
+    if(curr>0 && years>0){
+      ann = Math.pow(curr/init,1/years)-1;
+    }
+
+    periodReturn.textContent=pct(totalReturn*100);
+    gain.textContent=euro(g);
+    gain.className = g>=0 ? 'pos' : 'neg';
+    annualized.textContent=ann===null?'—':pct(ann*100)+'%';
+    annualizedHero.textContent=ann===null?'—':pct(ann*100)+'%';
+    duration.textContent = years<1
+      ? Math.round(days)+' giorni'
+      : pct(years)+' anni';
+
+    startLabel.textContent=fmtDate(start);
+
+    if(g>0){
+      headline.textContent='Il capitale è cresciuto.';
+      headlineText.textContent='Hai guadagnato '+euro(g)+' rispetto al capitale iniziale.';
+    }else if(g<0){
+      headline.textContent='Il capitale è diminuito.';
+      headlineText.textContent='La differenza rispetto al capitale iniziale è '+euro(g)+'.';
+    }else{
+      headline.textContent='Il capitale è invariato.';
+      headlineText.textContent='Il valore di oggi coincide con il capitale iniziale.';
+    }
+
+    const taxRate=selectedTax();
+    const taxable=Math.max(0,g);
+    const tax=taxable*taxRate;
+    const netG=g-tax;
+    const netV=curr-tax;
+
+    taxableGain.textContent=euro(taxable);
+    taxAmount.textContent=euro(tax);
+    netGain.textContent=euro(netG);
+    netValue.textContent=euro(netV);
+
+    updateTaxOptions();
+  }
+
+  [initial,current,startDate].forEach(el=>el.addEventListener('input',update));
+  document.querySelectorAll('input[name="tax"]').forEach(el=>el.addEventListener('change',update));
+
+  setDefaults();
+  update();
+})();
+</script>
+</body>
+</html>
