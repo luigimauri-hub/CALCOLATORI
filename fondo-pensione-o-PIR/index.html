@@ -1,0 +1,502 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Confronta un versamento annuo nel fondo pensione e in un PIR, considerando deduzione IRPEF e tassazione della previdenza complementare.">
+  <title>Fondo pensione o PIR? | Luigi Mauri</title>
+  <style>
+    :root {
+      --ink: #17233c;
+      --muted: #667085;
+      --paper: #f6f3ed;
+      --card: #fff;
+      --line: #ded9cf;
+      --blue: #173f74;
+      --blue-soft: #eaf0f7;
+      --green: #176b55;
+      --green-soft: #e7f3ee;
+      --sand: #f2e7d5;
+      --red: #a13c35;
+      --shadow: 0 14px 42px rgba(23,35,60,.09);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+    button, input, select { font: inherit; }
+    .page { width: min(1120px, calc(100% - 32px)); margin: 0 auto; padding: 34px 0 64px; }
+    .eyebrow { margin: 0 0 10px; color: var(--blue); font-size: .78rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+    h1 { max-width: 840px; margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: clamp(2.25rem, 6vw, 4.75rem); font-weight: 500; line-height: .98; letter-spacing: -.045em; }
+    .intro { max-width: 800px; margin: 22px 0 0; color: #465267; font-size: clamp(1rem, 2vw, 1.18rem); }
+    .moments { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 30px 0; }
+    .moment { min-height: 154px; padding: 21px; border: 1px solid var(--line); border-radius: 18px; background: rgba(255,255,255,.62); }
+    .moment .number { display: inline-grid; width: 31px; height: 31px; place-items: center; margin-bottom: 12px; border-radius: 50%; color: #fff; background: var(--blue); font-size: .88rem; font-weight: 800; }
+    .moment strong { display: block; margin-bottom: 5px; }
+    .moment p { margin: 0; color: var(--muted); font-size: .94rem; }
+    .calculator { display: grid; grid-template-columns: minmax(280px,.78fr) minmax(0,1.52fr); gap: 18px; align-items: start; }
+    .panel { border: 1px solid var(--line); border-radius: 22px; background: var(--card); box-shadow: var(--shadow); }
+    .controls { position: sticky; top: 16px; padding: 24px; }
+    .results { padding: 24px; }
+    h2 { margin: 0 0 7px; font-family: Georgia, "Times New Roman", serif; font-size: 1.65rem; font-weight: 500; }
+    .subtle { margin: 0 0 22px; color: var(--muted); font-size: .9rem; }
+    .field { margin: 0 0 19px; }
+    .field label { display: block; margin-bottom: 7px; font-size: .89rem; font-weight: 750; }
+    .field-note { display: block; margin-top: 7px; color: var(--muted); font-size: .77rem; line-height: 1.4; }
+    .input-wrap { position: relative; }
+    .input-wrap input, select { width: 100%; min-height: 48px; border: 1px solid #cfd3da; border-radius: 11px; color: var(--ink); background: #fff; font-weight: 700; outline: none; }
+    .input-wrap input { padding: 10px 58px 10px 13px; }
+    select { padding: 10px 38px 10px 13px; }
+    .input-wrap input:focus, select:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(23,63,116,.12); }
+    .suffix { position: absolute; top: 50%; right: 13px; color: var(--muted); transform: translateY(-50%); }
+    .formula { margin: 5px 0 20px; padding: 14px; border-radius: 13px; background: var(--blue-soft); font-size: .86rem; }
+    .formula span { display: block; color: var(--muted); }
+    .formula strong { display: block; margin: 2px 0 5px; color: var(--blue); font-family: Georgia, "Times New Roman", serif; font-size: 1.55rem; }
+    .error { display: none; margin: 0 0 16px; padding: 11px 13px; border-radius: 10px; color: var(--red); background: #fbefed; font-size: .88rem; font-weight: 700; }
+    .summary-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 11px; }
+    .metric { min-height: 118px; padding: 18px; border: 1px solid var(--line); border-radius: 16px; background: #fff; }
+    .metric.primary { border-color: #aec4df; background: var(--blue-soft); }
+    .metric.final { border-color: #abd3c4; background: var(--green-soft); }
+    .metric .label { display: block; margin-bottom: 8px; color: var(--muted); font-size: .76rem; font-weight: 750; line-height: 1.25; text-transform: uppercase; letter-spacing: .045em; }
+    .metric .value { display: block; font-family: Georgia, "Times New Roman", serif; font-size: clamp(1.55rem,4vw,2.2rem); line-height: 1; }
+    .metric small { display: block; margin-top: 8px; color: var(--muted); }
+    .stage-title { margin: 29px 0 5px; font-family: Georgia, "Times New Roman", serif; font-size: 1.42rem; font-weight: 500; }
+    .stage-note { margin: 0 0 12px; color: var(--muted); font-size: .86rem; }
+    .comparison-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 13px; margin-top: 18px; }
+    .method-card { overflow: hidden; border: 1px solid var(--line); border-radius: 18px; background: #fff; }
+    .method-card.fund { border-color: #aec4df; }
+    .method-card.pir { border-color: #d8c2a0; }
+    .method-head { padding: 17px 18px; background: var(--blue-soft); }
+    .pir .method-head { background: var(--sand); }
+    .method-head span { display: block; color: var(--muted); font-size: .76rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+    .method-head h3 { margin: 3px 0 0; font-family: Georgia, "Times New Roman", serif; font-size: 1.42rem; font-weight: 500; }
+    .method-body { padding: 4px 18px 18px; }
+    .line-item { display: flex; justify-content: space-between; gap: 14px; padding: 13px 0; border-bottom: 1px solid #ebe7df; }
+    .line-item span { max-width: 64%; color: var(--muted); font-size: .82rem; }
+    .line-item strong { text-align: right; font-size: .92rem; }
+    .line-item.total { display: block; padding-top: 17px; border-bottom: 0; }
+    .line-item.total span { display: block; max-width: none; margin-bottom: 5px; color: var(--ink); font-weight: 800; text-transform: uppercase; letter-spacing: .045em; }
+    .line-item.total strong { display: block; color: var(--green); font-family: Georgia, "Times New Roman", serif; font-size: clamp(1.65rem,4vw,2.35rem); text-align: left; }
+    .difference { margin-top: 13px; padding: 17px 19px; border-radius: 15px; color: #fff; background: var(--blue); }
+    .difference span { display: block; font-size: .8rem; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; opacity: .82; }
+    .difference strong { display: block; margin-top: 3px; font-family: Georgia, "Times New Roman", serif; font-size: clamp(1.6rem,4vw,2.25rem); font-weight: 500; }
+    .difference small { display: block; margin-top: 4px; opacity: .82; }
+    .key-message { margin-top: 17px; padding: 20px; border-left: 5px solid var(--green); border-radius: 0 14px 14px 0; background: var(--green-soft); }
+    .key-message strong { display: block; margin-bottom: 4px; color: var(--green); font-size: 1.08rem; }
+    .key-message p { margin: 0; }
+    .payout-note { margin-top: 17px; padding: 19px; border: 1px solid #b8d5c9; border-radius: 15px; background: var(--green-soft); }
+    .payout-note.warning { border-color: #dfbd83; background: #fff4df; }
+    .payout-note.neutral { border-color: var(--line); background: #faf9f6; }
+    .payout-note strong { display: block; margin-bottom: 5px; color: var(--green); font-size: 1.04rem; }
+    .payout-note.warning strong { color: #85520a; }
+    .payout-note.neutral strong { color: var(--ink); }
+    .payout-note p { margin: 0; font-size: .9rem; }
+    .payout-note .rule-note { margin-top: 13px; padding-top: 13px; border-top: 1px solid rgba(23,35,60,.14); }
+    .payout-note .rule-note strong { display: inline; margin: 0; color: inherit; font-size: inherit; }
+    .payout-note small { display: block; margin-top: 8px; color: var(--muted); font-size: .76rem; }
+    .tax-brackets { display: grid; grid-template-columns: repeat(3,1fr); gap: 9px; margin-top: 13px; }
+    .tax-bracket { padding: 13px; border: 1px solid var(--line); border-radius: 13px; background: #faf9f6; }
+    .tax-bracket strong { display: block; color: var(--blue); font-size: 1.2rem; }
+    .tax-bracket span { color: var(--muted); font-size: .75rem; }
+    .table-block { margin-top: 27px; }
+    .table-head { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 11px; }
+    .table-head h2 { margin: 0; }
+    .table-head p { margin: 0; color: var(--muted); font-size: .82rem; }
+    .table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; }
+    table { width: 100%; min-width: 900px; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+    th, td { padding: 12px 13px; border-bottom: 1px solid #ebe7df; text-align: right; white-space: nowrap; }
+    th:first-child, td:first-child { text-align: left; }
+    th { color: #536078; background: #faf9f6; font-size: .7rem; letter-spacing: .025em; text-transform: uppercase; }
+    td { font-size: .84rem; }
+    tbody tr:last-child td { border-bottom: 0; font-weight: 800; }
+    tbody tr.final-row td { color: var(--ink); background: var(--green-soft); font-weight: 800; }
+    details { margin-top: 18px; padding: 15px 17px; border: 1px solid var(--line); border-radius: 13px; background: rgba(255,255,255,.55); }
+    summary { cursor: pointer; font-weight: 800; }
+    details p, details li { color: var(--muted); font-size: .85rem; }
+    details ul { padding-left: 20px; }
+    .footer-note { margin: 24px 0 0; color: var(--muted); font-size: .76rem; }
+    .footer-note a { color: var(--blue); }
+    @media (max-width: 820px) {
+      .page { width: min(100% - 22px,680px); padding-top: 22px; }
+      .moments, .calculator { grid-template-columns: 1fr; }
+      .moment { min-height: 0; }
+      .controls { position: static; }
+    }
+    @media (max-width: 500px) {
+      .panel, .moment { border-radius: 16px; }
+      .controls, .results { padding: 17px; }
+      .summary-grid, .comparison-grid { grid-template-columns: 1fr; }
+      .metric { min-height: 104px; }
+      .tax-brackets { grid-template-columns: 1fr; }
+      .table-head { display: block; }
+      .table-head p { margin-top: 3px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <p class="eyebrow">Fai due conti · Previdenza</p>
+    <h1>Fondo pensione o PIR?</h1>
+    <p class="intro">Stesso versamento e stesso rendimento lordo ipotizzato. Il confronto isola l’effetto delle diverse regole fiscali: deduzione oggi, tasse durante il percorso e tassazione alla fine.</p>
+
+    <section class="moments" aria-label="I tre momenti fiscali">
+      <article class="moment"><span class="number">1</span><strong>Quando versi</strong><p>Il contributo al fondo pensione riduce il reddito imponibile. Il versamento nel PIR non è deducibile.</p></article>
+      <article class="moment"><span class="number">2</span><strong>Mentre cresce</strong><p>Il fondo paga ogni anno il 20% sui rendimenti. Il PIR è mostrato al lordo delle imposte.</p></article>
+      <article class="moment"><span class="number">3</span><strong>Quando incassi</strong><p>Nel fondo la tassa finale colpisce i contributi dedotti, non i rendimenti già tassati. Il PIR resta esente se rispetta i requisiti di legge.</p></article>
+    </section>
+
+    <section class="calculator">
+      <form class="panel controls" id="calculatorForm" novalidate>
+        <h2>I dati dell’esempio</h2>
+        <p class="subtle">Scegli quanto versare ogni anno: massimo 5.300 €.</p>
+
+        <div class="field">
+          <label for="annualContribution">Versamento annuo</label>
+          <div class="input-wrap"><input id="annualContribution" type="number" min="100" max="5300" step="100" value="5300" inputmode="decimal"><span class="suffix">€</span></div>
+          <small class="field-note">Lo stesso importo viene versato ogni anno nel fondo pensione e nel PIR.</small>
+        </div>
+
+        <div class="field">
+          <label for="ral">Retribuzione annua lorda (RAL)</label>
+          <div class="input-wrap"><input id="ral" type="number" min="10000" max="500000" step="500" value="48000" inputmode="decimal"><span class="suffix">€</span></div>
+          <small class="field-note">Usata come approssimazione del reddito imponibile IRPEF. Il dato fiscale reale può essere diverso.</small>
+        </div>
+
+        <div class="formula" aria-live="polite">
+          <span>Beneficio IRPEF stimato ogni anno</span>
+          <strong id="annualTaxBenefit">€ 1.749,00</strong>
+          <span id="taxBenefitCaption">calcolato per scaglioni sulla RAL indicata</span>
+        </div>
+
+        <div class="field">
+          <label for="currentAge">Età attuale</label>
+          <div class="input-wrap"><input id="currentAge" type="number" min="18" max="74" step="1" value="48" inputmode="numeric"><span class="suffix">anni</span></div>
+        </div>
+
+        <div class="field">
+          <label for="retirementAge">Età prevista per la pensione</label>
+          <div class="input-wrap"><input id="retirementAge" type="number" min="50" max="80" step="1" value="68" inputmode="numeric"><span class="suffix">anni</span></div>
+        </div>
+
+        <div class="field">
+          <label for="gender">Sesso per la soglia di liquidazione</label>
+          <select id="gender">
+            <option value="male" selected>Uomo</option>
+            <option value="female">Donna</option>
+          </select>
+          <small class="field-note">Le soglie indicative della tabella cambiano in base all’età e al sesso.</small>
+        </div>
+
+        <div class="field">
+          <label for="previousYears">Anni già maturati nella previdenza complementare</label>
+          <div class="input-wrap"><input id="previousYears" type="number" min="0" max="45" step="1" value="0" inputmode="numeric"><span class="suffix">anni</span></div>
+          <small class="field-note">Servono per stimare l’aliquota finale della prestazione.</small>
+        </div>
+
+        <div class="field">
+          <label for="grossReturn">Rendimento medio annuo lordo</label>
+          <select id="grossReturn">
+            <option value="2">2%</option><option value="3">3%</option><option value="4">4%</option><option value="5" selected>5%</option><option value="6">6%</option><option value="7">7%</option><option value="8">8%</option><option value="9">9%</option><option value="10">10%</option>
+          </select>
+          <small class="field-note">La stessa ipotesi viene applicata a fondo pensione e PIR per rendere leggibile il solo effetto fiscale.</small>
+        </div>
+
+        <p class="error" id="errorMessage" role="alert"></p>
+      </form>
+
+      <section class="panel results" aria-live="polite">
+        <h2>Il risultato</h2>
+        <p class="subtle" id="scenarioText">20 anni · 5.300 € versati ogni anno · rendimento lordo 5,00%.</p>
+
+        <div class="summary-grid">
+          <article class="metric primary"><span class="label">Versamento annuo in ciascuna soluzione</span><strong class="value" id="annualContributionResult">€ 5.300</strong><small>Contributo volontario nel fondo · investimento nel PIR</small></article>
+          <article class="metric"><span class="label">Totale versato in ciascuna soluzione</span><strong class="value" id="totalContributions">€ 106.000</strong><small id="contributionYears">In 20 anni</small></article>
+        </div>
+
+        <h3 class="stage-title">1. Il vantaggio fiscale all’ingresso</h3>
+        <p class="stage-note" id="taxBenefitStageNote">Il risparmio IRPEF è calcolato applicando gli scaglioni 2026 alla RAL prima e dopo la deduzione del versamento scelto.</p>
+        <div class="summary-grid">
+          <article class="metric primary"><span class="label">Beneficio fiscale annuo stimato</span><strong class="value" id="annualBenefitResult">€ 1.749</strong><small id="effectiveBenefitRate">33,00% del versamento</small></article>
+          <article class="metric final"><span class="label">Beneficio fiscale cumulato</span><strong class="value" id="cumulativeTaxBenefit">€ 34.980</strong><small>Sommato al risultato finale, senza rendimento</small></article>
+        </div>
+        <div class="tax-brackets" aria-label="Scaglioni IRPEF 2026">
+          <div class="tax-bracket"><strong>23%</strong><span>fino a 28.000 €</span></div>
+          <div class="tax-bracket"><strong>33%</strong><span>oltre 28.000 € e fino a 50.000 €</span></div>
+          <div class="tax-bracket"><strong>43%</strong><span>oltre 50.000 €</span></div>
+        </div>
+
+        <h3 class="stage-title">2. Come vengono tassati i rendimenti</h3>
+        <p class="stage-note">Ogni anno il fondo calcola il 20% sul rendimento maturato e lo sottrae immediatamente dal proprio montante. L’anno successivo riparte dal saldo già al netto dell’imposta. Il PIR è rappresentato al lordo, senza prelievi annuali.</p>
+        <div class="comparison-grid">
+          <article class="method-card fund">
+            <header class="method-head"><span>Durante l’investimento</span><h3>Fondo pensione</h3></header>
+            <div class="method-body">
+              <div class="line-item"><span>Rendimenti lordi complessivi</span><strong id="fundGrossGains">€ 0</strong></div>
+              <div class="line-item"><span>Imposte annuali sui rendimenti (20%)</span><strong id="fundReturnTaxes">− € 0</strong></div>
+              <div class="line-item total"><span>Rendimenti netti accumulati</span><strong id="fundNetGains">€ 0</strong></div>
+            </div>
+          </article>
+          <article class="method-card pir">
+            <header class="method-head"><span>Durante l’investimento</span><h3>PIR</h3></header>
+            <div class="method-body">
+              <div class="line-item"><span>Rendimenti lordi complessivi</span><strong id="pirGrossGains">€ 0</strong></div>
+              <div class="line-item"><span>Imposte considerate nella simulazione</span><strong>€ 0</strong></div>
+              <div class="line-item total"><span>Rendimenti accumulati</span><strong id="pirNetGains">€ 0</strong></div>
+            </div>
+          </article>
+        </div>
+
+        <h3 class="stage-title">3. La tassazione finale</h3>
+        <p class="stage-note" id="finalTaxStageNote">Nel fondo l’aliquota agevolata si applica ai contributi dedotti ogni anno. I guadagni non vengono tassati di nuovo.</p>
+        <div class="comparison-grid">
+          <article class="method-card fund">
+            <header class="method-head"><span>Al momento della prestazione</span><h3>Fondo pensione</h3></header>
+            <div class="method-body">
+              <div class="line-item"><span>Contributi dedotti · base imponibile finale</span><strong id="fundFinalTaxBase">€ 106.000</strong></div>
+              <div class="line-item"><span id="finalRateCaption">Aliquota dopo 20 anni di partecipazione</span><strong id="fundFinalRate">13,50%</strong></div>
+              <div class="line-item total"><span>Imposta finale sulla prestazione</span><strong id="fundFinalTax">− € 14.310</strong></div>
+            </div>
+          </article>
+          <article class="method-card pir">
+            <header class="method-head"><span>Al momento del disinvestimento</span><h3>PIR</h3></header>
+            <div class="method-body">
+              <div class="line-item"><span>Capitale e rendimenti</span><strong id="pirBeforeTax">€ 0</strong></div>
+              <div class="line-item"><span>Tassazione ipotizzata</span><strong>0%</strong></div>
+              <div class="line-item total"><span>Imposta finale</span><strong>€ 0</strong></div>
+            </div>
+          </article>
+        </div>
+
+        <h3 class="stage-title">4. Quanto resta alla fine</h3>
+        <p class="stage-note">Per il fondo mostriamo il valore netto teorico complessivo e aggiungiamo separatamente i benefici fiscali ricevuti negli anni. Il valore non coincide necessariamente con il capitale liquidabile subito.</p>
+        <div class="summary-grid">
+          <article class="metric final"><span class="label">Fondo · valore netto teorico complessivo</span><strong class="value" id="fundNetCapital">€ 0</strong><small id="fundBeforeFinalTax">Prima dell’imposta finale: € 0</small></article>
+          <article class="metric final"><span class="label">PIR · valore finale lordo</span><strong class="value" id="pirFinalCapital">€ 0</strong><small>Esenzione subordinata al rispetto dei requisiti PIR</small></article>
+          <article class="metric primary"><span class="label">Fondo · benefici fiscali cumulati</span><strong class="value" id="benefitsAdded">€ 0</strong><small>Ricevuti negli anni e non reinvestiti</small></article>
+          <article class="metric primary"><span class="label">Fondo · valore economico complessivo</span><strong class="value" id="fundEconomicValue">€ 0</strong><small>Capitale netto + benefici fiscali cumulati</small></article>
+        </div>
+
+        <div class="payout-note" id="payoutNote">
+          <strong id="payoutTitle">Verifica della liquidazione in capitale</strong>
+          <p id="payoutText">La soglia viene confrontata con il montante del fondo alla pensione.</p>
+          <p class="rule-note">Per determinare se è possibile prelevare l’<strong>intero capitale</strong> del fondo pensione o se si è limitati al <strong>50%</strong>, con la conversione del resto in rendita, bisogna verificare una soglia specifica basata sull’importo dell’<strong>assegno sociale</strong>. La regola fondamentale stabilisce che il 100% in capitale è concesso <strong>solo se</strong> la rendita vitalizia annua che si otterrebbe convertendo il <strong>70% del montante accumulato</strong> risulta <strong>inferiore alla metà dell’importo annuo dell’assegno sociale</strong>.</p>
+          <small>Le soglie sono indicative e vanno confermate dal fondo pensione al momento della prestazione.</small>
+        </div>
+
+        <div class="difference"><span>Differenza finale della simulazione</span><strong id="differenceValue">€ 0</strong><small id="differenceCaption">a favore del fondo pensione</small></div>
+        <div class="key-message"><strong>La distinzione che conta</strong><p id="keyMessage">Il fondo paga le imposte sui rendimenti durante il percorso. Alla fine, la tassazione agevolata colpisce soltanto i contributi dedotti: i rendimenti già tassati non entrano una seconda volta nella base imponibile.</p></div>
+
+        <section class="table-block">
+          <div class="table-head"><h2>Anno per anno</h2><p>Qui si vede quando il fondo paga le imposte</p></div>
+          <div class="table-scroll" tabindex="0" aria-label="Tabella annuale della simulazione">
+            <table>
+              <thead><tr><th>Anno</th><th>Versato cumulato</th><th>Rendimento lordo fondo</th><th>Tasse fondo nell’anno</th><th>Valore fondo</th><th>Valore PIR lordo</th><th>Beneficio fiscale cumulato</th></tr></thead>
+              <tbody id="yearRows"></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+    </section>
+
+    <details>
+      <summary>Come funziona il calcolo</summary>
+      <ul>
+        <li>Si ipotizza che l’importo selezionato venga versato all’inizio di ogni anno, sia nel fondo pensione sia nel PIR. Il versamento nel fondo non può superare 5.300 €.</li>
+        <li>La deduzione viene stimata come differenza tra l’IRPEF lorda sulla RAL inserita e quella sulla RAL ridotta del versamento selezionato, applicando gli scaglioni 2026: 23%, 33% e 43%.</li>
+        <li>Il beneficio fiscale viene cumulato senza rendimento e aggiunto al capitale netto del fondo solo nel riepilogo economico finale.</li>
+        <li>Nel fondo, alla fine di ciascun anno, si calcola il rendimento lordo sul montante. Il 20% di quel rendimento viene subito sottratto dal valore del fondo; soltanto il saldo netto passa all’anno successivo. L’imposta non viene rinviata alla scadenza. L’aliquota effettiva può essere inferiore per la quota riferibile a titoli di Stato e assimilati.</li>
+        <li>La tassazione finale del fondo parte dal 15%, scende di 0,30 punti per ogni anno di partecipazione oltre il quindicesimo e non può essere inferiore al 9%.</li>
+        <li>La tassa finale del fondo è applicata esclusivamente ai contributi dedotti. I rendimenti, già tassati durante l’accumulo, sono esclusi dalla base imponibile finale.</li>
+        <li>Il montante del fondo prima della tassazione finale viene confrontato con la soglia indicativa corrispondente al sesso e all’età pensionabile selezionati. Se supera la soglia, la simulazione segnala che, in via ordinaria, non è prevista la liquidazione immediata dell’intera posizione in capitale.</li>
+        <li>Il PIR è mostrato al lordo delle imposte: l’esenzione fiscale richiede il rispetto della normativa PIR, compreso il periodo minimo di detenzione e i vincoli di composizione.</li>
+      </ul>
+    </details>
+
+    <details>
+      <summary>Soglie indicative utilizzate per la liquidazione integrale</summary>
+      <p>Valori della tabella fornita, distinti per sesso ed età al pensionamento. Il superamento della soglia fa scattare l’avviso sulla liquidazione massima ordinaria del 50% in capitale.</p>
+      <div class="table-scroll" tabindex="0" aria-label="Soglie indicative per la liquidazione integrale del fondo pensione">
+        <table style="min-width: 440px">
+          <thead><tr><th>Età</th><th>Uomo</th><th>Donna</th></tr></thead>
+          <tbody>
+            <tr><td>57</td><td>165.659 €</td><td>185.984 €</td></tr><tr><td>58</td><td>160.880 €</td><td>181.121 €</td></tr><tr><td>59</td><td>156.118 €</td><td>176.259 €</td></tr><tr><td>60</td><td>146.645 €</td><td>166.534 €</td></tr><tr><td>61</td><td>141.941 €</td><td>161.673 €</td></tr><tr><td>62</td><td>137.273 €</td><td>156.806 €</td></tr><tr><td>63</td><td>132.645 €</td><td>151.934 €</td></tr><tr><td>64</td><td>128.063 €</td><td>147.062 €</td></tr><tr><td>65</td><td>123.507 €</td><td>142.194 €</td></tr><tr><td>66</td><td>118.968 €</td><td>137.329 €</td></tr><tr><td>67</td><td>114.452 €</td><td>132.472 €</td></tr><tr><td>68</td><td>109.961 €</td><td>127.622 €</td></tr><tr><td>69</td><td>101.058 €</td><td>117.964 €</td></tr><tr><td>70</td><td>96.656 €</td><td>113.164 €</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <details>
+      <summary>Avvertenze importanti</summary>
+      <p>Questa è una simulazione didattica, non una previsione, una consulenza fiscale o una proposta di investimento. I rendimenti sono costanti e puramente ipotetici. Non sono considerati costi, commissioni, garanzie, volatilità, perdite, inflazione, imposta di bollo, variazioni normative, contributi del datore di lavoro, TFR, anticipazioni, riscatti o trasferimenti.</p>
+      <p>La RAL non coincide normalmente con il reddito imponibile IRPEF. La stima non considera contributi previdenziali obbligatori, detrazioni, crediti d’imposta, addizionali regionali e comunali, altri redditi, altri oneri deducibili né incapienza fiscale. Il beneficio effettivo va verificato sulla situazione personale.</p>
+      <p>Si presume che l’intero versamento selezionato sia deducibile e poi imponibile al momento della prestazione. Eventuali contributi non dedotti, se comunicati correttamente al fondo, seguono un trattamento diverso e non dovrebbero essere tassati nuovamente in uscita.</p>
+      <p>Le soglie riportate traducono in valori indicativi la verifica prevista per la liquidazione integrale in capitale e possono cambiare nel tempo in funzione dell’assegno sociale, dei coefficienti di conversione, delle condizioni della forma pensionistica e della posizione individuale. La regola generale consente fino al 50% in capitale e destina la parte restante alla rendita, salvo i casi in cui sia ammessa la liquidazione integrale e le ulteriori opzioni previste dalla normativa. Anticipazioni non reintegrate, anzianità precedente e qualifica di “vecchio iscritto” possono modificare il trattamento.</p>
+      <p>Fondo pensione e PIR possono avere composizione, rischio, liquidabilità, costi e finalità molto differenti. L’uso dello stesso rendimento serve soltanto a isolare l’effetto fiscale e non implica equivalenza tra le due soluzioni.</p>
+    </details>
+
+    <p class="footer-note">Riferimenti informativi: <a href="https://www.mef.gov.it/focus/Principali-misure-della-legge-di-bilancio-2026/" target="_blank" rel="noopener">MEF · Legge di Bilancio 2026</a>, <a href="https://www.covip.it/per-il-cittadino/educazione-previdenziale/informazioni-sul-trattamento-fiscale-della-previdenza" target="_blank" rel="noopener">COVIP · trattamento fiscale</a>. Ultimo aggiornamento: settembre 2026.</p>
+  </main>
+
+  <script>
+    (() => {
+      const FUND_RETURN_TAX = 0.20;
+      const PAYOUT_THRESHOLDS = {
+        57: { male: 165659, female: 185984 }, 58: { male: 160880, female: 181121 },
+        59: { male: 156118, female: 176259 }, 60: { male: 146645, female: 166534 },
+        61: { male: 141941, female: 161673 }, 62: { male: 137273, female: 156806 },
+        63: { male: 132645, female: 151934 }, 64: { male: 128063, female: 147062 },
+        65: { male: 123507, female: 142194 }, 66: { male: 118968, female: 137329 },
+        67: { male: 114452, female: 132472 }, 68: { male: 109961, female: 127622 },
+        69: { male: 101058, female: 117964 }, 70: { male: 96656, female: 113164 }
+      };
+      const fields = {
+        annualContribution: document.querySelector('#annualContribution'),
+        ral: document.querySelector('#ral'),
+        currentAge: document.querySelector('#currentAge'),
+        retirementAge: document.querySelector('#retirementAge'),
+        gender: document.querySelector('#gender'),
+        previousYears: document.querySelector('#previousYears'),
+        grossReturn: document.querySelector('#grossReturn')
+      };
+      const out = Object.fromEntries([...document.querySelectorAll('[id]')].map((el) => [el.id, el]));
+      const money0 = new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+      const money2 = new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR', minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      const number2 = new Intl.NumberFormat('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+      function value(name) { return Number.parseFloat(fields[name].value); }
+      function grossIrpef(income) {
+        const taxable = Math.max(0, income);
+        const first = Math.min(taxable, 28000) * 0.23;
+        const second = Math.min(Math.max(taxable - 28000, 0), 22000) * 0.33;
+        const third = Math.max(taxable - 50000, 0) * 0.43;
+        return first + second + third;
+      }
+      function finalBenefitRate(participationYears) {
+        return Math.max(9, 15 - Math.max(0, participationYears - 15) * 0.3);
+      }
+
+      function calculate() {
+        const annualContribution = value('annualContribution');
+        const ral = value('ral');
+        const currentAge = value('currentAge');
+        const retirementAge = value('retirementAge');
+        const gender = fields.gender.value;
+        const previousYears = value('previousYears');
+        const grossReturnRate = value('grossReturn') / 100;
+        const years = Math.trunc(retirementAge - currentAge);
+        const invalid = [annualContribution, ral, currentAge, retirementAge, previousYears, grossReturnRate].some((n) => !Number.isFinite(n));
+        if (invalid || annualContribution <= 0 || annualContribution > 5300 || ral <= 0 || years <= 0 || previousYears < 0 || grossReturnRate < 0) {
+          out.errorMessage.textContent = years <= 0
+            ? 'L’età prevista per la pensione deve essere superiore all’età attuale.'
+            : annualContribution > 5300
+              ? 'Il versamento annuo nel fondo pensione non può superare 5.300 €.'
+              : 'Controlla i valori inseriti.';
+          out.errorMessage.style.display = 'block';
+          return;
+        }
+        out.errorMessage.style.display = 'none';
+
+        const deductibleContribution = Math.min(annualContribution, ral);
+        const annualTaxBenefit = grossIrpef(ral) - grossIrpef(ral - deductibleContribution);
+        const cumulativeTaxBenefit = annualTaxBenefit * years;
+        const totalContributions = annualContribution * years;
+        const participationYears = Math.trunc(previousYears + years);
+        const finalRate = finalBenefitRate(participationYears) / 100;
+        let fundBalance = 0;
+        let pirBalance = 0;
+        let totalFundGrossGains = 0;
+        let totalFundReturnTaxes = 0;
+        let totalPirGrossGains = 0;
+        const rows = [];
+
+        for (let year = 1; year <= years; year += 1) {
+          fundBalance += annualContribution;
+          pirBalance += annualContribution;
+          const fundGrossGain = fundBalance * grossReturnRate;
+          const fundTax = Math.max(0, fundGrossGain) * FUND_RETURN_TAX;
+          const pirGrossGain = pirBalance * grossReturnRate;
+          // L'imposta sui rendimenti viene prelevata dal montante ogni anno.
+          fundBalance += fundGrossGain - fundTax;
+          pirBalance += pirGrossGain;
+          totalFundGrossGains += fundGrossGain;
+          totalFundReturnTaxes += fundTax;
+          totalPirGrossGains += pirGrossGain;
+          rows.push({
+            year,
+            totalPaid: annualContribution * year,
+            fundGrossGain,
+            fundTax,
+            fundBalance,
+            pirBalance,
+            cumulativeBenefit: annualTaxBenefit * year
+          });
+        }
+
+        const fundNetGains = fundBalance - totalContributions;
+        const pirNetGains = pirBalance - totalContributions;
+        const fundFinalTax = totalContributions * finalRate;
+        const fundNetCapital = fundBalance - fundFinalTax;
+        const fundEconomicValue = fundNetCapital + cumulativeTaxBenefit;
+        const difference = fundEconomicValue - pirBalance;
+
+        out.annualTaxBenefit.textContent = money2.format(annualTaxBenefit);
+        out.taxBenefitCaption.textContent = annualTaxBenefit > 0 ? 'calcolato per scaglioni sulla RAL indicata' : 'nessun beneficio IRPEF stimato';
+        out.scenarioText.textContent = `${years} ${years === 1 ? 'anno' : 'anni'} · ${money0.format(annualContribution)} versati ogni anno · rendimento lordo ${number2.format(grossReturnRate * 100)}%.`;
+        out.annualContributionResult.textContent = money0.format(annualContribution);
+        out.totalContributions.textContent = money0.format(totalContributions);
+        out.contributionYears.textContent = `In ${years} ${years === 1 ? 'anno' : 'anni'}`;
+        out.annualBenefitResult.textContent = money0.format(annualTaxBenefit);
+        out.effectiveBenefitRate.textContent = `${number2.format((annualTaxBenefit / annualContribution) * 100)}% del versamento`;
+        out.taxBenefitStageNote.textContent = `Il risparmio IRPEF è calcolato applicando gli scaglioni 2026 alla RAL prima e dopo la deduzione di ${money0.format(annualContribution)}.`;
+        out.cumulativeTaxBenefit.textContent = money0.format(cumulativeTaxBenefit);
+        out.fundGrossGains.textContent = money0.format(totalFundGrossGains);
+        out.fundReturnTaxes.textContent = `− ${money0.format(totalFundReturnTaxes)}`;
+        out.fundNetGains.textContent = money0.format(fundNetGains);
+        out.pirGrossGains.textContent = money0.format(totalPirGrossGains);
+        out.pirNetGains.textContent = money0.format(pirNetGains);
+        out.fundFinalTaxBase.textContent = money0.format(totalContributions);
+        out.finalRateCaption.textContent = `Aliquota dopo ${participationYears} ${participationYears === 1 ? 'anno' : 'anni'} di partecipazione`;
+        out.fundFinalRate.textContent = `${number2.format(finalRate * 100)}%`;
+        out.fundFinalTax.textContent = `− ${money0.format(fundFinalTax)}`;
+        out.finalTaxStageNote.textContent = `Nel fondo l’aliquota agevolata si applica ai ${money0.format(annualContribution)} dedotti ogni anno. I guadagni, già tassati durante il percorso, non vengono tassati di nuovo.`;
+        out.pirBeforeTax.textContent = money0.format(pirBalance);
+        out.fundNetCapital.textContent = money0.format(fundNetCapital);
+        out.fundBeforeFinalTax.textContent = `Prima dell’imposta finale: ${money0.format(fundBalance)}`;
+        out.pirFinalCapital.textContent = money0.format(pirBalance);
+        out.benefitsAdded.textContent = money0.format(cumulativeTaxBenefit);
+        out.fundEconomicValue.textContent = money0.format(fundEconomicValue);
+        const threshold = PAYOUT_THRESHOLDS[Math.trunc(retirementAge)]?.[gender];
+        const genderLabel = gender === 'female' ? 'donna' : 'uomo';
+        if (!Number.isFinite(threshold)) {
+          out.payoutNote.className = 'payout-note neutral';
+          out.payoutTitle.textContent = 'Soglia non disponibile per l’età selezionata';
+          out.payoutText.textContent = `La tabella allegata contiene valori da 57 a 70 anni. Per un pensionamento a ${Math.trunc(retirementAge)} anni, la possibilità di ricevere il 100% in capitale deve essere verificata direttamente con il fondo.`;
+        } else if (fundBalance > threshold) {
+          const maximumCapital = fundBalance * 0.50;
+          out.payoutNote.className = 'payout-note warning';
+          out.payoutTitle.textContent = 'Attenzione: il fondo supera la soglia per il capitale integrale';
+          out.payoutText.textContent = `Montante stimato: ${money0.format(fundBalance)}. Soglia indicativa per ${genderLabel} di ${Math.trunc(retirementAge)} anni: ${money0.format(threshold)}. In via ordinaria non sarebbe possibile ricevere subito il 100%: fino a circa ${money0.format(maximumCapital)} lordi potrebbe essere liquidato in capitale e la parte restante destinata alla rendita, salvo eccezioni e verifiche del fondo.`;
+        } else {
+          out.payoutNote.className = 'payout-note';
+          out.payoutTitle.textContent = 'Il montante non supera la soglia indicativa';
+          out.payoutText.textContent = `Montante stimato: ${money0.format(fundBalance)}. Soglia indicativa per ${genderLabel} di ${Math.trunc(retirementAge)} anni: ${money0.format(threshold)}. In base alla tabella, potrebbe essere ammessa la liquidazione integrale in capitale, previa verifica del fondo pensione.`;
+        }
+        out.differenceValue.textContent = money0.format(Math.abs(difference));
+        out.differenceCaption.textContent = Math.abs(difference) < .5 ? 'risultati sostanzialmente equivalenti nelle ipotesi selezionate' : difference > 0 ? 'a favore del fondo pensione, includendo i benefici fiscali' : 'a favore del PIR, nelle ipotesi selezionate';
+        out.keyMessage.textContent = `Il fondo ha pagato ${money0.format(totalFundReturnTaxes)} sui rendimenti durante il percorso. Alla fine il ${number2.format(finalRate * 100)}% è applicato ai ${money0.format(totalContributions)} versati e dedotti, non ai ${money0.format(fundNetGains)} di rendimenti netti già tassati.`;
+        const annualRows = rows.map((row) => `<tr><td>${row.year}</td><td>${money0.format(row.totalPaid)}</td><td>${money0.format(row.fundGrossGain)}</td><td>− ${money0.format(row.fundTax)}</td><td>${money0.format(row.fundBalance)}</td><td>${money0.format(row.pirBalance)}</td><td>${money0.format(row.cumulativeBenefit)}</td></tr>`).join('');
+        const finalRow = `<tr class="final-row"><td>Prestazione finale</td><td>Base: ${money0.format(totalContributions)}</td><td>Già tassati</td><td>− ${money0.format(fundFinalTax)} (${number2.format(finalRate * 100)}%)</td><td>${money0.format(fundNetCapital)} netti</td><td>${money0.format(pirBalance)}</td><td>${money0.format(cumulativeTaxBenefit)}</td></tr>`;
+        out.yearRows.innerHTML = annualRows + finalRow;
+      }
+
+      Object.values(fields).forEach((field) => field.addEventListener('input', calculate));
+      calculate();
+    })();
+  </script>
+</body>
+</html>
