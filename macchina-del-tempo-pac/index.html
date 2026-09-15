@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Macchina del Tempo - PAC nel passato</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.98);
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            padding: 30px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        h1 {
+            color: #2c3e50;
+            margin: 0 0 5px 0;
+            text-align: center;
+            font-size: 2.8em;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        .time-machine-subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 25px;
+            font-size: 1.2em;
+            font-style: italic;
+            border-bottom: 1px dashed #3498db;
+            padding-bottom: 10px;
+        }
+        
+        /* Guida per il cliente - Stili */
+        .guide-container {
+            margin-bottom: 25px;
+            border: 2px solid #3498db;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .guide-header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 15px 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+        .guide-header:hover {
+            background: linear-gradient(135deg, #1e2b37, #2980b9);
+        }
+        .guide-header span:first-child {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .guide-content {
+            background: #f8f9fa;
+            padding: 20px;
+            display: none;
+            max-height: none;
+        }
+        .guide-content.show {
+            display: block;
+        }
+        .guide-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .guide-section h3 {
+            color: #2c3e50;
+            margin: 0 0 15px 0;
+            font-size: 1.3em;
+            border-left: 5px solid #3498db;
+            padding-left: 15px;
+        }
+        .step-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .step-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+        }
+        .step-number {
+            display: inline-block;
+            width: 28px;
+            height: 28px;
+            background: #3498db;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 28px;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        .scenario-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-right: 8px;
+        }
+        .scenario-optimist { background: #fff5e6; color: #e67e22; border: 1px solid #f39c12; }
+        .scenario-realist { background: #e8f5e9; color: #27ae60; border: 1px solid #2ecc71; }
+        .scenario-prudent { background: #e3f2fd; color: #1976d2; border: 1px solid #3498db; }
+        .question-list {
+            list-style: none;
+            padding: 0;
+        }
+        .question-list li {
+            padding: 10px;
+            margin-bottom: 8px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 3px solid #f39c12;
+        }
+        .tip-box {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        .warning-box {
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            color: #856404;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            background: #f0f5fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid #bdd3e8;
+        }
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .control-group label {
+            font-weight: 700;
+            color: #2c3e50;
+            font-size: 0.95em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .control-group input, .control-group select {
+            padding: 12px 14px;
+            border: 2px solid #bdc3c7;
+            border-radius: 10px;
+            font-size: 1em;
+            background: white;
+            transition: all 0.2s;
+            width: 100%;
+        }
+        .control-group input:focus, .control-group select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52,152,219,0.2);
+        }
+        .control-group input[type="range"] {
+            padding: 0;
+            height: 8px;
+        }
+        .amount-input {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .amount-input span {
+            font-weight: 700;
+            color: #2c3e50;
+            font-size: 1.2em;
+        }
+        .amount-input input {
+            flex: 1;
+        }
+        .strategy-section {
+            grid-column: 1 / -1;
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 5px;
+            border: 2px solid #3498db;
+            box-shadow: 0 4px 10px rgba(52,152,219,0.2);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .strategy-section.selected {
+            border-color: #e67e22;
+            box-shadow: 0 4px 15px rgba(230,126,34,0.3);
+        }
+        .strategy-title {
+            font-weight: 700;
+            color: #2c3e50;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .strategy-title span {
+            background: #3498db;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 30px;
+            font-size: 0.8em;
+        }
+        .pac-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .pic-options {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px dashed #bdc3c7;
+        }
+        .allocation-group {
+            grid-column: 1 / -1;
+            background: #e9ecef;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 10px;
+            border: 1px solid #bdc3c7;
+        }
+        .allocation-sliders {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 15px;
+        }
+        .slider-item {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .slider-item label {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        .slider-value {
+            font-weight: bold;
+            color: #3498db;
+            font-size: 1.2em;
+            background: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            text-align: center;
+            border: 1px solid #bdc3c7;
+        }
+        .slider-item input[type="range"] {
+            width: 100%;
+            height: 8px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #2c3e50 0%, #1e2b37 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border: 1px solid #4a5a6a;
+        }
+        .stat-card.highlight {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+        }
+        .stat-card.volatility {
+            background: linear-gradient(135deg, #8e44ad 0%, #9b59b6 100%);
+        }
+        .stat-value {
+            font-size: 1.6em;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+        .stat-label {
+            font-size: 0.85em;
+            opacity: 0.9;
+        }
+        .chart-container {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid #e1e8ed;
+            height: 500px;
+            position: relative;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            max-height: 500px;
+            overflow-y: auto;
+            border: 1px solid #e1e8ed;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 0 10px;
+        }
+        .table-header select {
+            padding: 8px 12px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 0.95em;
+            background: white;
+            min-width: 200px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9em;
+        }
+        th {
+            background: #2c3e50;
+            color: white;
+            padding: 12px;
+            position: sticky;
+            top: 0;
+            font-weight: 600;
+            z-index: 10;
+        }
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #e1e8ed;
+        }
+        tr:hover {
+            background: #f5f5f5;
+        }
+        .positive {
+            color: #27ae60;
+            font-weight: 600;
+        }
+        .negative {
+            color: #e74c3c;
+            font-weight: 600;
+        }
+        .view-trip-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85em;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .view-trip-btn:hover {
+            background: #2980b9;
+            transform: scale(1.05);
+        }
+        .tab-buttons {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        .tab-button {
+            padding: 12px 25px;
+            background: white;
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: 700;
+            color: #2c3e50;
+            font-size: 1em;
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border: 1px solid #bdc3c7;
+        }
+        .tab-button.active {
+            background: #2c3e50;
+            color: white;
+            transform: scale(1.02);
+            border-color: #1e2b37;
+        }
+        .tab-content {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .tab-content.active {
+            display: block;
+            opacity: 1;
+        }
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 15px;
+        }
+        .comparison-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid #e1e8ed;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        .comparison-card h3 {
+            margin: 0 0 15px 0;
+            color: #2c3e50;
+            font-size: 1.2em;
+        }
+        .comparison-value {
+            font-size: 2em;
+            font-weight: bold;
+            margin: 10px 0;
+            color: #3498db;
+        }
+        .legend-box {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-right: 8px;
+            border-radius: 4px;
+            vertical-align: middle;
+        }
+        .chart-legend {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            flex-wrap: wrap;
+            border: 1px solid #e1e8ed;
+        }
+        .time-machine-button {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: center;
+            margin: 20px 0 10px 0;
+        }
+        .start-button {
+            background: linear-gradient(135deg, #e67e22, #d35400);
+            color: white;
+            border: none;
+            padding: 18px 50px;
+            font-size: 1.6em;
+            font-weight: 700;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 10px 20px rgba(230,126,34,0.3);
+            border: 2px solid #f39c12;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .start-button:hover {
+            background: linear-gradient(135deg, #d35400, #e67e22);
+            transform: scale(1.05);
+            box-shadow: 0 15px 30px rgba(230,126,34,0.4);
+        }
+        .start-button:active {
+            transform: scale(0.95);
+        }
+        .footer {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f0f5fa;
+            border-radius: 12px;
+            font-size: 0.85em;
+            color: #5d6d7e;
+            border-top: 3px solid #2c3e50;
+        }
+        .footer p {
+            margin: 5px 0;
+        }
+        .footer strong {
+            color: #2c3e50;
+        }
+        .credit {
+            text-align: right;
+            font-size: 1.1em;
+            margin-top: 10px;
+            color: #2c3e50;
+            font-weight: 700;
+            border-top: 1px solid #bdc3c7;
+            padding-top: 15px;
+        }
+        .info-badge {
+            background: #2c3e50;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            display: inline-block;
+        }
+        .total-versamenti {
+            font-size: 0.85em;
+            color: #2c3e50;
+            margin-top: 5px;
+            font-weight: 600;
+        }
+        .holding-period {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            border: 1px solid #3498db;
+        }
+        .holding-slider {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .strategy-label {
+            font-size: 1.1em;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .strategy-label span {
+            background: #3498db;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.8em;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            overflow: auto;
+        }
+        .modal-content {
+            background-color: white;
+            margin: 3% auto;
+            padding: 25px;
+            border-radius: 20px;
+            width: 95%;
+            max-width: 1200px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 15px;
+        }
+        .modal-header h2 {
+            margin: 0;
+            color: #2c3e50;
+        }
+        .close-modal {
+            font-size: 2em;
+            cursor: pointer;
+            color: #7f8c8d;
+            transition: color 0.2s;
+        }
+        .close-modal:hover {
+            color: #e74c3c;
+        }
+        .trip-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+        }
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px dashed #bdc3c7;
+        }
+        .detail-label {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        .detail-value {
+            font-weight: 700;
+            color: #3498db;
+        }
+        .modal-legend {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            margin: 15px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 50px;
+            flex-wrap: wrap;
+        }
+        .modal-chart-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 15px;
+        }
+        .modal-chart-container {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid #e1e8ed;
+            height: 350px;
+            position: relative;
+        }
+        .modal-chart-title {
+            text-align: center;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        .modal-chart-subtitle {
+            text-align: center;
+            font-size: 0.85em;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+        .alignment-note {
+            background: #e8f4fd;
+            border: 1px solid #3498db;
+            border-radius: 8px;
+            padding: 8px;
+            margin-bottom: 10px;
+            font-size: 0.85em;
+            text-align: center;
+            color: #2c3e50;
+        }
+        input[type=range]{width:100%;min-height:36px;accent-color:#2980b9;cursor:pointer}output{font-weight:700;font-size:1.4em}select{font-size:1rem;padding:10px;border-radius:8px;border:1px solid #abc}.controls-grid{grid-template-columns:minmax(0,1fr)}.chart-container{height:auto;min-height:0}.chart-plot{height:480px;position:relative}.table-container{overflow-x:auto}.tab-buttons{flex-wrap:wrap}.detail-item{gap:12px;flex-wrap:wrap}.stat-value{font-size:1.65em}.guide-header:focus-visible,button:focus-visible{outline:3px solid #e67e22}#simulationStatus{text-align:center;color:#2c3e50;padding:10px}
+        @media(max-width:760px){body{padding:8px}.container{padding:16px;border-radius:18px}h1{font-size:1.55em;letter-spacing:0}.controls-grid,.pac-options,.allocation-sliders,.comparison-grid,.trip-details,.modal-chart-grid{grid-template-columns:1fr!important}.controls-grid{padding:12px}.strategy-section,.allocation-group{padding:14px;min-width:0}.strategy-title{flex-wrap:wrap;gap:8px}.holding-period>div:first-child{flex-wrap:wrap;gap:8px}.chart-plot{height:340px}.chart-legend{flex-wrap:wrap;gap:10px}.modal-content{padding:14px}.modal-header h2{font-size:1.25em}.start-button{font-size:1em;padding:16px}.stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.tab-button{flex:1;font-size:.85em}.time-machine-subtitle{font-size:1em}.amount-input{min-width:0}}
+        .risk-notice{padding:18px;margin:18px 0;background:#fff5e5;border-left:4px solid #b36a00;border-radius:8px;color:#493719;font-size:.95rem;line-height:1.65}.risk-notice a{color:#174b70;text-decoration:underline;font-weight:600}.disclaimer-section{margin:12px 0;padding:14px 16px;background:#fff;border:1px solid #ccd6df;border-radius:8px;text-align:left;color:#334155;line-height:1.7;font-size:1rem}.disclaimer-section summary{font-weight:700;cursor:pointer;color:#203a43}.disclaimer-section p{margin-bottom:0}#avvertenze{scroll-margin-top:20px;text-align:left}#avvertenze h2{color:#203a43}@media print{.disclaimer-section>p{display:block!important}.disclaimer-section{break-inside:avoid}}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⚡ LA MACCHINA DEL TEMPO ⚡</h1>
+        <div class="time-machine-subtitle">PAC mensile · Versamenti, tempo e riscatto</div>
+        
+        <!-- GUIDA INTERATTIVA PER IL CLIENTE -->
+        <div class="guide-container">
+            <div class="guide-header" id="guideToggle">
+                <span>
+                    <span style="font-size: 1.5em;">📘</span>
+                    COME FUNZIONA LA MACCHINA DEL TEMPO
+                </span>
+                <span id="toggleIcon" style="font-size: 1.3em;">▲</span>
+            </div>
+            
+            <div class="guide-content show" id="guideContent">
+                <div class="guide-section">
+                    <p><strong>La Macchina del Tempo non prevede il futuro. Ti mostra cosa sarebbe successo se avessi iniziato nel passato.</strong></p>
+                    <p>Scegli un importo mensile, la durata dei versamenti, i costi e quando riscattare. La macchina del tempo applica queste scelte a tanti momenti di partenza diversi, usando l’andamento storico dell’azionario.</p>
+                    <p>La domanda è semplice: <strong>«Se avessi versato questa somma ogni mese, come sarebbe andata?»</strong></p>
+                    <p>Puoi confrontare i risultati nei periodi favorevoli e in quelli difficili, vedere cosa sarebbe successo ritirando il capitale alla fine dei versamenti oppure lasciandolo investito più a lungo. Con <strong>“Mai”</strong>, scopri quanto varrebbe il capitale ancora investito all’ultima data disponibile nei dati.</p>
+                    <p><strong>Il passato non ti dice quanto guadagnerai. Ti aiuta a capire quanto possono contare la costanza, il tempo e il momento in cui decidi di uscire.</strong></p>
+                    <p>La componente obbligazionaria viene invece calcolata al tasso fisso che scegli: è un’ipotesi di confronto, non un rendimento storico né garantito.</p>
+                </div>
+                <details class="guide-section"><summary>Come leggere i grafici e i calcoli</summary><p>Le linee blu mostrano i percorsi storici; la linea rossa i versamenti, quella arancione la media e quella verde il riferimento obbligazionario.</p><p>La quota obbligazionaria è regolabile dallo 0% al 100%. Il rendimento annuo scelto è un’ipotesi costante di calcolo, non una garanzia né una serie storica obbligazionaria. Ogni versamento viene ripartito nelle percentuali scelte, senza successivi ribilanciamenti.</p><p>I versamenti avvengono a inizio mese. Il costo selezionato viene trattenuto da ciascun versamento: solo il netto viene investito. Capitale versato, guadagno/perdita e TIR considerano tutte le somme pagate, costi compresi. Anche il riferimento obbligazionario applica lo stesso costo. Il rendimento annuo è il TIR dei flussi mensili, annualizzato. La volatilità misura le variazioni mensili del portafoglio escludendo i versamenti.</p></details>
+            </div>
+        </div>
+        
+        <div class="controls-grid">
+            <!-- STRATEGIA PAC (MENSILE) - Prima opzione -->
+            <div class="strategy-section" id="pacSection">
+                <div class="strategy-title">
+                    📈 STRATEGIA PAC - ACCUMULO MENSILE 
+                    <span>SOLO VERSAMENTI MENSILI</span>
+                </div>
+                <div class="pac-options">
+                    <div class="control-group">
+                        <label>💰 Importo PAC (mensile)</label>
+                        <div class="amount-input">
+                            <span>€</span>
+                            <output id="pacAmountValue">500</output></div><input aria-label="Importo mensile in euro" type="range" id="pacAmount" min="50" max="5000" value="500" step="50"><div>
+                        </div>
+                        <div class="total-versamenti" id="totalPacDisplay">Totale versato: €0</div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label>⏱️ Durata Accumulo PAC</label>
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <input type="range" id="duration" min="1" max="30" value="15" step="1" style="flex: 1;">
+                            <span class="info-badge" id="durationValue">15 anni</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Periodo di detenzione aggiuntivo (solo per PAC) -->
+                <div class="holding-period">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <span style="font-weight: 600; color: #2c3e50; font-size: 1em;">⏳ Tre ipotesi di riscatto</span>
+                        <span class="info-badge">Scegli quando</span>
+                    </div>
+                    <div class="control-group" style="margin-bottom:12px"><label for="redemptionMode">Quando riscattare?</label><p>Alla fine del periodo di versamenti mensili stabilito, X anni dopo oppure mai: il capitale è ancora investito attualmente.</p><select id="redemptionMode"><option value="end" selected>1. Alla fine del periodo di versamenti mensili</option><option value="years">2. X anni dopo la fine dei versamenti</option><option value="never">3. Mai — il capitale è ancora investito</option></select><p id="neverNote" hidden>Il capitale resta investito fino a luglio 2026, ultima data del CSV: non è una quotazione aggiornata a oggi. Sono inclusi i PAC che hanno completato tutti i versamenti entro questa data. Le durate complessive cambiano con la partenza: medie e classifiche confrontano quindi orizzonti diversi.</p></div><div class="holding-slider" id="holdingSlider">
+                        <div style="display: flex; justify-content: space-between;">
+                            <label>Anni di attesa senza nuovi versamenti:</label>
+                            <span class="slider-value" id="holdingValue">0 anni</span>
+                        </div>
+                        <input type="range" id="holdingPeriod" min="1" max="20" value="5" step="1">
+                    </div>
+                    <div style="text-align: center; margin-top: 10px; font-size: 0.9em; color: #2c3e50; background: white; padding: 8px; border-radius: 20px;">
+                        <span id="totalPeriod">Periodo totale: 15 anni</span>
+                    </div>
+                </div>
+                <div class="control-group" style="margin:18px 0">
+                    <label for="paymentFee">Costo su ogni versamento</label>
+                    <div style="display:flex;align-items:center;gap:15px"><input type="range" id="paymentFee" min="0" max="10" step="0.1" value="0"><output id="paymentFeeValue" style="white-space:nowrap">0%</output></div>
+                    <div id="paymentFeeSummary" style="line-height:1.6"></div>
+                </div>
+            </div>
+            
+            <!-- Allocazione personalizzata - Comune a entrambe le strategie -->
+            <div class="allocation-group">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <span style="font-weight: 700; color: #2c3e50; font-size: 1.2em;">📊 ALLOCAZIONE PORTAFOGLIO</span>
+                    <span class="info-badge">Rendimento ipotetico</span>
+                </div>
+                <div class="control-group"><label for="bondRate">Rendimento annuo delle obbligazioni</label><select id="bondRate"><option value="0">0%</option><option value="1">1%</option><option value="2" selected>2%</option><option value="3">3%</option><option value="4">4%</option></select><p style="font-size:.9em">Ipotesi costante prima dei costi sui versamenti selezionati e delle tasse. Non rappresenta un rendimento garantito.</p></div>
+                <div class="allocation-sliders">
+                    <div class="slider-item">
+                        <div style="display: flex; justify-content: space-between;">
+                            <label>🛡️ % Obbligazioni</label>
+                            <span class="slider-value" id="guaranteedPctValue">0%</span>
+                        </div>
+                        <input type="range" id="guaranteedPct" min="0" max="100" value="0" step="5">
+                    </div>
+                    <div class="slider-item">
+                        <div style="display: flex; justify-content: space-between;">
+                            <label>📈 % MSCI World - Azionario globale</label>
+                            <span class="slider-value" id="msciPctValue">100%</span>
+                        </div>
+                        <input type="range" id="msciPct" min="0" max="100" value="100" step="5">
+                    </div>
+                </div>
+                <div style="text-align: center; margin-top: 15px; font-size: 1.1em; color: #2c3e50; font-weight: 700; background: white; padding: 12px; border-radius: 40px; border: 2px solid #3498db;" id="allocationDescription">
+                    100% MSCI World | 0% Obbligazioni
+                </div>
+            </div>
+            
+            <!-- Pulsante Avvia Macchina del Tempo -->
+            <div class="time-machine-button">
+                <button class="start-button" id="startSimulation">
+                    <span>⚡</span> AVVIA LA MACCHINA DEL TEMPO <span>⚡</span>
+                </button>
+            </div>
+        </div>
+
+        <aside class="risk-notice" aria-label="Avvertenze essenziali"><strong>Analisi del passato, non previsione.</strong> I risultati sono ricostruzioni ipotetiche: non rappresentano rendimenti effettivamente ottenuti e non garantiscono risultati futuri. Il capitale può diminuire. Sono inclusi solo i costi sui versamenti selezionati; altri costi, tasse e inflazione sono esclusi. Il tasso obbligazionario è un’ipotesi, non una garanzia. Dati disponibili fino a luglio 2026. <a href="#avvertenze">Leggi avvertenze, metodo e limiti dei dati</a>.</aside>
+        <div id="simulationStatus" role="status" aria-live="polite"></div><div class="stats-grid" id="stats">
+            <!-- Verrà popolato via JavaScript -->
+        </div>
+
+        <div class="tab-buttons">
+            <button class="tab-button active" data-tab="grafico">📈 GRAFICO VIAGGIO NEL TEMPO</button>
+            <button class="tab-button" data-tab="simulazioni">📋 TABELLE STORICHE</button>
+            <button class="tab-button" data-tab="confronto">🔄 CONFRONTO RISCATTO</button>
+        </div>
+
+        <div id="graficoTab" class="tab-content active">
+            <div class="chart-container">
+                <p id="chartMethod" style="line-height:1.5"></p><div class="chart-plot"><canvas id="bundleChart"></canvas></div>
+                <div class="chart-legend">
+                    <div>
+                        <span class="legend-box" style="background: rgba(52, 152, 219, 0.5);"></span>
+                        <span>Viaggi nel tempo (<span id="simCount">0</span> percorsi)</span>
+                    </div>
+                    <div>
+                        <span class="legend-box" style="background: #e74c3c; border: 2px solid #c0392b;"></span>
+                        <span>Capitale Versato</span>
+                    </div>
+                    <div>
+                        <span class="legend-box" style="background: #f39c12;"></span>
+                        <span>Media percorsi</span>
+                    </div>
+                    <div>
+                        <span class="legend-box" style="background: #27ae60;"></span>
+                        <span><span id="referenceLabel">Obbligazioni 2% (riferimento)</span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="simulazioniTab" class="tab-content">
+            <div class="table-container">
+                <div class="table-header">
+                    <span style="font-weight: 600; color: #2c3e50;">📋 Elenco viaggi storici</span>
+                    <select id="displayType">
+                        <option value="all">Tutti i periodi</option>
+                        <option value="best">Top 10 migliori</option>
+                        <option value="worst">Top 10 peggiori</option>
+                    </select>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Periodo Accumulo</th>
+                            <th>Periodo Detenzione</th>
+                            <th>Investito</th>
+                            <th>Valore al termine / alla data dati</th>
+                            <th>Guadagno / perdita</th>
+                            <th>Rend.% Periodo</th>
+                            <th>TIR annuo</th>
+                            <th>Volatilità</th>
+                            <th>Dettaglio</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="confrontoTab" class="tab-content">
+            <p>Stesso importo mensile e stesse date di partenza. Il riferimento obbligazionario include lo stesso periodo di attesa di ciascun PAC. Con “Mai”, i valori ancora investiti sono riferiti a luglio 2026.</p><div class="comparison-grid">
+                <div class="comparison-card">
+                    <h3>🛡️ PAC 100% obbligazioni</h3>
+                    <div class="comparison-value" id="lumpAvg">0%</div>
+                    <div>Valore finale medio</div>
+                    <div style="margin-top: 15px; color: #27ae60;" id="lumpBest">📈 Migliore: 0%</div>
+                    <div style="color: #e74c3c;" id="lumpWorst">📉 Peggiore: 0%</div>
+                </div>
+                <div class="comparison-card">
+                    <h3>📈 PAC: riscatto a fine versamenti</h3>
+                    <div class="comparison-value" id="pacAvg">0%</div>
+                    <div>Valore finale medio</div>
+                    <div style="margin-top: 15px; color: #27ae60;" id="pacBest">📈 Migliore: 0%</div>
+                    <div style="color: #e74c3c;" id="pacWorst">📉 Peggiore: 0%</div>
+                </div>
+                <div class="comparison-card">
+                    <h3>⏳ PAC: modalità di riscatto scelta</h3>
+                    <div class="comparison-value" id="detAvg">0%</div>
+                    <div>Valore finale medio</div>
+                    <div style="margin-top: 15px; color: #27ae60;" id="detBest">📈 Migliore: 0%</div>
+                    <div style="color: #e74c3c;" id="detWorst">📉 Peggiore: 0%</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Modal per il dettaglio del viaggio -->
+        <div id="tripModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>📊 Dettaglio Viaggio Storico</h2>
+                    <span class="close-modal" id="closeModal">&times;</span>
+                </div>
+                <div class="alignment-note">
+                    ⚡ I grafici sono allineati temporalmente: stesso periodo, stessa scala temporale
+                </div>
+                <div class="trip-details" id="tripDetails">
+                    <!-- Popolato via JavaScript -->
+                </div>
+                <div class="modal-legend">
+                    <div>
+                        <span class="legend-box" style="background: #3498db;"></span>
+                        <span>Il tuo investimento</span>
+                    </div>
+                    <div>
+                        <span class="legend-box" style="background: #e74c3c; border: 2px solid #c0392b;"></span>
+                        <span>Capitale Versato</span>
+                    </div>
+                    <div>
+                        <span class="legend-box" style="background: #2c3e50;"></span>
+                        <span>MSCI World (serie allegata)</span>
+                    </div>
+                </div>
+                <div class="modal-chart-grid">
+                    <div>
+                        <div class="modal-chart-title">📈 Il tuo investimento nel tempo</div>
+                        <div class="modal-chart-subtitle">Confronto tra valore investimento e capitale versato</div>
+                        <div class="modal-chart-container">
+                            <canvas id="tripInvestmentChart"></canvas>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="modal-chart-title">🌍 Andamento MSCI World nel periodo</div>
+                        <div class="modal-chart-subtitle" id="msciPeriodLabel">Valori reali dell'indice</div>
+                        <div class="modal-chart-container">
+                            <canvas id="tripMsciChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <section class="footer" id="avvertenze" aria-labelledby="avvertenze-title">
+            <h2 id="avvertenze-title">Avvertenze, metodo e limiti</h2>
+            <p><strong>Leggere prima di interpretare o condividere i risultati.</strong> Queste informazioni accompagnano tutte le ricostruzioni della Macchina del Tempo.</p>
+            <details class="disclaimer-section"><summary>Finalità informativa e assenza di raccomandazioni personalizzate</summary><p>La Macchina del Tempo è uno strumento didattico di ricostruzione storica. Non costituisce un’offerta, una sollecitazione all’acquisto o alla vendita, una raccomandazione personalizzata, un servizio di gestione né un preventivo contrattuale. Non considera patrimonio, reddito, debiti, esigenze di liquidità, conoscenze, esperienza, obiettivi, capacità di sostenere perdite e tolleranza al rischio dell’utilizzatore. La scelta dei cursori non costituisce una profilazione né una valutazione di adeguatezza o appropriatezza.</p></details>
+            <details class="disclaimer-section"><summary>Passato, rischio di perdita e assenza di garanzie</summary><p>I risultati derivano dall’applicazione retrospettiva di regole di investimento ai dati disponibili. Non sono risultati effettivamente conseguiti da un cliente, né previsioni o promesse. I rendimenti passati, anche ricostruiti, non sono indicatori affidabili dei rendimenti futuri. Le perdite future possono superare quelle osservate: il peggior percorso storico non è un limite massimo alla perdita. Né il PAC, né la diversificazione, né una lunga durata o il rinvio del riscatto garantiscono un guadagno, il recupero delle perdite o la conservazione del capitale. È possibile perdere anche interamente il capitale investito.</p></details>
+            <details class="disclaimer-section"><summary>Provenienza, copertura e limiti della serie</summary><p>La serie incorporata è quella denominata “MSCI World” nel file chart (2).csv fornito per questa elaborazione: 680 osservazioni mensili da dicembre 1969 a luglio 2026, da cui sono ricavate 679 variazioni mensili. Il file non documenta il fornitore originario, la versione dell’indice, la valuta, il trattamento lordo/netto dei dividendi o eventuali ricostruzioni retrospettive. La corrispondenza dei calcoli al file non certifica l’autenticità o la completezza della fonte. I valori non sono una serie ufficiale verificata nell’ambito di questo strumento e possono essere corretti o aggiornati. Gli esiti dipendono dall’intervallo e dai dati selezionati.</p></details>
+            <details class="disclaimer-section"><summary>Valuta, dividendi e indice rispetto a un prodotto reale</summary><p>Gli importi sono espressi in euro come unità di conto dei versamenti simulati. Non viene applicata alcuna conversione valutaria né copertura del cambio: senza conoscere la valuta della serie non si può attribuire il risultato alla performance effettiva in euro dell’indice. Non vengono aggiunti dividendi separati e non è verificato se siano già inclusi nella serie. Un indice non è acquistabile direttamente. Fondi, ETF, polizze e altri prodotti possono discostarsene per costi, composizione, fiscalità, replica e condizioni operative. Il richiamo a MSCI World serve a identificare la denominazione del file e non indica approvazione, sponsorizzazione o certificazione dello strumento da parte di MSCI.</p></details>
+            <details class="disclaimer-section"><summary>Componente obbligazionaria: ipotesi semplificata</summary><p>Il rendimento annuo selezionato tra 0% e 4% è applicato come tasso effettivo costante, con fattore mensile pari a (1 + tasso annuo) elevato a 1/12. Non deriva da una serie storica obbligazionaria e non è un’offerta disponibile sul mercato. Questa componente non rappresenta le oscillazioni dei prezzi, le variazioni dei tassi, il rischio di credito e insolvenza, il rischio di liquidità, il reinvestimento delle cedole o il cambio di obbligazioni reali. La regolarità della linea e la sua volatilità nulla dipendono dal modello, non dalla sicurezza di un investimento reale. Anche con tasso 0%, i costi sui versamenti riducono il capitale investito rispetto a quanto pagato.</p></details>
+            <details class="disclaimer-section"><summary>Versamenti e gestione del portafoglio</summary><p>Si ipotizzano versamenti mensili costanti a inizio mese, senza interruzioni, aumenti, indicizzazione all’inflazione o prelievi parziali. Il costo selezionato viene trattenuto da ciascun versamento; solo il netto viene ripartito nelle percentuali azionaria e obbligazionaria scelte. Le due componenti evolvono separatamente, senza ribilanciamento: i pesi effettivi possono cambiare. Dopo il termine dei versamenti non vengono aggiunte nuove somme. Si ipotizza la possibilità di investire immediatamente e senza limiti di frazionamento; non sono modellati giorni effettivi di negoziazione, spread, ritardi, sospensioni o difficoltà di esecuzione.</p></details>
+            <details class="disclaimer-section"><summary>Costi inclusi, costi esclusi e fiscalità</summary><p>È incluso esclusivamente il costo percentuale sui versamenti impostato dall’utilizzatore, applicato anche al riferimento obbligazionario. Sono esclusi, salvo il suddetto costo, commissioni di gestione, performance, consulenza, custodia, negoziazione, spread, costi assicurativi, penali e oneri di uscita. Non sono applicate imposte sui rendimenti o sul patrimonio, imposta di bollo, ritenute, detrazioni, deduzioni, esenzioni o compensazioni di minusvalenze. Gli importi non sono quindi somme nette effettivamente liquidabili. L’inflazione è esclusa: il potere d’acquisto può diminuire anche in presenza di un guadagno nominale. Nessun beneficio fiscale può essere desunto dai risultati.</p></details>
+            <details class="disclaimer-section"><summary>Le tre ipotesi di riscatto e il significato di “Mai”</summary><p>Il riscatto a fine versamenti avviene nel modello al termine del mese dell’ultimo versamento. Il riscatto X anni dopo lascia il capitale investito senza nuovi apporti per gli anni selezionati. “Mai” significa nessun riscatto simulato: si mostra il valore ancora investito alla fine di luglio 2026, ultima osservazione disponibile, non una quotazione alla data odierna. Sono inclusi soltanto i PAC che hanno completato i versamenti entro questa data. La disponibilità effettiva del capitale, i tempi di liquidazione e gli eventuali vincoli o penali dipendono dal prodotto reale e non sono verificati dallo strumento.</p></details>
+            <details class="disclaimer-section"><summary>Medie, classifiche e frequenze storiche</summary><p>Ogni mese di partenza ammissibile genera un percorso. Molti periodi si sovrappongono: non sono osservazioni indipendenti e la loro numerosità non misura la robustezza statistica di una previsione. La percentuale di percorsi in guadagno è una frequenza nel campione, non una probabilità futura. Le medie non descrivono un risultato tipico garantito e possono essere influenzate da pochi valori elevati. Le classifiche migliori/peggiori sono ordinate per valore finale. Con “Mai”, le durate cambiano tra le partenze: valori finali, medie e classifiche non confrontano orizzonti omogenei. Nel grafico la media a ciascuna durata considera soltanto i percorsi disponibili; il campione diminuisce verso destra. Il valore finale della linea media non coincide necessariamente con la media dei valori alla data dati mostrata nel confronto.</p></details>
+            <details class="disclaimer-section"><summary>Rendimenti, volatilità e grafici</summary><p>Il guadagno o la perdita è la differenza fra valore calcolato e totale lordo dei versamenti, comprensivo dei costi trattenuti. La percentuale sul totale versato non è un rendimento annuo. Il TIR annuo tiene conto della sequenza mensile dei pagamenti lordi e del valore terminale; in modalità “Mai” quest’ultimo è trattato come valore di valutazione, senza un effettivo incasso. La media dei TIR non è il rendimento di un portafoglio aggregato. La volatilità è la deviazione standard delle variazioni mensili del portafoglio dopo la deduzione dei costi sui versamenti, annualizzata con la radice di 12: non misura tutte le forme di rischio né la perdita massima possibile. I dati mensili e il campionamento dei grafici possono non mostrare oscillazioni inframensili. Gli arrotondamenti visualizzati possono produrre piccole differenze nei confronti manuali.</p></details>
+            <details class="disclaimer-section"><summary>Prodotti assicurativi, previdenziali e documentazione</summary><p>Lo strumento non riproduce le condizioni di una specifica polizza, di un fondo pensione o di un altro prodotto. Non simula garanzie contrattuali, coperture biometriche, prestazioni caso morte, rendite, bonus, vincoli di riscatto, benefici successori o trattamenti fiscali individuali. Prima di un’eventuale sottoscrizione occorre esaminare la documentazione aggiornata del prodotto, inclusi KID e condizioni contrattuali ove previsti, e valutare rischi, costi, durata e disponibilità del capitale con un intermediario abilitato.</p></details>
+            <details class="disclaimer-section"><summary>Limiti tecnici e responsabilità</summary><p>I risultati dipendono dalla correttezza degli input, del file storico, delle formule e del funzionamento del browser. Possono verificarsi errori, interruzioni, differenze di arrotondamento o mancati aggiornamenti. In presenza di risultati anomali è opportuno richiedere una verifica prima di utilizzarli. Le avvertenze non sostituiscono gli obblighi informativi e di condotta applicabili e non escludono responsabilità che non possono essere escluse per legge. Lo strumento non attesta la conformità o l’idoneità di uno specifico investimento e non sostituisce una valutazione finanziaria, fiscale o legale individuale.</p></details>
+            <p><strong>Dati aggiornati a luglio 2026.</strong> Gli importi mostrati sono ricostruzioni ipotetiche, al netto dei soli costi sui versamenti selezionati e prima degli altri oneri.</p>
+            <div class="credit"><strong>Luigi Mauri</strong> · La Macchina del Tempo</div>
+        </section>
+    </div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+<script>
+const SERIES=[10000.0, 9445.5, 9740.499999999998, 9770.8, 8857.800000000001, 8298.999999999998, 8094.5999999999985, 8596.499999999998, 8879.9, 9166.700000000003, 9031.4, 9233.7, 9691.5, 10073.198169398906, 10163.472934426229, 10609.448166666665, 10965.358325136613, 10467.678934426227, 10450.800516393443, 10192.672349726778, 10220.354133879782, 9947.754704918034, 9483.39607103825, 9582.816002732237, 10245.097967213116, 10496.007557377048, 10747.548726775956, 10858.43306557377, 11013.59492896175, 11243.255672131145, 10945.348655737705, 11088.470415300544, 11494.732841530054, 11343.269642076504, 11486.126754098357, 12076.959289617485, 12279.808644808742, 12298.034459016391, 11644.177445355192, 10914.370502732243, 10451.360262295084, 10251.600983606557, 9535.005081967212, 8840.419672131145, 8802.384180327868, 9048.130229508197, 9099.083928961747, 8467.771046448086, 8647.400606557378, 9229.759150273225, 9038.727967213114, 8496.988961748633, 8061.822027322404, 7539.35619672131, 7491.309349726776, 7124.404459016393, 6602.30275409836, 6083.947540983607, 6495.389049180328, 6192.222049180328, 5942.178344262295, 6571.385106557377, 7037.442877049181, 7065.246836065574, 7537.12813114754, 7633.216639344262, 7696.5360109289595, 7681.989786885246, 7871.629836065573, 7674.307210382514, 8086.434598360655, 8332.993180327869, 8443.521516393443, 9130.65081967213, 8921.711754098362, 9020.222950819672, 8877.521803278687, 8811.816043715848, 9138.293852459017, 9042.263005464483, 8863.330622950822, 8798.177688524587, 8284.386754098361, 8196.156666666666, 8703.328625683062, 8446.46606557377, 8451.209426229509, 8351.584819672133, 8381.797972677594, 8213.97319125683, 8511.632360655736, 8135.142950819672, 8288.997344262296, 8418.314704918032, 8110.710579234973, 8078.220060109289, 7909.0389344262285, 7558.5980327868865, 7357.782852459017, 7526.635655737705, 7900.449213114755, 8245.840262295082, 8242.049180327871, 8715.9995, 8661.141775956283, 8640.462994535521, 7910.742928961748, 7903.306644808743, 8053.607622950819, 8374.890920906435, 8254.02085713558, 8597.408372856242, 8680.583861842639, 8624.512520948967, 8770.254481359167, 8519.581714406237, 8888.384069147352, 8989.74133405289, 8356.556236998304, 8578.48054719024, 8610.029830033005, 9038.277249530114, 9126.329252370291, 8576.254480292011, 9246.793992508892, 9281.47744341322, 9583.373973052774, 9754.886372002678, 10142.399523561871, 10421.777541480375, 10994.775804387571, 11855.562521343181, 11961.844335825948, 11648.06777429447, 12476.965203762595, 12928.440860125513, 13277.61676844419, 13812.837615265096, 14316.17560939497, 14502.287906427568, 14601.50834804114, 12889.970076914109, 12890.541667817084, 13699.030345969539, 13591.621821251712, 13595.40406799338, 13196.535469761193, 13069.349935119797, 13921.242962998596, 13105.779309431184, 13238.749215457392, 13347.359658298803, 14401.689684100222, 14602.44444243838, 15788.854432741777, 16901.68057760279, 16931.70069361683, 17169.28823116136, 17849.628088415124, 18568.863798841092, 20179.162961727958, 20104.117277399506, 21368.722194556587, 21270.256526188343, 22075.82256407751, 22535.007112009665, 21901.24514116344, 23065.335907760156, 23950.128826480635, 24688.220866893964, 23533.8134690919, 23761.046531643682, 24090.848969313192, 23109.64565095301, 23302.57534882318, 23329.02102962507, 25956.58864295981, 27077.329144808737, 27861.15456210172, 27027.739719687037, 28678.46668987608, 30995.403199123943, 32208.93997851267, 33397.68603403727, 30997.60352328149, 32813.402623779366, 32812.042373720826, 31851.11189320004, 31005.546084236026, 31738.563749497163, 31387.082387569055, 32496.14690534258, 33210.72335646866, 33002.13081138161, 34556.29881776739, 36883.360500299, 38092.02523496577, 37315.86455836853, 38964.87685528558, 38122.3030099966, 40205.47408020263, 38301.379937902806, 37221.11974386329, 39188.983541480375, 39397.43380524251, 41379.913268859535, 41985.7985984723, 44508.67603346445, 46500.475719442176, 45997.36954796034, 46790.482265181614, 48410.797207517055, 51665.75346124784, 49438.17366903115, 40740.79873321381, 37341.57287678266, 37769.07474318494, 39090.532112761386, 42547.48087274064, 43230.87360797953, 43507.09835733133, 43049.40775144418, 44578.430632488744, 47696.05055256296, 46076.468068209615, 47672.260371439064, 49577.69969077026, 49261.73775213921, 49748.81832871593, 53580.84199138883, 53892.6805055043, 53892.35714919983, 55429.23370733391, 56379.14721838335, 56734.14911642507, 60378.235234212785, 59814.91112407635, 62432.676179708564, 58064.81577812076, 59504.358102430444, 58876.27141089383, 54469.11282492343, 51429.99883277154, 49156.68449757035, 47813.82234442719, 51972.21691778812, 51936.28935867181, 50812.9995671025, 44016.0874579192, 39425.50256748339, 41828.253659854156, 40313.38672740135, 41629.6305936351, 43244.68241785279, 46447.73767331349, 49050.62376089899, 52053.37269383303, 53928.89836108757, 52470.160906202706, 55002.868543330194, 53605.18691617787, 53477.03636276416, 54256.229988725274, 49935.25112253359, 51853.67873236816, 51236.91288564573, 51448.92953572151, 50319.72439921569, 50544.772196900834, 51534.956976487745, 48367.663297218875, 46169.35226846314, 46084.77317526819, 46702.0403355638, 47311.492594578995, 51297.011469143625, 51662.02036320776, 52831.35942978783, 55414.17284654824, 58899.15935812061, 59516.307344798566, 61022.25457271147, 62260.04096680266, 66220.8647951882, 69769.04850187238, 65741.37080178074, 68329.99619211246, 66179.55510872969, 69370.94192018236, 74932.61826972777, 73661.92817566161, 69012.78808871846, 71336.2296630011, 69966.8129412897, 68623.80010453315, 67758.0187956087, 69863.29749918073, 67283.39674238418, 67859.67431035535, 65866.59025232839, 67848.79977761375, 65448.54706750988, 65660.1314855241, 66135.23591583851, 67115.65392842748, 68720.20391014076, 68110.56963521108, 70672.21116160057, 71174.16333573827, 74171.33785793374, 71852.16986408907, 74491.96140926292, 77868.116807173, 80222.95613444911, 81158.72671395341, 82439.8017581856, 85080.69828367696, 86169.96496311708, 85916.92201673379, 81604.19742011424, 81777.0525351551, 85698.34501251797, 86548.02252183242, 90208.13922010455, 90710.72345528383, 94283.44394756292, 99504.4469555124, 98649.58571053082, 102409.52109379908, 108379.05241005546, 115044.04281074446, 123671.61124857572, 118670.09980497124, 121816.14182357752, 113290.79744010323, 112903.92922652066, 117343.8948998229, 123368.37568828475, 131403.41636267837, 137436.623406016, 137819.33887206152, 133999.0800491892, 138154.94604427836, 138239.06430929905, 119295.30215338974, 115721.78243495236, 121502.51112245365, 132433.44644031994, 137997.3120434992, 145606.4528005109, 146419.9071902431, 156413.00652431697, 164781.3562465668, 160878.45808012178, 170446.06540938048, 164096.55991474303, 165656.92139597924, 162613.14700298352, 174512.43866596615, 185724.53110306093, 201753.33595948963, 195129.47393827717, 197183.04672612113, 214340.0789162961, 215825.99091610382, 205407.34962509183, 206677.6706299381, 207635.70224652413, 222475.5238151789, 214007.9652066434, 219094.84008987274, 199438.93952738782, 189114.8129930444, 193005.42913923223, 177532.47977725978, 173653.1883995846, 185529.60645735046, 191662.98370481556, 185630.9797634492, 177396.92643855218, 161425.3413326143, 147614.8727356923, 151914.2990535642, 163482.05087792798, 166079.7215571836, 164312.75586930796, 162604.0192344503, 168346.16370027847, 157496.98186290325, 151390.0421671041, 133797.3991297029, 124912.20031518543, 124489.2562902788, 110479.58750396367, 118572.06981463642, 124154.01869744709, 111814.21248716052, 105109.2663432574, 103595.34942290882, 102182.48179664006, 108879.25939759436, 108351.82728104865, 114023.18387125831, 117445.60461212373, 124261.42378542546, 117231.06338667251, 124496.61676504566, 122458.61693535291, 123578.9590828589, 128056.09656039921, 129843.94685913756, 131029.35648197848, 131321.47216380952, 129791.10214502511, 132924.1391876391, 129823.13266285391, 129618.54194061892, 128898.95351026554, 128652.56555178855, 129727.56165969456, 131456.29273440116, 134273.31775025747, 136207.07868278926, 136581.76891114865, 133677.93351672933, 142959.9621025617, 147047.03522767386, 152171.04514031418, 151997.9270181473, 157966.09566531077, 154377.241959662, 162963.8183415544, 166178.8583454393, 169000.72912658178, 172202.2722790281, 172659.22409636428, 171756.9857095391, 161622.79902572016, 163545.3793293853, 163869.98260342045, 167024.6451419753, 171566.1213419198, 177358.73088692705, 174764.20622120713, 178723.5318565966, 183848.6886966529, 179334.12629700286, 181149.70924505472, 185148.82007235163, 192487.14527702393, 190266.9894540528, 183311.37167724757, 183199.0705640947, 185495.6102668897, 187638.47505329028, 176140.28340322914, 174340.26099688967, 159403.8655902554, 155377.8831427668, 147611.17924363213, 158088.76124031583, 160830.53333821252, 145599.67436807769, 143434.15895549898, 149826.8042100552, 135993.77198890864, 123565.28938232172, 115839.48499358661, 109333.15269673719, 108324.7162278696, 98559.4321777633, 100703.2406359776, 112278.48228473836, 115303.21582449084, 114490.67647761473, 124152.55351345865, 128060.6940574609, 129791.07386768029, 126129.60440177225, 129334.85037697169, 137296.13144149294, 135768.28891458648, 141700.0275085132, 151491.47418170705, 153378.901507426, 150046.12411194082, 145326.71293274156, 147979.88494301809, 146364.69002008712, 148663.50585168065, 151879.20639497228, 158420.76231177428, 165435.78710763945, 165095.91940854656, 169122.42977745016, 163058.12231659406, 162515.49789131456, 164399.08200454025, 161037.08871738124, 160257.14198036463, 147007.16204174483, 143729.57831423252, 152955.4082065391, 155704.4205863056, 161378.861420969, 166428.92548232252, 171091.73713019263, 174420.17405294726, 174292.53588413182, 169659.66417338082, 175656.36404886915, 182346.43764192922, 182121.172360436, 182508.06809134304, 180395.7993249808, 182804.23354110227, 183306.03961742294, 187582.21279401003, 193916.97235713457, 203480.69879850213, 205601.43552046167, 206722.82563589438, 200488.3673837795, 207943.1770635732, 204132.21278789476, 210056.16139523915, 216102.26917282876, 220427.51932068204, 222153.7960689473, 218278.166037425, 224277.14315088894, 225008.96563224253, 226297.02084729716, 234870.21932514964, 238179.11548768147, 239265.5861410615, 248079.4435767389, 252950.41868087568, 255786.1009308187, 261769.20957829335, 264803.0360789859, 279232.1416625082, 297301.35816905805, 305730.88408289355, 300178.5398908151, 307939.77043225337, 294892.36405894987, 306262.20686369843, 279671.1591490904, 269644.14140385843, 295925.0539821765, 306643.7702144706, 292731.1320163302, 274386.98492142855, 273145.3070502433, 278947.6416253396, 282914.3126924234, 290854.4919374069, 288942.4358091719, 300851.7054411729, 300587.8217491223, 301399.3574113136, 301371.860982302, 314645.0820543735, 325047.0225210583, 326268.2751460959, 340319.6912939634, 340920.6434858108, 338403.48707772855, 336600.59384209785, 332240.3770303907, 331053.7797284324, 328772.46403403033, 336692.5029233621, 348007.64767488785, 349216.72851048503, 349689.63846413, 354440.25233213924, 346516.2502785341, 336019.75633250707, 346690.4162919509, 360194.5120758423, 361288.8311468575, 370096.9548691918, 377409.57958097453, 381969.86913948867, 361990.5227910669, 364781.2367032482, 334365.29845615, 359188.8222957569, 372323.07995161955, 383290.3893288231, 397483.0448158682, 376798.3545670402, 393545.4729997349, 403616.82745088806, 399480.8590412406, 413489.93823033466, 413938.37668370974, 432130.3255134631, 435092.26807808265, 439565.3117317643, 405160.39472645934, 352214.1944768149, 393565.34135406127, 402945.04639772646, 411313.35371286, 407346.3046000334, 431214.4696998599, 424587.89383369073, 411915.4706703681, 453647.6943686267, 461666.74867254926, 462162.93308335444, 474592.13433402125, 506944.97712908936, 514861.877557841, 517184.7624900095, 538894.5702956186, 548224.8143634184, 564575.5361378051, 553051.2347403184, 581064.3127416789, 582435.9729701157, 609313.3866606732, 585867.8084941544, 568857.8454295495, 589628.9734111327, 569422.8246093927, 560651.7559530048, 528159.045506822, 580658.4723756232, 567398.7591808622, 527958.01590917, 556397.2287228062, 568587.1881029423, 529637.9027403039, 558370.4746004468, 555930.1784944491, 559617.1584057389, 563930.2550346977, 573873.9824267175, 598331.1802623811, 609622.5273570892, 603548.0433577927, 592448.5337247931, 573903.8478342931, 609792.0630160035, 632839.9509537511, 653021.9775481477, 681400.2190376476, 704272.7165461194, 683996.6670341112, 705715.4417128729, 729963.2321311199, 734388.8674841091, 736189.8446235245, 742373.8456796908, 748643.7387063099, 806719.1094322795, 798779.0932978133, 826648.6403583796, 819280.148374629, 753563.2436331915, 722959.1182374044, 768048.5160032312, 775146.5335954078, 803919.4238380806, 809889.4564736295, 830014.7138940967, 860338.7009363472, 861873.811312663, 855235.0069806318, 861976.54948686, 876675.6142652112, 842752.3206956891, 907486.9834318387, 953522.8336569385, 967452.3576832024, 964712.298813276];
+const $=id=>document.getElementById(id);
+const RETURNS=SERIES.slice(1).map((v,i)=>v/SERIES[i]-1);
+const euro=v=>v.toLocaleString('it-IT',{style:'currency',currency:'EUR',maximumFractionDigits:0});
+const pct=v=>v.toLocaleString('it-IT',{maximumFractionDigits:2,minimumFractionDigits:2})+'%';
+const date=i=>new Date(1970,i,1).toLocaleDateString('it-IT',{month:'short',year:'numeric'});
+let periods=[], settings, bundleChart, tripInvestmentChart, tripMsciChart, timer;
+function inputs(){return {amount:+$('pacAmount').value,months:+$('duration').value*12,hold:$('redemptionMode').value==='years'?+$('holdingPeriod').value*12:0,bond:+$('guaranteedPct').value/100,rate:+$('bondRate').value/100,fee:+$('paymentFee').value/100,never:$('redemptionMode').value==='never'};}
+function updateControls(){
+ const s=inputs();$('pacAmountValue').textContent=s.amount.toLocaleString('it-IT');
+ $('durationValue').textContent=s.months/12+' anni';$('holdingValue').textContent=s.hold/12+' anni';
+ $('holdingPeriod').disabled=$('redemptionMode').value!=='years'; $('holdingSlider').hidden=$('redemptionMode').value!=='years'; $('neverNote').hidden=!s.never;
+ $('totalPeriod').textContent=s.never?'Nessun riscatto · valorizzazione al 31 luglio 2026':'Periodo totale: '+(s.months+s.hold)/12+' anni (versamenti + attesa)';
+ $('paymentFeeValue').textContent=pct(s.fee*100);
+ $('paymentFeeSummary').textContent='Per ogni versamento: '+euro(s.amount)+' pagati, '+(s.amount*s.fee).toLocaleString('it-IT',{style:'currency',currency:'EUR'})+' di costo, '+(s.amount*(1-s.fee)).toLocaleString('it-IT',{style:'currency',currency:'EUR'})+' investiti. Costi complessivi: '+euro(s.amount*s.months*s.fee)+'.';
+ $('totalPacDisplay').textContent='Totale versato: '+euro(s.amount*s.months);
+ $('msciPct').value=100-Math.round(s.bond*100);$('guaranteedPctValue').textContent=Math.round(s.bond*100)+'%';$('msciPctValue').textContent=$('msciPct').value+'%';
+ $('allocationDescription').textContent=$('msciPct').value+'% MSCI World | '+Math.round(s.bond*100)+'% Obbligazioni al '+Math.round(s.rate*100)+'% annuo';
+ $('referenceLabel').textContent='Obbligazioni '+Math.round(s.rate*100)+'% (riferimento)';
+}
+// Monthly beginning-of-period payments, no rebalancing, exact annual-to-monthly conversion.
+function simulate(start,s){
+ let bonds=0,equity=0;const path=[0],contributions=[0],monthly=[];const factor=Math.pow(1+s.rate,1/12);
+ for(let i=0;i<s.months+s.hold;i++){
+  const payment=i<s.months?s.amount*(1-(s.fee||0)):0;
+  const before=bonds+equity+payment;
+  bonds=(bonds+payment*s.bond)*factor;
+  equity=(equity+payment*(1-s.bond))*(1+RETURNS[start+i]);
+  const value=bonds+equity;monthly.push(value/before-1);path.push(value);contributions.push(Math.min(i+1,s.months)*s.amount);
+ }
+ const value=path.at(-1),invested=s.amount*s.months;
+ const mean=monthly.reduce((a,b)=>a+b,0)/monthly.length;
+ const volatility=Math.sqrt(monthly.reduce((a,b)=>a+(b-mean)**2,0)/monthly.length*12)*100;
+ return {startIdx:start,hold:s.hold,path,contributions,value,invested,gain:value-invested,gainPct:(value/invested-1)*100,annual:irr(value,s),volatility};
+}
+// Solve the future value of the actual monthly cash flows, then annualize the monthly IRR.
+function irr(final,s){
+ if(Math.abs(final-s.amount*s.months)<1e-7)return 0;
+ function future(q){return s.amount*q*(Math.abs(q-1)<1e-10?s.months:(Math.pow(q,s.months)-1)/(q-1))*Math.pow(q,s.hold);}
+ let lo=0,hi=2;while(future(hi)<final)hi*=2;
+ for(let i=0;i<75;i++){const mid=(lo+hi)/2;if(future(mid)>final)hi=mid;else lo=mid;}
+ return (Math.pow((lo+hi)/2,12)-1)*100;
+}
+function line(label,data,color,width=2,dash=[]){return {label,data,borderColor:color,borderWidth:width,borderDash:dash,pointRadius:0,tension:0,fill:false};}
+function chart(id,labels,datasets,money=true,legend=true){
+ if(typeof Chart==='undefined')return null;
+ return new Chart($(id), {
+  type:'line', data:{labels,datasets},
+  options:{
+   responsive:true,maintainAspectRatio:false,animation:false,
+   interaction:{mode:'nearest',intersect:false},
+   plugins:{legend:{display:legend},tooltip:{callbacks:{label:c=>c.dataset.label+': '+(money?euro(c.parsed.y):c.parsed.y.toLocaleString('it-IT',{maximumFractionDigits:0}))}}},
+   scales:{x:{ticks:{maxTicksLimit:9,maxRotation:0}},y:{ticks:{callback:v=>money?euro(v):v.toLocaleString('it-IT',{maximumFractionDigits:0})}}}
+  }
+ });
+}
+function stats(){
+ const avg=key=>periods.reduce((a,p)=>a+p[key],0)/periods.length;
+ const annuals=periods.map(p=>p.annual);
+ const cells=[['Media annua (TIR)',pct(avg('annual'))],['Guadagno medio sui versamenti',pct(avg('gainPct'))],['Miglior TIR annuo',pct(Math.max(...annuals))],['Peggior TIR annuo',pct(Math.min(...annuals))],['Periodi storici',periods.length],['Periodi in guadagno',pct(periods.filter(p=>p.gain>1e-7).length/periods.length*100)],['Volatilità media',pct(avg('volatility'))]];
+ $('stats').innerHTML=cells.map(([k,v])=>`<div class="stat-card"><div class="stat-label">${k}</div><div class="stat-value">${v}</div></div>`).join('');$('simCount').textContent=periods.length;
+}
+function table(){
+ let selected=[...periods];const mode=$('displayType').value;
+ if(mode!=='all')selected.sort((a,b)=>mode==='best'?b.value-a.value:a.value-b.value),selected=selected.slice(0,10);
+ $('tableBody').innerHTML=selected.map(p=>`<tr><td>${date(p.startIdx)} – ${date(p.startIdx+settings.months-1)}</td><td>${settings.never?'Ancora investito · luglio 2026 ('+p.hold+' mesi dopo i versamenti)':p.hold?date(p.startIdx+settings.months)+' – '+date(p.startIdx+settings.months+p.hold-1):'Nessuna attesa'}</td><td>${euro(p.invested)}</td><td>${euro(p.value)}</td><td class="${p.gain>=0?'positive':'negative'}">${euro(p.gain)}</td><td>${pct(p.gainPct)}</td><td>${pct(p.annual)}</td><td>${pct(p.volatility)}</td><td><button class="view-trip-btn" onclick="showTrip(${p.startIdx})">🔍 Visualizza</button></td></tr>`).join('');
+}
+function comparison(){
+ const direct=periods.map(p=>simulate(p.startIdx,{...settings,hold:0}).value);
+ const delayed=periods.map(p=>p.value);
+ const bonds=periods.map(p=>simulate(p.startIdx,{...settings,hold:p.hold,bond:1}).value);
+ for(const [prefix,values] of [['lump',bonds],['pac',direct],['det',delayed]]){
+  $(prefix+'Avg').textContent=euro(values.reduce((a,b)=>a+b,0)/values.length);
+  $(prefix+'Best').textContent='Migliore: '+euro(Math.max(...values));
+  $(prefix+'Worst').textContent='Peggiore: '+euro(Math.min(...values));
+ }
+}
+function run(){
+ clearTimeout(timer);settings=inputs();updateControls();periods=[];
+ const max=RETURNS.length-settings.months-(settings.never?0:settings.hold);
+ if(max<0){$('simulationStatus').textContent='La durata supera la serie storica disponibile.';return;}
+ for(let start=0;start<=max;start++)periods.push(simulate(start,{...settings,hold:settings.never?RETURNS.length-start-settings.months:settings.hold}));
+ stats();table();comparison();
+ const n=settings.months+periods[0].hold;
+ const indexes=Array.from({length:settings.never?n+1:n/3+1},(_,i)=>i*(settings.never?1:3));
+ const sample=p=>indexes.map(i=>p[i]??null);
+ const labels=indexes.map(i=>(i/12).toLocaleString('it-IT')+' anni');
+ const avg=Array.from({length:n+1},(_,i)=>{const active=periods.filter(p=>p.path[i]!==undefined);return active.reduce((a,p)=>a+p.path[i],0)/active.length;});
+ const datasets=periods.map(p=>line('Partenza '+date(p.startIdx),sample(p.path),'rgba(52,152,219,.18)',1));
+ datasets.push(line(settings.never?'Media dei percorsi disponibili a ciascuna durata':'Media di tutti i percorsi',sample(avg),'#f39c12',3),line('Capitale versato',sample(periods[0].contributions),'#e74c3c',3,[5,5]),line('Obbligazioni '+Math.round(settings.rate*100)+'%',sample(simulate(0,{...settings,hold:periods[0].hold,bond:1}).path),'#27ae60',3,[3,3]));
+ bundleChart?.destroy();bundleChart=chart('bundleChart',labels,datasets,true,false);
+ $('chartMethod').textContent=settings.never?'Ogni percorso termina al valore di luglio 2026. L’asse orizzontale mostra gli anni dalla partenza: i percorsi hanno lunghezze diverse. La media a ciascuna durata usa solo i percorsi ancora disponibili, quindi il campione diminuisce verso destra. La linea verde è il riferimento obbligazionario alla stessa durata.':'Tutti i percorsi hanno la stessa durata. La media include tutte le partenze mensili disponibili.';
+ $('simulationStatus').textContent=typeof Chart==='undefined'?'Tabelle e calcoli disponibili. Per caricare i grafici è necessaria una connessione a Internet.':settings.never?`${periods.length} partenze mensili · nessun riscatto · capitale ancora investito, valorizzato al 31 luglio 2026`:`${periods.length} partenze mensili · ${settings.months/12} anni di versamenti + ${settings.hold/12} anni di attesa · riscatto a fine periodo`;
+}
+window.showTrip=function(start){
+ const p=periods.find(p=>p.startIdx===start);if(!p)return;
+ const n=settings.months+p.hold;
+ const idx=Array.from({length:n+1},(_,i)=>i);
+ const labels=idx.map(i=>i===0?'Inizio '+date(start):'Fine '+date(start+i-1));
+ const rows=[['Versamenti',date(start)+' – '+date(start+settings.months-1)],[settings.never?'Stato':'Riscatto',settings.never?'Mai riscattato · valore al 31 luglio 2026':'Fine '+date(start+n-1)],['Capitale versato',euro(p.invested)],['Costi sui versamenti',euro(p.invested*settings.fee)],['Totale investito al netto dei costi',euro(p.invested*(1-settings.fee))],['Valore finale',euro(p.value)],['Guadagno / perdita',euro(p.gain)],['Rendimento sui versamenti',pct(p.gainPct)],['TIR annuo',pct(p.annual)],['Volatilità annua',pct(p.volatility)]];
+ $('tripDetails').innerHTML=rows.map(([k,v])=>`<div class="detail-item"><span class="detail-label">${k}</span><span class="detail-value">${v}</span></div>`).join('');
+ $('msciPeriodLabel').textContent='Serie allegata, ribasata a 100 a inizio viaggio';
+ $('tripModal').style.display='block';
+ tripInvestmentChart?.destroy();tripMsciChart?.destroy();
+ tripInvestmentChart=chart('tripInvestmentChart',labels,[line('Il tuo PAC',idx.map(i=>p.path[i]),'#3498db',3),line('Capitale versato',idx.map(i=>p.contributions[i]),'#e74c3c',2,[5,5])]);
+ tripMsciChart=chart('tripMsciChart',labels,[line('MSCI World (base 100)',idx.map(i=>SERIES[start+i]/SERIES[start]*100),'#2c3e50')],false);
+ $('closeModal').focus();
+};
+$('guideToggle').setAttribute('role','button');$('guideToggle').tabIndex=0;$('guideToggle').setAttribute('aria-expanded','true');
+$('guideToggle').onclick=()=>{const open=$('guideContent').classList.toggle('show');$('toggleIcon').textContent=open?'▲':'▼';$('guideToggle').setAttribute('aria-expanded',String(open));};
+$('guideToggle').onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();$('guideToggle').click();}};
+$('closeModal').setAttribute('role','button');$('closeModal').setAttribute('aria-label','Chiudi dettaglio');$('closeModal').tabIndex=0;
+$('closeModal').onclick=()=>{$('tripModal').style.display='none';};
+$('closeModal').onkeydown=e=>{if(e.key==='Enter'||e.key===' ')$('closeModal').click();};
+$('tripModal').onclick=e=>{if(e.target===$('tripModal'))$('closeModal').click();};
+document.addEventListener('keydown',e=>{if(e.key==='Escape')$('closeModal').click();});
+document.querySelectorAll('.tab-button').forEach(btn=>btn.onclick=()=>{document.querySelectorAll('.tab-button,.tab-content').forEach(e=>e.classList.remove('active'));btn.classList.add('active');$(btn.dataset.tab+'Tab').classList.add('active');bundleChart?.resize();});
+for(const id of ['pacAmount','duration','holdingPeriod','guaranteedPct','msciPct','bondRate','paymentFee','redemptionMode']){
+ $(id).setAttribute('aria-label',({pacAmount:'Versamento mensile in euro',duration:'Durata versamenti in anni',holdingPeriod:'Anni di riscatto ritardato',guaranteedPct:'Percentuale obbligazioni',msciPct:'Percentuale azioni MSCI World',bondRate:'Rendimento annuo obbligazioni',paymentFee:'Costo percentuale su ogni versamento',redemptionMode:'Modalità di riscatto'})[id]);
+ $(id).addEventListener('input',()=>{if(id==='msciPct')$('guaranteedPct').value=100-(+$('msciPct').value);updateControls();$('tripModal').style.display='none';$('simulationStatus').textContent='Aggiornamento dei risultati…';clearTimeout(timer);timer=setTimeout(run,180);});
+}
+$('displayType').onchange=table;$('startSimulation').onclick=run;
+run();
+</script>
+</body>
+</html>
