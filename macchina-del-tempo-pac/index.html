@@ -292,7 +292,7 @@
         }
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(7, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 12px;
             margin-bottom: 20px;
         }
@@ -319,6 +319,22 @@
         .stat-label {
             font-size: 0.85em;
             opacity: 0.9;
+        }
+        .stat-dual{
+            display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px;
+        }
+        .stat-dual span{
+            display:block;padding:7px 5px;border-radius:9px;background:rgba(255,255,255,.10);
+        }
+        .stat-dual small{
+            display:block;font-size:.58em;line-height:1.1;opacity:.78;text-transform:uppercase;
+            letter-spacing:.08em;margin-bottom:5px;font-weight:700;
+        }
+        .stat-dual strong{
+            display:block;font-size:1.15em;line-height:1;font-weight:800;
+        }
+        .stat-positive{
+            background:linear-gradient(135deg,#18865d,#27ae60);
         }
         .chart-container {
             background: white;
@@ -540,6 +556,18 @@
             font-size: 0.9em;
             display: inline-block;
         }
+        .start-mode-check{
+            display:flex;align-items:center;gap:9px;margin-top:9px;
+        }
+        .start-mode-check input{
+            width:18px!important;height:18px;accent-color:#2980b9;cursor:pointer;flex:0 0 auto;
+        }
+        .start-mode-check label{
+            margin:0;text-transform:none!important;letter-spacing:0!important;font-size:.82em!important;cursor:pointer;
+        }
+        .start-mode-note{
+            color:#71808d;font-size:.76em;line-height:1.45;margin-top:2px;
+        }
         .total-versamenti {
             font-size: 0.85em;
             color: #2c3e50;
@@ -686,13 +714,17 @@
         }
         input[type=range]{width:100%;min-height:36px;accent-color:#2980b9;cursor:pointer}output{font-weight:700;font-size:1.4em}select{font-size:1rem;padding:10px;border-radius:8px;border:1px solid #abc}.controls-grid{grid-template-columns:minmax(0,1fr)}.chart-container{height:auto;min-height:0}.chart-plot{height:480px;position:relative}.table-container{overflow-x:auto}.tab-buttons{flex-wrap:wrap}.detail-item{gap:12px;flex-wrap:wrap}.stat-value{font-size:1.65em}.guide-header:focus-visible,button:focus-visible{outline:3px solid #e67e22}#simulationStatus{text-align:center;color:#2c3e50;padding:10px}
         @media(max-width:760px){body{padding:8px}.container{padding:16px;border-radius:18px}h1{font-size:1.55em;letter-spacing:0}.controls-grid,.pac-options,.allocation-sliders,.comparison-grid,.trip-details,.modal-chart-grid{grid-template-columns:1fr!important}.controls-grid{padding:12px}.strategy-section,.allocation-group{padding:14px;min-width:0}.strategy-title{flex-wrap:wrap;gap:8px}.holding-period>div:first-child{flex-wrap:wrap;gap:8px}.chart-plot{height:340px}.chart-legend{flex-wrap:wrap;gap:10px}.modal-content{padding:14px}.modal-header h2{font-size:1.25em}.start-button{font-size:1em;padding:16px}.stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.tab-button{flex:1;font-size:.85em}.time-machine-subtitle{font-size:1em}.amount-input{min-width:0}}
+        .returns-note{
+            margin:-6px 0 18px;padding:12px 14px;background:#f7f9fb;border:1px solid #e1e8ed;
+            border-radius:10px;color:#5c6975;font-size:.82rem;line-height:1.55;
+        }
         .risk-notice{padding:18px;margin:18px 0;background:#fff5e5;border-left:4px solid #b36a00;border-radius:8px;color:#493719;font-size:.95rem;line-height:1.65}.risk-notice a{color:#174b70;text-decoration:underline;font-weight:600}.disclaimer-section{margin:12px 0;padding:14px 16px;background:#fff;border:1px solid #ccd6df;border-radius:8px;text-align:left;color:#334155;line-height:1.7;font-size:1rem}.disclaimer-section summary{font-weight:700;cursor:pointer;color:#203a43}.disclaimer-section p{margin-bottom:0}#avvertenze{scroll-margin-top:20px;text-align:left}#avvertenze h2{color:#203a43}@media print{.disclaimer-section>p{display:block!important}.disclaimer-section{break-inside:avoid}}
     </style>
 </head>
 <body>
     <div class="container">
         <h1>⚡ LA MACCHINA DEL TEMPO ⚡</h1>
-        <div class="time-machine-subtitle">PAC mensile · Versamenti, tempo e riscatto</div>
+        <div class="time-machine-subtitle">PAC mensile · Stessa strategia · Anni di partenza diversi</div>
         
         <!-- GUIDA INTERATTIVA PER IL CLIENTE -->
         <div class="guide-container">
@@ -706,12 +738,23 @@
             
             <div class="guide-content show" id="guideContent">
                 <div class="guide-section">
-                    <p><strong>La Macchina del Tempo non prevede il futuro. Ti mostra cosa sarebbe successo se avessi iniziato nel passato.</strong></p>
-                    <p>Scegli un importo mensile, la durata dei versamenti, i costi e quando riscattare. La macchina del tempo applica queste scelte a tanti momenti di partenza diversi, usando l’andamento storico dell’azionario.</p>
-                    <p>La domanda è semplice: <strong>«Se avessi versato questa somma ogni mese, come sarebbe andata?»</strong></p>
-                    <p>Puoi confrontare i risultati nei periodi favorevoli e in quelli difficili, vedere cosa sarebbe successo ritirando il capitale alla fine dei versamenti oppure lasciandolo investito più a lungo. Con <strong>“Mai”</strong>, scopri quanto varrebbe il capitale ancora investito all’ultima data disponibile nei dati.</p>
-                    <p><strong>Il passato non ti dice quanto guadagnerai. Ti aiuta a capire quanto possono contare la costanza, il tempo e il momento in cui decidi di uscire.</strong></p>
-                    <p>La componente obbligazionaria viene invece calcolata al tasso fisso che scegli: è un’ipotesi di confronto, non un rendimento storico né garantito.</p>
+                    <p><strong>La Macchina del Tempo non prevede il futuro. Ricostruisce cosa sarebbe successo iniziando lo stesso PAC, con la stessa asset allocation, in momenti diversi del passato.</strong></p>
+
+                    <p>Scegli l’importo mensile, la durata dei versamenti, i costi, l’allocazione e quando riscattare.</p>
+
+                    <p>Di default la Macchina del Tempo calcola i risultati di un PAC iniziato <strong>a gennaio di ogni anno, a partire dal 1970</strong>, per la durata che hai selezionato (<strong><span id="guideYears">15</span> anni</strong> di default). Se vuoi un’analisi più dettagliata, puoi attivare l’opzione per includere <strong>tutte le partenze mensili</strong>.</p>
+
+                    <p>La domanda è questa:</p>
+
+                    <p><strong>«Se avessi iniziato questo stesso PAC a gennaio 1970, a gennaio 1980, a gennaio 1996 o in qualsiasi altro anno, cosa sarebbe successo dopo <span id="guideYearsQuestion">15</span> anni? E se, terminati i versamenti, avessi deciso di lasciare il capitale investito senza aggiungere altre somme?»</strong></p>
+
+                    <p><strong>Cambia il momento di partenza. Importo mensile, durata, costi e asset allocation rimangono uguali.</strong></p>
+
+                    <p>Puoi confrontare i risultati nei periodi favorevoli e in quelli difficili, vedere cosa sarebbe successo riscattando alla fine dei versamenti oppure lasciando il capitale investito più a lungo. Con <strong>“Mai”</strong>, non viene simulato alcun riscatto: il capitale resta investito fino all’ultima data disponibile nei dati.</p>
+
+                    <p><strong>Il passato non ti dice quanto guadagnerai in futuro. Ti aiuta a capire come lo stesso piano di investimento si è comportato attraversando periodi storici differenti.</strong></p>
+
+                    <p>La componente obbligazionaria viene calcolata al tasso fisso che scegli: è un’ipotesi di confronto, non un rendimento storico né garantito.</p>
                 </div>
                 <details class="guide-section"><summary>Come leggere i grafici e i calcoli</summary><p>Le linee blu mostrano i percorsi storici; la linea rossa i versamenti, quella arancione la media e quella verde il riferimento obbligazionario.</p><p>La quota obbligazionaria è regolabile dallo 0% al 100%. Il rendimento annuo scelto è un’ipotesi costante di calcolo, non una garanzia né una serie storica obbligazionaria. Ogni versamento viene ripartito nelle percentuali scelte, senza successivi ribilanciamenti.</p><p>I versamenti avvengono a inizio mese. Il costo selezionato viene trattenuto da ciascun versamento: solo il netto viene investito. Capitale versato, guadagno/perdita e TIR considerano tutte le somme pagate, costi compresi. Anche il riferimento obbligazionario applica lo stesso costo. Il rendimento annuo è il TIR dei flussi mensili, annualizzato. La volatilità misura le variazioni mensili del portafoglio escludendo i versamenti.</p></details>
             </div>
@@ -740,6 +783,11 @@
                             <input type="range" id="duration" min="1" max="30" value="15" step="1" style="flex: 1;">
                             <span class="info-badge" id="durationValue">15 anni</span>
                         </div>
+                        <div class="start-mode-check">
+                            <input type="checkbox" id="allMonths">
+                            <label for="allMonths">Includi tutte le partenze mensili</label>
+                        </div>
+                        <div class="start-mode-note">Di default vengono simulati soltanto i PAC iniziati a gennaio di ogni anno. Attiva il flag per includere anche tutti gli altri mesi.</div>
                     </div>
                 </div>
                 
@@ -806,6 +854,10 @@
         <aside class="risk-notice" aria-label="Avvertenze essenziali"><strong>Analisi del passato, non previsione.</strong> I risultati sono ricostruzioni ipotetiche: non rappresentano rendimenti effettivamente ottenuti e non garantiscono risultati futuri. Il capitale può diminuire. Sono inclusi solo i costi sui versamenti selezionati; altri costi, tasse e inflazione sono esclusi. Il tasso obbligazionario è un’ipotesi, non una garanzia. Dati disponibili fino a luglio 2026. <a href="#avvertenze">Leggi avvertenze, metodo e limiti dei dati</a>.</aside>
         <div id="simulationStatus" role="status" aria-live="polite"></div><div class="stats-grid" id="stats">
             <!-- Verrà popolato via JavaScript -->
+        </div>
+
+        <div class="returns-note">
+            <strong>Rendimenti:</strong> nella stessa casella trovi il rendimento complessivo del periodo e il corrispondente rendimento annuo. Per l’investimento medio il rendimento di periodo deriva dal valore finale medio; il rendimento annuo è il TIR corrispondente quando tutti i percorsi hanno la stessa durata. Con “Mai”, poiché le durate sono diverse, viene mostrata la media dei TIR annui.
         </div>
 
         <div class="tab-buttons">
@@ -969,10 +1021,12 @@ const euro=v=>v.toLocaleString('it-IT',{style:'currency',currency:'EUR',maximumF
 const pct=v=>v.toLocaleString('it-IT',{maximumFractionDigits:2,minimumFractionDigits:2})+'%';
 const date=i=>new Date(1970,i,1).toLocaleDateString('it-IT',{month:'short',year:'numeric'});
 let periods=[], settings, bundleChart, tripInvestmentChart, tripMsciChart, timer;
-function inputs(){return {amount:+$('pacAmount').value,months:+$('duration').value*12,hold:$('redemptionMode').value==='years'?+$('holdingPeriod').value*12:0,bond:+$('guaranteedPct').value/100,rate:+$('bondRate').value/100,fee:+$('paymentFee').value/100,never:$('redemptionMode').value==='never'};}
+function inputs(){return {amount:+$('pacAmount').value,months:+$('duration').value*12,hold:$('redemptionMode').value==='years'?+$('holdingPeriod').value*12:0,bond:+$('guaranteedPct').value/100,rate:+$('bondRate').value/100,fee:+$('paymentFee').value/100,never:$('redemptionMode').value==='never',allMonths:$('allMonths').checked};}
 function updateControls(){
  const s=inputs();$('pacAmountValue').textContent=s.amount.toLocaleString('it-IT');
  $('durationValue').textContent=s.months/12+' anni';$('holdingValue').textContent=s.hold/12+' anni';
+ if($('guideYears')) $('guideYears').textContent=s.months/12;
+ if($('guideYearsQuestion')) $('guideYearsQuestion').textContent=s.months/12;
  $('holdingPeriod').disabled=$('redemptionMode').value!=='years'; $('holdingSlider').hidden=$('redemptionMode').value!=='years'; $('neverNote').hidden=!s.never;
  $('totalPeriod').textContent=s.never?'Nessun riscatto · valorizzazione al 31 luglio 2026':'Periodo totale: '+(s.months+s.hold)/12+' anni (versamenti + attesa)';
  $('paymentFeeValue').textContent=pct(s.fee*100);
@@ -1020,9 +1074,50 @@ function chart(id,labels,datasets,money=true,legend=true){
 }
 function stats(){
  const avg=key=>periods.reduce((a,p)=>a+p[key],0)/periods.length;
- const annuals=periods.map(p=>p.annual);
- const cells=[['Media annua (TIR)',pct(avg('annual'))],['Guadagno medio sui versamenti',pct(avg('gainPct'))],['Miglior TIR annuo',pct(Math.max(...annuals))],['Peggior TIR annuo',pct(Math.min(...annuals))],['Periodi storici',periods.length],['Periodi in guadagno',pct(periods.filter(p=>p.gain>1e-7).length/periods.length*100)],['Volatilità media',pct(avg('volatility'))]];
- $('stats').innerHTML=cells.map(([k,v])=>`<div class="stat-card"><div class="stat-label">${k}</div><div class="stat-value">${v}</div></div>`).join('');$('simCount').textContent=periods.length;
+ const finals=periods.map(p=>p.value);
+ const invested=settings.amount*settings.months;
+ const avgFinal=avg('value');
+ const medianFinal=(()=>{const a=[...finals].sort((x,y)=>x-y),n=a.length;return n%2?a[(n-1)/2]:(a[n/2-1]+a[n/2])/2;})();
+ const avgPeriod=invested>0?(avgFinal/invested-1)*100:0;
+ const avgAnnual=settings.never?avg('annual'):irr(avgFinal,settings);
+
+ const best=periods.reduce((a,b)=>b.gainPct>a.gainPct?b:a,periods[0]);
+ const worst=periods.reduce((a,b)=>b.gainPct<a.gainPct?b:a,periods[0]);
+ const positive=periods.filter(p=>p.gain>1e-7).length/periods.length*100;
+
+ $('stats').innerHTML=`
+   <div class="stat-card"><div class="stat-label">Viaggi storici</div><div class="stat-value">${periods.length.toLocaleString('it-IT')}</div></div>
+   <div class="stat-card"><div class="stat-label">Capitale versato</div><div class="stat-value">${euro(invested)}</div></div>
+   <div class="stat-card highlight"><div class="stat-label">Valore finale medio</div><div class="stat-value">${euro(avgFinal)}</div></div>
+   <div class="stat-card"><div class="stat-label">Valore finale mediano</div><div class="stat-value">${euro(medianFinal)}</div></div>
+
+   <div class="stat-card highlight">
+      <div class="stat-label">Rendimento investimento medio</div>
+      <div class="stat-dual">
+        <span><small>Periodo</small><strong>${pct(avgPeriod)}</strong></span>
+        <span><small>Annuo</small><strong>${pct(avgAnnual)}</strong></span>
+      </div>
+   </div>
+
+   <div class="stat-card">
+      <div class="stat-label">Miglior rendimento storico</div>
+      <div class="stat-dual">
+        <span><small>Periodo</small><strong>${pct(best.gainPct)}</strong></span>
+        <span><small>Annuo</small><strong>${pct(best.annual)}</strong></span>
+      </div>
+   </div>
+
+   <div class="stat-card volatility">
+      <div class="stat-label">Peggior rendimento storico</div>
+      <div class="stat-dual">
+        <span><small>Periodo</small><strong>${pct(worst.gainPct)}</strong></span>
+        <span><small>Annuo</small><strong>${pct(worst.annual)}</strong></span>
+      </div>
+   </div>
+
+   <div class="stat-card stat-positive"><div class="stat-label">Percorsi sopra il capitale versato</div><div class="stat-value">${pct(positive)}</div></div>
+ `;
+ $('simCount').textContent=periods.length;
 }
 function table(){
  let selected=[...periods];const mode=$('displayType').value;
@@ -1043,7 +1138,10 @@ function run(){
  clearTimeout(timer);settings=inputs();updateControls();periods=[];
  const max=RETURNS.length-settings.months-(settings.never?0:settings.hold);
  if(max<0){$('simulationStatus').textContent='La durata supera la serie storica disponibile.';return;}
- for(let start=0;start<=max;start++)periods.push(simulate(start,{...settings,hold:settings.never?RETURNS.length-start-settings.months:settings.hold}));
+ for(let start=0;start<=max;start++){
+  if(!settings.allMonths && start%12!==0)continue;
+  periods.push(simulate(start,{...settings,hold:settings.never?RETURNS.length-start-settings.months:settings.hold}));
+ }
  stats();table();comparison();
  const n=settings.months+periods[0].hold;
  const indexes=Array.from({length:settings.never?n+1:n/3+1},(_,i)=>i*(settings.never?1:3));
@@ -1053,8 +1151,15 @@ function run(){
  const datasets=periods.map(p=>line('Partenza '+date(p.startIdx),sample(p.path),'rgba(52,152,219,.18)',1));
  datasets.push(line(settings.never?'Media dei percorsi disponibili a ciascuna durata':'Media di tutti i percorsi',sample(avg),'#f39c12',3),line('Capitale versato',sample(periods[0].contributions),'#e74c3c',3,[5,5]),line('Obbligazioni '+Math.round(settings.rate*100)+'%',sample(simulate(0,{...settings,hold:periods[0].hold,bond:1}).path),'#27ae60',3,[3,3]));
  bundleChart?.destroy();bundleChart=chart('bundleChart',labels,datasets,true,false);
- $('chartMethod').textContent=settings.never?'Ogni percorso termina al valore di luglio 2026. L’asse orizzontale mostra gli anni dalla partenza: i percorsi hanno lunghezze diverse. La media a ciascuna durata usa solo i percorsi ancora disponibili, quindi il campione diminuisce verso destra. La linea verde è il riferimento obbligazionario alla stessa durata.':'Tutti i percorsi hanno la stessa durata. La media include tutte le partenze mensili disponibili.';
- $('simulationStatus').textContent=typeof Chart==='undefined'?'Tabelle e calcoli disponibili. Per caricare i grafici è necessaria una connessione a Internet.':settings.never?`${periods.length} partenze mensili · nessun riscatto · capitale ancora investito, valorizzato al 31 luglio 2026`:`${periods.length} partenze mensili · ${settings.months/12} anni di versamenti + ${settings.hold/12} anni di attesa · riscatto a fine periodo`;
+ const startMode=settings.allMonths?'tutte le partenze mensili':'partenza a gennaio di ogni anno';
+ $('chartMethod').textContent=settings.never
+ ?`Ogni percorso parte con ${startMode} e termina al valore di luglio 2026. L’asse orizzontale mostra gli anni dalla partenza: i percorsi hanno lunghezze diverse. La media a ciascuna durata usa solo i percorsi ancora disponibili, quindi il campione diminuisce verso destra.`
+ :`Tutti i percorsi hanno la stessa durata e usano ${startMode}. Importo mensile, costi, asset allocation e modalità di riscatto restano identici.`;
+ $('simulationStatus').textContent=typeof Chart==='undefined'
+ ?'Tabelle e calcoli disponibili. Per caricare i grafici è necessaria una connessione a Internet.'
+ :settings.never
+ ?`${periods.length} viaggi storici · ${startMode} · nessun riscatto · valore al 31 luglio 2026`
+ :`${periods.length} viaggi storici · ${startMode} · ${settings.months/12} anni di versamenti + ${settings.hold/12} anni di attesa`;
 }
 window.showTrip=function(start){
  const p=periods.find(p=>p.startIdx===start);if(!p)return;
@@ -1079,9 +1184,10 @@ $('closeModal').onkeydown=e=>{if(e.key==='Enter'||e.key===' ')$('closeModal').cl
 $('tripModal').onclick=e=>{if(e.target===$('tripModal'))$('closeModal').click();};
 document.addEventListener('keydown',e=>{if(e.key==='Escape')$('closeModal').click();});
 document.querySelectorAll('.tab-button').forEach(btn=>btn.onclick=()=>{document.querySelectorAll('.tab-button,.tab-content').forEach(e=>e.classList.remove('active'));btn.classList.add('active');$(btn.dataset.tab+'Tab').classList.add('active');bundleChart?.resize();});
-for(const id of ['pacAmount','duration','holdingPeriod','guaranteedPct','msciPct','bondRate','paymentFee','redemptionMode']){
- $(id).setAttribute('aria-label',({pacAmount:'Versamento mensile in euro',duration:'Durata versamenti in anni',holdingPeriod:'Anni di riscatto ritardato',guaranteedPct:'Percentuale obbligazioni',msciPct:'Percentuale azioni MSCI World',bondRate:'Rendimento annuo obbligazioni',paymentFee:'Costo percentuale su ogni versamento',redemptionMode:'Modalità di riscatto'})[id]);
- $(id).addEventListener('input',()=>{if(id==='msciPct')$('guaranteedPct').value=100-(+$('msciPct').value);updateControls();$('tripModal').style.display='none';$('simulationStatus').textContent='Aggiornamento dei risultati…';clearTimeout(timer);timer=setTimeout(run,180);});
+for(const id of ['pacAmount','duration','holdingPeriod','guaranteedPct','msciPct','bondRate','paymentFee','redemptionMode','allMonths']){
+ $(id).setAttribute('aria-label',({pacAmount:'Versamento mensile in euro',duration:'Durata versamenti in anni',holdingPeriod:'Anni di riscatto ritardato',guaranteedPct:'Percentuale obbligazioni',msciPct:'Percentuale azioni MSCI World',bondRate:'Rendimento annuo obbligazioni',paymentFee:'Costo percentuale su ogni versamento',redemptionMode:'Modalità di riscatto',allMonths:'Includi tutte le partenze mensili'})[id]);
+ const eventName=id==='allMonths'?'change':'input';
+ $(id).addEventListener(eventName,()=>{if(id==='msciPct')$('guaranteedPct').value=100-(+$('msciPct').value);updateControls();$('tripModal').style.display='none';$('simulationStatus').textContent='Aggiornamento dei risultati…';clearTimeout(timer);timer=setTimeout(run,180);});
 }
 $('displayType').onchange=table;$('startSimulation').onclick=run;
 run();
