@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#10283f">
-  <meta name="description" content="Calcola il capitale indicativo necessario per vivere di rendita e scopri quando si esaurirebbe.">
-  <title>Vivere di rendita · Quanto capitale ti serve?</title>
+  <meta name="description" content="Calcola il capitale necessario per ottenere una rendita mensile, integrare la pensione o anticipare l’uscita dal lavoro.">
+  <title>Rendita mensile · Quanto capitale ti serve?</title>
   <style>
     :root{
       --navy:#10283f;--navy-2:#173b58;--ink:#14202b;--muted:#64717d;
@@ -90,14 +90,14 @@
 
   <header class="hero">
     <div class="hero-inner">
-      <div class="eyebrow">FIRE · Vivere di rendita</div>
-      <h1>Quanto capitale ti serve?</h1>
-      <p>Scegli quanto vuoi avere ogni mese e quando vorresti iniziare. Il calcolatore stima il capitale necessario e ti mostra fino a quando durerebbe.</p>
+      <div class="eyebrow">Reddito futuro · Rendita mensile</div>
+      <h1>Quanto capitale ti serve per una rendita mensile?</h1>
+      <p>Calcola quanto capitale ti servirà per ottenere una rendita mensile, integrare la pensione o anticipare l’uscita dal lavoro.</p>
     </div>
   </header>
 
   <main class="main">
-    <section class="calculator" aria-label="Calcolatore vivere di rendita">
+    <section class="calculator" aria-label="Calcolatore della rendita mensile">
       <div class="grid">
         <div class="inputs">
           <h2>I tuoi dati</h2>
@@ -123,7 +123,7 @@
 
           <div class="field">
             <div class="label-row">
-              <label for="startAge">A che età vuoi iniziare a vivere di rendita?</label>
+              <label for="startAge">A che età vuoi iniziare a ricevere la rendita?</label>
               <span class="value"><span id="startAgeValue">60</span> anni</span>
             </div>
             <input id="startAge" type="range" min="50" max="84" step="1" value="60">
@@ -195,7 +195,7 @@
       <p>I rendimenti e l’inflazione reali cambiano nel tempo; possono inoltre esserci imposte, costi e spese impreviste. Per questo il risultato è un punto di partenza, non la cifra “giusta” in assoluto.</p>
     </article>
     <div class="disclaimer">
-      <strong>Avvertenze.</strong> Calcolatore con finalità esclusivamente informative e didattiche. Utilizza formule e ipotesi semplificate: rendimento e inflazione uniformi nel tempo, nessuna volatilità, tassazione, costo di prodotto o commissione. L’importo mensile cresce al tasso d’inflazione selezionato, applicato su base mensile. Il capitale indicato è quello teoricamente necessario all’età scelta per iniziare a vivere di rendita: il calcolatore non simula come accumularlo prima di tale data. Le età-obiettivo sono assunzioni indicative di pianificazione e non costituiscono una previsione individuale della durata della vita. Il risultato non considera pensioni, altri redditi, imprevisti, successione o capitale residuo desiderato. Non è consulenza finanziaria, previdenziale o fiscale, né una raccomandazione personalizzata, una promessa di rendimento o un’indicazione di risultati futuri. Prima di assumere decisioni è necessario valutare situazione personale, rischio, liquidità e obiettivi con un professionista.
+      <strong>Avvertenze.</strong> Calcolatore con finalità esclusivamente informative e didattiche. Utilizza formule e ipotesi semplificate: rendimento e inflazione uniformi nel tempo, nessuna volatilità, tassazione, costo di prodotto o commissione. L’importo mensile cresce al tasso d’inflazione selezionato, applicato su base mensile. Il capitale indicato è quello teoricamente necessario all’età scelta per iniziare a ricevere la rendita: il calcolatore non simula come accumularlo prima di tale data. Le età-obiettivo sono assunzioni indicative di pianificazione e non costituiscono una previsione individuale della durata della vita. Il risultato non considera pensioni, altri redditi, imprevisti, successione o capitale residuo desiderato. Non è consulenza finanziaria, previdenziale o fiscale, né una raccomandazione personalizzata, una promessa di rendimento o un’indicazione di risultati futuri. Prima di assumere decisioni è necessario valutare situazione personale, rischio, liquidità e obiettivi con un professionista.
     </div>
   </section>
 
@@ -269,7 +269,7 @@
         $('withdrawnResult').textContent = euro.format(totalWithdrawn);
         $('lastMonthlyResult').textContent = euro.format(lastMonthly);
         $('endResult').textContent = monthYear.format(endDate);
-        $('answer').innerHTML = `Per iniziare a vivere di rendita a <strong>${chosenStartAge} anni</strong>, la somma di ${euro.format(spend)} mensili desiderata oggi diventerebbe circa ${euro.format(spendAtStart)} con un’inflazione del ${inflation}%. A quella data servirebbe un capitale di circa <strong>${euro.format(capital)}</strong>. Ipotizzando un rendimento medio del ${num.format(annualRate*100)}%, il capitale si esaurirebbe verso gli <strong>${targetAge} anni</strong>, a ${monthYear.format(endDate)}.`;
+        $('answer').innerHTML = `Per iniziare a ricevere la rendita a <strong>${chosenStartAge} anni</strong>, la somma di ${euro.format(spend)} mensili desiderata oggi diventerebbe circa ${euro.format(spendAtStart)} con un’inflazione del ${inflation}%. A quella data servirebbe un capitale di circa <strong>${euro.format(capital)}</strong>. Ipotizzando un rendimento medio del ${num.format(annualRate*100)}%, il capitale si esaurirebbe verso gli <strong>${targetAge} anni</strong>, a ${monthYear.format(endDate)}.`;
 
         points = [{month:0,balance:capital}];
         let balance = capital;
