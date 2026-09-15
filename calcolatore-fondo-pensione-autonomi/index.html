@@ -1,0 +1,541 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Calcolatore semplice del fondo pensione per lavoratori autonomi e professionisti: montante, risparmio fiscale, tassazione e possibilità di ritiro in capitale.">
+  <title>Fondo pensione per autonomi e professionisti | Luigi Mauri</title>
+  <style>
+    :root {
+      --ink: #17233c;
+      --muted: #657084;
+      --paper: #f5f2ec;
+      --card: #fff;
+      --line: #ddd8ce;
+      --blue: #173f74;
+      --blue-soft: #eaf0f7;
+      --green: #176b55;
+      --green-soft: #e6f3ed;
+      --sand: #f3e8d6;
+      --amber: #9b641a;
+      --amber-soft: #fff4de;
+      --red: #a13c35;
+      --shadow: 0 14px 42px rgba(23, 35, 60, .09);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+
+    button, input, select { font: inherit; }
+    .page { width: min(1120px, calc(100% - 32px)); margin: 0 auto; padding: 34px 0 64px; }
+    .eyebrow { margin: 0 0 10px; color: var(--blue); font-size: .78rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+    h1 { max-width: 900px; margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: clamp(2.2rem, 6vw, 4.65rem); font-weight: 500; line-height: .98; letter-spacing: -.045em; }
+    .intro { max-width: 790px; margin: 22px 0 0; color: #465267; font-size: clamp(1rem, 2vw, 1.18rem); }
+
+    .three-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 30px 0; }
+    .step { min-height: 150px; padding: 21px; border: 1px solid var(--line); border-radius: 18px; background: rgba(255,255,255,.62); }
+    .step-number { display: inline-grid; width: 31px; height: 31px; place-items: center; margin-bottom: 12px; border-radius: 50%; color: #fff; background: var(--blue); font-size: .88rem; font-weight: 800; }
+    .step strong { display: block; margin-bottom: 5px; }
+    .step p { margin: 0; color: var(--muted); font-size: .92rem; }
+
+    .calculator { display: grid; grid-template-columns: minmax(285px, .8fr) minmax(0, 1.55fr); gap: 18px; align-items: start; }
+    .panel { border: 1px solid var(--line); border-radius: 22px; background: var(--card); box-shadow: var(--shadow); }
+    .controls { position: sticky; top: 16px; padding: 24px; }
+    .results { padding: 24px; }
+    h2 { margin: 0 0 7px; font-family: Georgia, "Times New Roman", serif; font-size: 1.65rem; font-weight: 500; }
+    .subtle { margin: 0 0 22px; color: var(--muted); font-size: .9rem; }
+
+    .field { margin: 0 0 18px; }
+    .field label { display: block; margin-bottom: 7px; font-size: .88rem; font-weight: 760; }
+    .field-note { display: block; margin-top: 6px; color: var(--muted); font-size: .75rem; line-height: 1.4; }
+    [hidden] { display: none !important; }
+    .existing-toggle { display: flex; align-items: flex-start; gap: 10px; margin: 4px 0 18px; padding: 14px; border: 1px solid #b9c9dc; border-radius: 13px; background: var(--blue-soft); cursor: pointer; }
+    .existing-toggle input { width: 19px; height: 19px; margin: 1px 0 0; accent-color: var(--blue); }
+    .existing-toggle span { font-size: .86rem; font-weight: 800; }
+    .existing-data { margin: -5px 0 20px; padding: 16px 16px 1px; border: 1px solid var(--line); border-radius: 14px; background: #faf8f3; }
+    .input-wrap { position: relative; }
+    .input-wrap input, select {
+      width: 100%;
+      min-height: 48px;
+      padding: 10px 52px 10px 13px;
+      border: 1px solid #cfd3da;
+      border-radius: 11px;
+      color: var(--ink);
+      background: #fff;
+      font-weight: 700;
+      outline: none;
+    }
+    select { padding-right: 38px; }
+    .input-wrap input:focus, select:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(23,63,116,.12); }
+    .input-wrap input[type="date"] { padding-right: 13px; }
+    .suffix { position: absolute; top: 50%; right: 13px; color: var(--muted); transform: translateY(-50%); }
+    .formula { margin: 4px 0 18px; padding: 13px 14px; border-radius: 13px; background: var(--blue-soft); font-size: .82rem; }
+    .formula strong { display: block; margin-top: 2px; color: var(--blue); font-size: 1.05rem; }
+    .error { display: none; margin: 0 0 16px; padding: 11px 13px; border-radius: 10px; color: var(--red); background: #fbefed; font-size: .86rem; font-weight: 700; }
+
+    .section-title { margin: 28px 0 5px; font-family: Georgia, "Times New Roman", serif; font-size: 1.42rem; font-weight: 500; }
+    .section-note { margin: 0 0 12px; color: var(--muted); font-size: .84rem; }
+    .metric-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 11px; }
+    .metric { min-height: 117px; padding: 18px; border: 1px solid var(--line); border-radius: 16px; background: #fff; }
+    .metric.primary { border-color: #aec4df; background: var(--blue-soft); }
+    .metric.good { border-color: #abd3c4; background: var(--green-soft); }
+    .metric .label { display: block; margin-bottom: 8px; color: var(--muted); font-size: .75rem; font-weight: 800; line-height: 1.3; text-transform: uppercase; letter-spacing: .045em; }
+    .metric .value { display: block; font-family: Georgia, "Times New Roman", serif; font-size: clamp(1.55rem,4vw,2.15rem); line-height: 1; }
+    .metric small { display: block; margin-top: 8px; color: var(--muted); }
+
+    .breakdown { margin-top: 12px; overflow: hidden; border: 1px solid var(--line); border-radius: 16px; }
+    .breakdown-row { display: flex; justify-content: space-between; gap: 18px; padding: 13px 16px; border-bottom: 1px solid #ebe7df; }
+    .breakdown-row:last-child { border-bottom: 0; }
+    .breakdown-row span { color: var(--muted); font-size: .84rem; }
+    .breakdown-row strong { text-align: right; font-size: .91rem; }
+
+    .eligibility { margin-top: 13px; padding: 20px; border: 1px solid #aacdbf; border-radius: 17px; background: var(--green-soft); }
+    .eligibility.warning { border-color: #e1c58b; background: var(--amber-soft); }
+    .eligibility-kicker { display: block; margin-bottom: 5px; color: var(--green); font-size: .76rem; font-weight: 850; letter-spacing: .07em; text-transform: uppercase; }
+    .warning .eligibility-kicker { color: var(--amber); }
+    .eligibility h3 { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: clamp(1.45rem,4vw,2rem); font-weight: 500; line-height: 1.08; }
+    .eligibility p { margin: 10px 0 0; color: #475568; font-size: .9rem; }
+
+    .threshold-bar { height: 10px; margin-top: 17px; overflow: hidden; border-radius: 999px; background: rgba(23,35,60,.12); }
+    .threshold-fill { width: 0; height: 100%; border-radius: inherit; background: var(--green); transition: width .25s ease; }
+    .warning .threshold-fill { background: var(--amber); }
+    .threshold-labels { display: flex; justify-content: space-between; gap: 10px; margin-top: 6px; color: var(--muted); font-size: .72rem; }
+
+    .payout-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 11px; margin-top: 12px; }
+    .payout-card { padding: 18px; border: 1px solid var(--line); border-radius: 16px; background: #fff; }
+    .payout-card span { display: block; color: var(--muted); font-size: .76rem; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; }
+    .payout-card strong { display: block; margin-top: 6px; font-family: Georgia, "Times New Roman", serif; font-size: 1.75rem; font-weight: 500; }
+    .payout-card small { display: block; margin-top: 7px; color: var(--muted); }
+
+    .annuity-types { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; margin-top: 12px; }
+    .annuity { padding: 15px; border: 1px solid var(--line); border-radius: 14px; background: rgba(255,255,255,.65); }
+    .annuity strong { display: block; margin-bottom: 4px; font-size: .91rem; }
+    .annuity p { margin: 0; color: var(--muted); font-size: .78rem; }
+
+    .key-message { margin-top: 17px; padding: 19px; border-left: 5px solid var(--blue); border-radius: 0 14px 14px 0; background: var(--blue-soft); }
+    .key-message strong { display: block; margin-bottom: 4px; color: var(--blue); }
+    .key-message p { margin: 0; font-size: .9rem; }
+
+    .table-block { margin-top: 27px; }
+    .table-head { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 11px; }
+    .table-head h2 { margin: 0; }
+    .table-head p { margin: 0; color: var(--muted); font-size: .8rem; }
+    .table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; }
+    table { width: 100%; min-width: 720px; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+    th,td { padding: 12px 13px; border-bottom: 1px solid #ebe7df; text-align: right; white-space: nowrap; }
+    th:first-child,td:first-child { text-align: left; }
+    th { color: #536078; background: #faf9f6; font-size: .71rem; letter-spacing: .025em; text-transform: uppercase; }
+    td { font-size: .84rem; }
+    tbody tr:last-child td { border-bottom: 0; font-weight: 800; }
+
+    details { margin-top: 18px; padding: 15px 17px; border: 1px solid var(--line); border-radius: 13px; background: rgba(255,255,255,.55); }
+    summary { cursor: pointer; font-weight: 800; }
+    details p, details li { color: var(--muted); font-size: .83rem; }
+    details ul { padding-left: 20px; }
+    .threshold-table { min-width: 460px; margin-top: 12px; }
+    .footer-note { margin: 24px 0 0; color: var(--muted); font-size: .75rem; }
+    .footer-note a { color: var(--blue); }
+
+    @media (max-width: 820px) {
+      .page { width: min(100% - 22px,680px); padding-top: 22px; }
+      .three-steps { grid-template-columns: 1fr; }
+      .step { min-height: 0; }
+      .calculator { grid-template-columns: 1fr; }
+      .controls { position: static; }
+    }
+    @media (max-width: 520px) {
+      .panel,.step { border-radius: 16px; }
+      .controls,.results { padding: 17px; }
+      .metric-grid,.payout-grid,.annuity-types { grid-template-columns: 1fr; }
+      .metric { min-height: 103px; }
+      .table-head { display: block; }
+      .table-head p { margin-top: 3px; }
+      .threshold-labels { display: block; }
+      .threshold-labels span { display: block; margin-top: 2px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <p class="eyebrow">Fai due conti · Previdenza</p>
+    <h1>Il fondo pensione per autonomi e professionisti.</h1>
+    <p class="intro">Quanto potresti accumulare, quante imposte potresti risparmiare e, alla pensione, potrai ritirare tutto il capitale oppure soltanto il 50%?</p>
+
+    <section class="three-steps" aria-label="I tre momenti fiscali del fondo pensione">
+      <article class="step"><span class="step-number">1</span><strong>Quando versi</strong><p>I versamenti deducibili possono ridurre il reddito sul quale paghi l’IRPEF.</p></article>
+      <article class="step"><span class="step-number">2</span><strong>Durante gli anni</strong><p>Il fondo investe il capitale e versa le imposte sui rendimenti maturati.</p></article>
+      <article class="step"><span class="step-number">3</span><strong>Alla pensione</strong><p>La parte imponibile della prestazione è tassata dal 15% fino al 9%.</p></article>
+    </section>
+
+    <section class="calculator">
+      <form class="panel controls" id="calculatorForm" novalidate>
+        <h2>I tuoi dati</h2>
+        <p class="subtle">Modifica i valori: il risultato si aggiorna subito.</p>
+
+        <div class="field">
+          <label for="currentAge">Età attuale</label>
+          <div class="input-wrap"><input id="currentAge" type="number" min="18" max="69" step="1" value="48" inputmode="numeric"><span class="suffix">anni</span></div>
+        </div>
+
+        <div class="field">
+          <label for="sex">Sesso utilizzato dalla tabella delle soglie</label>
+          <select id="sex"><option value="male" selected>Uomo</option><option value="female">Donna</option></select>
+          <small class="field-note">Serve esclusivamente per individuare la soglia di liquidabilità in capitale.</small>
+        </div>
+
+        <div class="field">
+          <label for="retirementAge">Età di pensionamento</label>
+          <select id="retirementAge">
+            <option>57</option><option>58</option><option>59</option><option>60</option><option>61</option><option>62</option><option>63</option><option>64</option><option>65</option><option>66</option><option>67</option><option selected>68</option><option>69</option><option>70</option>
+          </select>
+          <small class="field-note">La tabella allegata contiene soglie dai 57 ai 70 anni.</small>
+        </div>
+
+        <label class="existing-toggle" for="existingMember">
+          <input id="existingMember" type="checkbox">
+          <span>Sono già iscritto a una forma di previdenza complementare</span>
+        </label>
+
+        <section class="existing-data" id="existingData" hidden>
+          <div class="field">
+            <label for="enrollmentDate">Data della prima iscrizione</label>
+            <div class="input-wrap"><input id="enrollmentDate" type="date"></div>
+            <small class="field-note">Usata per calcolare l’anzianità complessiva nella previdenza complementare.</small>
+          </div>
+          <div class="field">
+            <label for="currentBalance">Montante attuale del fondo pensione</label>
+            <div class="input-wrap"><input id="currentBalance" type="number" min="0" max="5000000" step="100" value="0" inputmode="decimal"><span class="suffix">€</span></div>
+          </div>
+          <div class="field">
+            <label for="alreadyTaxedReturns">Rendimenti già tassati</label>
+            <div class="input-wrap"><input id="alreadyTaxedReturns" type="number" min="0" max="5000000" step="100" value="0" inputmode="decimal"><span class="suffix">€</span></div>
+            <small class="field-note">Il dato è normalmente riportato nel resoconto del fondo. Rimane nel montante, ma viene escluso dalla tassazione finale.</small>
+          </div>
+          <div class="field">
+            <label for="existingNonDeducted">Contributi non dedotti già comunicati al fondo</label>
+            <div class="input-wrap"><input id="existingNonDeducted" type="number" min="0" max="5000000" step="100" value="0" inputmode="decimal"><span class="suffix">€</span></div>
+            <small class="field-note">Dato facoltativo. Anche questa parte viene esclusa dalla tassazione finale.</small>
+          </div>
+        </section>
+
+        <div class="field">
+          <label for="annualContribution">Versamento annuo</label>
+          <div class="input-wrap"><input id="annualContribution" type="number" min="0" max="50000" step="100" value="5300" inputmode="decimal"><span class="suffix">€</span></div>
+        </div>
+
+        <div class="field">
+          <label for="grossReturn">Rendimento medio annuo lordo ipotizzato</label>
+          <select id="grossReturn"><option value="1">1%</option><option value="2">2%</option><option value="3">3%</option><option value="4" selected>4%</option><option value="5">5%</option><option value="6">6%</option><option value="7">7%</option><option value="8">8%</option></select>
+        </div>
+
+        <div class="field">
+          <label for="taxRate">Aliquota fiscale utilizzabile per la deduzione</label>
+          <select id="taxRate">
+            <option value="0">0% · nessun beneficio utilizzabile</option>
+            <option value="23">23%</option>
+            <option value="33" selected>33%</option>
+            <option value="43">43%</option>
+          </select>
+          <small class="field-note">Scegli 0% se, per esempio, sei forfettario e non possiedi altri redditi soggetti a IRPEF sui quali utilizzare la deduzione.</small>
+        </div>
+
+        <div class="formula" aria-live="polite">
+          Versamento fiscalmente considerato ogni anno
+          <strong id="deductibleContributionFormula">€ 5.300</strong>
+        </div>
+        <p class="error" id="errorMessage" role="alert"></p>
+      </form>
+
+      <section class="panel results" aria-live="polite">
+        <h2>Il risultato</h2>
+        <p class="subtle" id="scenarioText">20 anni di versamenti, dai 48 ai 68 anni.</p>
+
+        <h3 class="section-title">1. Il risparmio fiscale</h3>
+        <p class="section-note">È una stima semplice ottenuta applicando l’aliquota selezionata alla parte deducibile del versamento.</p>
+        <div class="metric-grid">
+          <article class="metric good"><span class="label">Risparmio fiscale annuo stimato</span><strong class="value" id="annualTaxSaving">€ 0</strong><small id="taxSavingRateCaption">Aliquota utilizzata: 33%</small></article>
+          <article class="metric"><span class="label">Risparmio fiscale complessivo</span><strong class="value" id="totalTaxSaving">€ 0</strong><small>Somma nominale, non reinvestita nella simulazione</small></article>
+        </div>
+        <div class="breakdown">
+          <div class="breakdown-row" id="existingBalanceRow" hidden><span>Montante attuale già accumulato</span><strong id="existingBalanceResult">€ 0</strong></div>
+          <div class="breakdown-row"><span>Nuovi versamenti complessivi</span><strong id="totalContributions">€ 0</strong></div>
+          <div class="breakdown-row"><span>Costo effettivo dopo il risparmio fiscale stimato</span><strong id="effectiveCost">€ 0</strong></div>
+          <div class="breakdown-row"><span>Contributi non dedotti complessivi</span><strong id="nonDeductedContributions">€ 0</strong></div>
+        </div>
+
+        <h3 class="section-title">2. La crescita del fondo</h3>
+        <p class="section-note">Il rendimento è costante e ipotetico. Il 20% viene sottratto ogni anno dai rendimenti positivi.</p>
+        <div class="metric-grid">
+          <article class="metric primary"><span class="label">Montante prima della tassazione finale</span><strong class="value" id="fundValue">€ 0</strong><small>È questo l’importo confrontato con la soglia</small></article>
+          <article class="metric"><span class="label">Nuovi rendimenti netti accumulati</span><strong class="value" id="netGains">€ 0</strong><small id="grossGainsCaption">Nuovi rendimenti lordi: € 0</small></article>
+        </div>
+        <div class="breakdown">
+          <div class="breakdown-row"><span>Imposte sui rendimenti versate durante gli anni</span><strong id="returnTaxes">− € 0</strong></div>
+          <div class="breakdown-row"><span>Tassazione ipotizzata dei rendimenti</span><strong>20,00%</strong></div>
+        </div>
+
+        <h3 class="section-title">3. La tassazione alla pensione</h3>
+        <p class="section-note">Si applica alla parte contributiva dedotta. I rendimenti sono esclusi perché già tassati durante gli anni.</p>
+        <div class="metric-grid">
+          <article class="metric"><span class="label">Base imponibile della prestazione</span><strong class="value" id="benefitTaxBase">€ 0</strong><small id="taxBaseCaption">Contributi dedotti negli anni</small></article>
+          <article class="metric"><span class="label">Imposta stimata sulla prestazione</span><strong class="value" id="benefitTax">− € 0</strong><small id="benefitRateCaption">Aliquota finale: 13,50%</small></article>
+        </div>
+        <div class="breakdown">
+          <div class="breakdown-row"><span>Base imponibile già presente nel fondo</span><strong id="existingTaxBaseResult">€ 0</strong></div>
+          <div class="breakdown-row"><span>Nuovi contributi dedotti</span><strong id="futureDeductedResult">€ 0</strong></div>
+        </div>
+
+        <h3 class="section-title">4. Tutto in capitale oppure capitale e rendita?</h3>
+        <p class="section-note">La verifica utilizza la soglia per età e sesso riportata nella tabella allegata.</p>
+        <div class="eligibility" id="eligibilityBox">
+          <span class="eligibility-kicker" id="eligibilityKicker">Verifica del capitale</span>
+          <h3 id="eligibilityTitle">Calcolo in corso</h3>
+          <p id="eligibilityText"></p>
+          <div class="threshold-bar" aria-hidden="true"><div class="threshold-fill" id="thresholdFill"></div></div>
+          <div class="threshold-labels"><span id="capitalBarLabel">Montante: € 0</span><span id="thresholdBarLabel">Soglia: € 0</span></div>
+        </div>
+
+        <div class="payout-grid">
+          <article class="payout-card"><span id="capitalPayoutLabel">Capitale lordo liquidabile</span><strong id="capitalPayout">€ 0</strong><small id="capitalTaxNote">Imposta stimata sulla quota in capitale: € 0</small></article>
+          <article class="payout-card" id="annuityPayoutCard"><span>Capitale destinato alla rendita</span><strong id="annuityPayout">€ 0</strong><small id="annuityTaxNote">La relativa imposta verrà trattenuta sulle rate</small></article>
+        </div>
+
+        <h3 class="section-title" id="annuityTitle">Le principali forme di rendita</h3>
+        <p class="section-note">Le opzioni effettivamente disponibili e i coefficienti dipendono dal fondo pensione scelto.</p>
+        <div class="annuity-types">
+          <article class="annuity"><strong>Vitalizia semplice</strong><p>Viene pagata finché sei in vita. In genere offre l’importo iniziale più elevato.</p></article>
+          <article class="annuity"><strong>Reversibile</strong><p>Dopo il decesso continua, in tutto o in parte, alla persona designata.</p></article>
+          <article class="annuity"><strong>Certa per 5 o 10 anni</strong><p>È garantita per il periodo scelto e successivamente continua finché sei in vita.</p></article>
+          <article class="annuity"><strong>Controassicurata</strong><p>Può riconoscere ai beneficiari il capitale residuo secondo le condizioni previste.</p></article>
+          <article class="annuity"><strong>Con maggiorazione LTC</strong><p>Può aumentare in caso di perdita dell’autosufficienza, se prevista dal fondo.</p></article>
+        </div>
+
+        <div class="key-message"><strong>La regola da ricordare</strong><p>La verifica del 100% in capitale viene fatta sul montante prima della tassazione finale. Se il limite è superato, normalmente puoi ricevere fino al 50% in capitale e convertire il resto in rendita.</p></div>
+
+        <section class="table-block">
+          <div class="table-head"><h2>Anno per anno</h2><p>Importi arrotondati all’euro</p></div>
+          <div class="table-scroll" tabindex="0" aria-label="Tabella della simulazione annuale">
+            <table>
+              <thead><tr><th>Anno</th><th>Età</th><th>Versamento</th><th>Rendimento lordo</th><th>Tasse rendimento</th><th>Valore fondo</th><th>Risparmio fiscale</th></tr></thead>
+              <tbody id="yearRows"></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+    </section>
+
+    <details>
+      <summary>Come viene verificata la possibilità di ritirare il 100%?</summary>
+      <p>La regola generale verifica se la rendita vitalizia ottenibile convertendo il 70% del montante finale risulta inferiore al 50% dell’assegno sociale. Il calcolatore non stima direttamente quella rendita: utilizza le soglie per età e sesso contenute nella tabella fornita. Se il montante è uguale o inferiore alla soglia selezionata, indica la possibilità teorica di richiedere l’intera prestazione in capitale; se la supera, indica la ripartizione ordinaria massima del 50% in capitale e almeno il 50% in rendita.</p>
+      <p>Le soglie dipendono dall’assegno sociale e dai coefficienti di conversione e devono essere verificate nuovamente al momento del pensionamento.</p>
+    </details>
+
+    <details>
+      <summary>Tabella delle soglie utilizzata</summary>
+      <div class="table-scroll"><table class="threshold-table"><thead><tr><th>Età</th><th>Uomo</th><th>Donna</th></tr></thead><tbody id="thresholdRows"></tbody></table></div>
+    </details>
+
+    <details>
+      <summary>Ipotesi fiscali e limiti della simulazione</summary>
+      <ul>
+        <li>Il limite annuo di deducibilità utilizzato è €5.300. Il risparmio fiscale è una stima semplificata: non calcola per scaglioni l’IRPEF, le addizionali, l’incapienza o altri redditi e deduzioni.</li>
+        <li>Se scegli 0%, il calcolatore presume che i nuovi versamenti non siano stati dedotti. I contributi non dedotti sono esclusi dalla base imponibile finale soltanto se comunicati correttamente al fondo nei termini previsti.</li>
+        <li>Per chi è già iscritto, la base imponibile pregressa viene stimata sottraendo dal montante attuale i rendimenti già tassati e gli eventuali contributi non dedotti dichiarati. Il calcolo presuppone che i dati inseriti siano quelli fiscalmente rilevanti riportati dal fondo.</li>
+        <li>La data della prima iscrizione viene utilizzata per stimare gli anni completi di partecipazione già maturati. Periodi anteriori al 2007 possono seguire regole fiscali differenti e richiedono una verifica specifica.</li>
+        <li>Il rendimento è costante e puramente ipotetico. Non sono considerati costi, inflazione, garanzie, volatilità, perdite, variazioni dei versamenti, anticipazioni, riscatti o regimi relativi a montanti anteriori al 2007.</li>
+        <li>Per semplicità viene applicata un’imposta costante del 20% a tutti i rendimenti positivi. Nella realtà il trattamento può variare, anche per la componente investita in titoli di Stato e per la disciplina vigente nel tempo.</li>
+        <li>La tassazione finale è stimata applicando l’aliquota dal 15% al 9% alla parte contributiva dedotta. In caso di rendita, la relativa imposta viene applicata progressivamente alle rate erogate.</li>
+        <li>Il calcolatore ha finalità esclusivamente educative e non costituisce consulenza fiscale, previdenziale o una proposta di investimento.</li>
+      </ul>
+    </details>
+
+    <p class="footer-note">Riferimenti informativi: <a href="https://lavoro.gov.it/previdenza-complementare/glossario-e-faq/faq" target="_blank" rel="noopener">Ministero del Lavoro – previdenza complementare</a> e tabella delle soglie fornita per il calcolo. Ultimo aggiornamento: settembre 2026.</p>
+  </main>
+
+  <script>
+    (() => {
+      const DEDUCTIBILITY_LIMIT = 5300;
+      const RETURN_TAX_RATE = 0.20;
+      const thresholds = {
+        57: { male: 165659, female: 185984 },
+        58: { male: 160880, female: 181121 },
+        59: { male: 156118, female: 176259 },
+        60: { male: 146645, female: 166534 },
+        61: { male: 141941, female: 161673 },
+        62: { male: 137273, female: 156806 },
+        63: { male: 132645, female: 151934 },
+        64: { male: 128063, female: 147062 },
+        65: { male: 123507, female: 142194 },
+        66: { male: 118968, female: 137329 },
+        67: { male: 114452, female: 132472 },
+        68: { male: 109961, female: 127622 },
+        69: { male: 101058, female: 117964 },
+        70: { male: 96656, female: 113164 }
+      };
+
+      const fields = {
+        currentAge: document.querySelector('#currentAge'),
+        sex: document.querySelector('#sex'),
+        retirementAge: document.querySelector('#retirementAge'),
+        existingMember: document.querySelector('#existingMember'),
+        enrollmentDate: document.querySelector('#enrollmentDate'),
+        currentBalance: document.querySelector('#currentBalance'),
+        alreadyTaxedReturns: document.querySelector('#alreadyTaxedReturns'),
+        existingNonDeducted: document.querySelector('#existingNonDeducted'),
+        annualContribution: document.querySelector('#annualContribution'),
+        grossReturn: document.querySelector('#grossReturn'),
+        taxRate: document.querySelector('#taxRate')
+      };
+      const out = Object.fromEntries([...document.querySelectorAll('[id]')].map((el) => [el.id, el]));
+      const money0 = new Intl.NumberFormat('it-IT', { style:'currency', currency:'EUR', maximumFractionDigits:0 });
+      const number2 = new Intl.NumberFormat('it-IT', { minimumFractionDigits:2, maximumFractionDigits:2 });
+
+      function numeric(name) { return Number.parseFloat(fields[name].value); }
+      function benefitRate(participationYears) { return Math.max(9, 15 - Math.max(0, participationYears - 15) * 0.3); }
+      function completedYearsSince(dateString) {
+        const start = new Date(`${dateString}T00:00:00`);
+        const today = new Date();
+        if (Number.isNaN(start.getTime()) || start > today) return Number.NaN;
+        let years = today.getFullYear() - start.getFullYear();
+        const beforeAnniversary = today.getMonth() < start.getMonth() || (today.getMonth() === start.getMonth() && today.getDate() < start.getDate());
+        if (beforeAnniversary) years -= 1;
+        return Math.max(0, years);
+      }
+
+      function calculate() {
+        const currentAge = numeric('currentAge');
+        const retirementAge = numeric('retirementAge');
+        const isExistingMember = fields.existingMember.checked;
+        const priorYears = isExistingMember ? completedYearsSince(fields.enrollmentDate.value) : 0;
+        const currentBalance = isExistingMember ? numeric('currentBalance') : 0;
+        const alreadyTaxedReturns = isExistingMember ? numeric('alreadyTaxedReturns') : 0;
+        const existingNonDeducted = isExistingMember ? numeric('existingNonDeducted') : 0;
+        const annualContribution = numeric('annualContribution');
+        const grossReturnRate = numeric('grossReturn') / 100;
+        const taxRate = numeric('taxRate') / 100;
+        const years = Math.trunc(retirementAge - currentAge);
+        const values = [currentAge, retirementAge, priorYears, currentBalance, alreadyTaxedReturns, existingNonDeducted, annualContribution, grossReturnRate, taxRate];
+
+        const existingBreakdownInvalid = alreadyTaxedReturns + existingNonDeducted > currentBalance;
+        if (values.some((value) => !Number.isFinite(value)) || years <= 0 || annualContribution < 0 || priorYears < 0 || existingBreakdownInvalid) {
+          out.errorMessage.textContent = years <= 0
+            ? 'L’età di pensionamento deve essere superiore all’età attuale.'
+            : existingBreakdownInvalid
+              ? 'Rendimenti già tassati e contributi non dedotti non possono superare il montante attuale.'
+              : isExistingMember && !fields.enrollmentDate.value
+                ? 'Inserisci la data della prima iscrizione alla previdenza complementare.'
+                : 'Controlla i valori inseriti.';
+          out.errorMessage.style.display = 'block';
+          return;
+        }
+        out.errorMessage.style.display = 'none';
+
+        const annualDeducted = taxRate > 0 ? Math.min(annualContribution, DEDUCTIBILITY_LIMIT) : 0;
+        const annualNonDeducted = annualContribution - annualDeducted;
+        const annualTaxSaving = annualDeducted * taxRate;
+        const monthlyContribution = annualContribution / 12;
+        const monthlyGrossRate = Math.pow(1 + grossReturnRate, 1 / 12) - 1;
+        let balance = currentBalance;
+        let totalGrossGains = 0;
+        let totalReturnTaxes = 0;
+        const rows = isExistingMember ? [{ year:0, age:currentAge, contribution:0, grossGain:0, returnTax:0, balance:currentBalance, taxSaving:0 }] : [];
+
+        for (let year = 1; year <= years; year += 1) {
+          let yearGrossGain = 0;
+          let yearReturnTax = 0;
+          for (let month = 1; month <= 12; month += 1) {
+            balance += monthlyContribution;
+            const grossGain = Math.max(0, balance * monthlyGrossRate);
+            const returnTax = grossGain * RETURN_TAX_RATE;
+            balance += grossGain - returnTax;
+            yearGrossGain += grossGain;
+            yearReturnTax += returnTax;
+          }
+          totalGrossGains += yearGrossGain;
+          totalReturnTaxes += yearReturnTax;
+          rows.push({ year, age: currentAge + year, contribution: annualContribution, grossGain: yearGrossGain, returnTax: yearReturnTax, balance, taxSaving: annualTaxSaving });
+        }
+
+        const totalContributions = annualContribution * years;
+        const futureDeducted = annualDeducted * years;
+        const existingTaxBase = Math.max(0, currentBalance - alreadyTaxedReturns - existingNonDeducted);
+        const totalDeducted = existingTaxBase + futureDeducted;
+        const totalNonDeducted = existingNonDeducted + (annualNonDeducted * years);
+        const totalTaxSaving = annualTaxSaving * years;
+        const netGains = balance - currentBalance - totalContributions;
+        const totalParticipationYears = priorYears + years;
+        const finalRate = benefitRate(totalParticipationYears) / 100;
+        const benefitTax = totalDeducted * finalRate;
+        const finalNetValue = balance - benefitTax;
+        const selectedThreshold = thresholds[retirementAge][fields.sex.value];
+        const fullCapitalAllowed = balance <= selectedThreshold;
+        const capitalGross = fullCapitalAllowed ? balance : balance * 0.5;
+        const annuityGross = fullCapitalAllowed ? 0 : balance * 0.5;
+        const capitalTax = fullCapitalAllowed ? benefitTax : benefitTax * 0.5;
+        const annuityTax = fullCapitalAllowed ? 0 : benefitTax * 0.5;
+        const capitalNet = capitalGross - capitalTax;
+
+        out.deductibleContributionFormula.textContent = money0.format(annualDeducted);
+        out.scenarioText.textContent = isExistingMember
+          ? `Montante iniziale ${money0.format(currentBalance)} e altri ${years} anni di versamenti, fino a ${retirementAge} anni.`
+          : `${years} anni di versamenti, dai ${currentAge} ai ${retirementAge} anni.`;
+        out.annualTaxSaving.textContent = money0.format(annualTaxSaving);
+        out.taxSavingRateCaption.textContent = `Aliquota utilizzata: ${number2.format(taxRate * 100)}%`;
+        out.totalTaxSaving.textContent = money0.format(totalTaxSaving);
+        out.existingBalanceRow.hidden = !isExistingMember;
+        out.existingBalanceResult.textContent = money0.format(currentBalance);
+        out.totalContributions.textContent = money0.format(totalContributions);
+        out.effectiveCost.textContent = money0.format(totalContributions - totalTaxSaving);
+        out.nonDeductedContributions.textContent = money0.format(totalNonDeducted);
+        out.fundValue.textContent = money0.format(balance);
+        out.netGains.textContent = money0.format(netGains);
+        out.grossGainsCaption.textContent = `Rendimenti lordi complessivi: ${money0.format(totalGrossGains)}`;
+        out.returnTaxes.textContent = `− ${money0.format(totalReturnTaxes)}`;
+        out.benefitTaxBase.textContent = money0.format(totalDeducted);
+        out.taxBaseCaption.textContent = isExistingMember ? 'Base pregressa più nuovi contributi dedotti' : (taxRate > 0 ? 'Nuovi contributi dedotti negli anni' : 'Nessun contributo considerato dedotto');
+        out.benefitTax.textContent = `− ${money0.format(benefitTax)}`;
+        out.benefitRateCaption.textContent = `Aliquota finale: ${number2.format(finalRate * 100)}% · ${totalParticipationYears} anni di partecipazione`;
+        out.existingTaxBaseResult.textContent = money0.format(existingTaxBase);
+        out.futureDeductedResult.textContent = money0.format(futureDeducted);
+
+        out.eligibilityBox.classList.toggle('warning', !fullCapitalAllowed);
+        out.eligibilityKicker.textContent = fullCapitalAllowed ? 'Soglia non superata' : 'Soglia superata';
+        out.eligibilityTitle.textContent = fullCapitalAllowed ? 'Puoi potenzialmente richiedere il 100% in capitale' : 'Fino al 50% in capitale, il resto in rendita';
+        const difference = Math.abs(selectedThreshold - balance);
+        out.eligibilityText.textContent = fullCapitalAllowed
+          ? `Il montante è inferiore alla soglia della tabella di ${money0.format(difference)}. La possibilità effettiva va verificata con il fondo al pensionamento.`
+          : `Il montante supera la soglia della tabella di ${money0.format(difference)}. In base alla regola ordinaria, almeno il 50% viene convertito in rendita.`;
+        out.capitalBarLabel.textContent = `Montante: ${money0.format(balance)}`;
+        out.thresholdBarLabel.textContent = `Soglia ${fields.sex.value === 'male' ? 'uomo' : 'donna'} a ${retirementAge} anni: ${money0.format(selectedThreshold)}`;
+        out.thresholdFill.style.width = `${Math.min(100, (balance / selectedThreshold) * 100)}%`;
+
+        out.capitalPayoutLabel.textContent = fullCapitalAllowed ? 'Capitale netto stimato liquidabile' : '50% in capitale · netto stimato';
+        out.capitalPayout.textContent = money0.format(capitalNet);
+        out.capitalTaxNote.textContent = `Quota lorda ${money0.format(capitalGross)} · imposta stimata ${money0.format(capitalTax)}`;
+        out.annuityPayoutCard.style.display = fullCapitalAllowed ? 'none' : 'block';
+        out.annuityPayout.textContent = money0.format(annuityGross);
+        out.annuityTaxNote.textContent = `Imposta stimata di ${money0.format(annuityTax)} trattenuta progressivamente sulle rate`;
+        out.annuityTitle.textContent = fullCapitalAllowed ? 'Se scegli comunque una rendita' : 'Le principali forme di rendita';
+
+        out.yearRows.innerHTML = rows.map((row) => `<tr><td>${row.year === 0 ? 'Oggi' : row.year}</td><td>${row.age}</td><td>${money0.format(row.contribution)}</td><td>${money0.format(row.grossGain)}</td><td>${money0.format(row.returnTax)}</td><td>${money0.format(row.balance)}</td><td>${money0.format(row.taxSaving)}</td></tr>`).join('');
+      }
+
+      out.thresholdRows.innerHTML = Object.entries(thresholds).map(([age, value]) => `<tr><td>${age}</td><td>${money0.format(value.male)}</td><td>${money0.format(value.female)}</td></tr>`).join('');
+      function toggleExistingData() {
+        out.existingData.hidden = !fields.existingMember.checked;
+        calculate();
+      }
+      Object.values(fields).forEach((field) => field.addEventListener('input', calculate));
+      fields.existingMember.addEventListener('change', toggleExistingData);
+      calculate();
+    })();
+  </script>
+</body>
+</html>
