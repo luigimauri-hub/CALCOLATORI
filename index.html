@@ -1,250 +1,322 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Fai due conti: calcolatori finanziari semplici per capire inflazione, rendimento, obiettivi finanziari e capitale necessario per vivere di rendita.">
-<title>Fai due conti | Luigi Mauri</title>
-<style>
-  * { box-sizing: border-box; }
-  html { background:#c0c0c0; }
-  body {
-    margin:0;
-    background:#c0c0c0;
-    color:#000;
-    font-family:"Times New Roman", Times, serif;
-    font-size:16px;
-  }
-  a:link { color:#0000EE; }
-  a:visited { color:#551A8B; }
-  a:active { color:#FF0000; }
-  .page { width:760px; max-width:calc(100% - 18px); margin:8px auto 24px; }
-  .browserbar {
-    font-family:Arial,Helvetica,sans-serif;
-    font-size:12px;
-    background:#c0c0c0;
-    border-top:2px solid #fff;
-    border-left:2px solid #fff;
-    border-right:2px solid #555;
-    border-bottom:2px solid #555;
-    padding:5px 7px;
-    margin-bottom:8px;
-  }
-  .browserbar b { font-size:13px; }
-  .window {
-    background:#fff;
-    border-top:2px solid #fff;
-    border-left:2px solid #fff;
-    border-right:2px solid #404040;
-    border-bottom:2px solid #404040;
-    padding:8px;
-  }
-  .titlebar {
-    background:#000080;
-    color:#fff;
-    font-family:Arial,Helvetica,sans-serif;
-    font-weight:bold;
-    padding:3px 5px;
-    margin:-6px -6px 10px;
-    font-size:13px;
-  }
-  h1 { font-size:42px; line-height:1; margin:8px 0; }
-  h2 { font-size:24px; margin:10px 0 6px; }
-  h3 { font-size:20px; margin:4px 0; }
-  p { margin:7px 0; }
-  hr { border:0; border-top:2px groove #ddd; margin:12px 0; }
-  .center { text-align:center; }
-  .small { font-size:13px; }
-  .tiny { font-size:11px; }
-  .red { color:#c00000; }
-  .new { color:#ff0000; font-weight:bold; font-family:Arial,Helvetica,sans-serif; font-size:11px; }
-  .blink { animation: blink 1.1s steps(1,end) infinite; }
-  @keyframes blink { 50% { visibility:hidden; } }
-  .marquee {
-    overflow:hidden;
-    white-space:nowrap;
-    border:1px inset #888;
-    background:#ffffcc;
-    padding:3px 0;
-    font-family:Arial,Helvetica,sans-serif;
-    font-size:12px;
-  }
-  .marquee span { display:inline-block; padding-left:100%; animation:scroll 18s linear infinite; }
-  @keyframes scroll { to { transform:translateX(-100%); } }
-  .menu { text-align:center; font-family:Arial,Helvetica,sans-serif; font-size:12px; margin:9px 0; }
-  .menu a { margin:0 5px; }
-  table.calc { width:100%; border-collapse:separate; border-spacing:3px; }
-  table.calc td {
-    vertical-align:top;
-    border:2px outset #ddd;
-    background:#e8e8e8;
-    padding:10px;
-  }
-  .calc-title { font-size:19px; font-weight:bold; }
-  .go {
-    display:inline-block;
-    margin-top:7px;
-    padding:3px 8px;
-    background:#c0c0c0;
-    border:2px outset #eee;
-    font-family:Arial,Helvetica,sans-serif;
-    font-size:12px;
-    font-weight:bold;
-    text-decoration:none;
-    color:#000 !important;
-  }
-  .go:active { border-style:inset; }
-  .tip {
-    background:#ffff99;
-    border:2px outset #fff3a0;
-    padding:8px;
-    margin:10px 0;
-  }
-  .updates { width:100%; font-size:13px; border-collapse:collapse; }
-  .updates td { padding:2px 5px; border-bottom:1px dotted #999; }
-  .counter {
-    display:inline-block;
-    background:#000;
-    color:#00ff00;
-    font-family:"Courier New",monospace;
-    letter-spacing:2px;
-    padding:2px 5px;
-    border:2px inset #777;
-  }
-  .badge {
-    display:inline-block;
-    font-family:Arial,Helvetica,sans-serif;
-    font-size:10px;
-    font-weight:bold;
-    padding:4px 6px;
-    margin:2px;
-    border:2px outset #ddd;
-    background:#d6d6d6;
-    color:#000;
-  }
-  .disclaimer {
-    background:#efefef;
-    border:1px solid #777;
-    padding:8px;
-    font-size:12px;
-  }
-  .footer { text-align:center; font-size:12px; margin-top:12px; }
-  @media (max-width:620px) {
-    body { font-size:15px; }
-    .page { max-width:calc(100% - 10px); margin-top:5px; }
-    h1 { font-size:34px; }
-    table.calc, table.calc tbody, table.calc tr, table.calc td { display:block; width:100%; }
-    table.calc td { margin-bottom:5px; }
-    .browserbar { overflow:hidden; white-space:nowrap; }
-    .marquee span { animation-duration:14s; }
-  }
-  @media (prefers-reduced-motion:reduce) {
-    .marquee span,.blink { animation:none; visibility:visible; padding-left:0; }
-  }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Fai due conti: calcolatori finanziari semplici per capire inflazione, rendimento, obiettivi finanziari, indipendenza finanziaria e concetti base di finanza.">
+  <title>Fai due conti | Luigi Mauri</title>
+  <style>
+    :root{
+      --navy:#172235;
+      --navy2:#26364e;
+      --paper:#ffffff;
+      --bg:#f2f4f6;
+      --soft:#f7f8fa;
+      --line:#e2e7ed;
+      --muted:#697487;
+      --green:#2f6b4f;
+      --teen:#167568;
+      --warm:#f3efe5;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--navy);
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    }
+    a{color:inherit}
+    .wrap{
+      width:min(1120px,calc(100% - 28px));
+      margin:0 auto;
+    }
+    header{
+      background:#fff;
+      border-bottom:1px solid var(--line);
+      padding:18px 0;
+    }
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:18px;
+    }
+    .brand{
+      text-decoration:none;
+      font-weight:850;
+      letter-spacing:-.015em;
+    }
+    .brand small{
+      display:block;
+      margin-top:2px;
+      font-size:.74rem;
+      color:var(--muted);
+      font-weight:550;
+    }
+    .site-link{
+      text-decoration:none;
+      font-size:.86rem;
+      font-weight:700;
+      color:var(--navy2);
+    }
+    .hero{padding:68px 0 42px}
+    .eyebrow{
+      margin-bottom:14px;
+      color:var(--muted);
+      font-size:.78rem;
+      font-weight:850;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+    }
+    h1{
+      margin:0;
+      font-size:clamp(3rem,8vw,6rem);
+      line-height:.92;
+      letter-spacing:-.06em;
+    }
+    .lead{
+      max-width:760px;
+      margin:24px 0 0;
+      color:#46536a;
+      font-size:clamp(1.06rem,2.2vw,1.28rem);
+      line-height:1.6;
+    }
+    .principle{
+      margin-top:24px;
+      font-weight:850;
+      font-size:1rem;
+    }
+    .section{padding:16px 0 68px}
+    .section + .section{padding-top:0}
+    .section-head{
+      display:flex;
+      justify-content:space-between;
+      gap:18px;
+      align-items:end;
+      margin-bottom:18px;
+    }
+    .section-head h2{
+      margin:0;
+      font-size:1.5rem;
+      letter-spacing:-.025em;
+    }
+    .section-head p{
+      margin:0;
+      color:var(--muted);
+      font-size:.88rem;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:16px;
+    }
+    .card{
+      min-height:240px;
+      display:flex;
+      flex-direction:column;
+      padding:25px;
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:23px;
+      text-decoration:none;
+      transition:.18s ease;
+      box-shadow:0 8px 26px rgba(23,34,53,.035);
+    }
+    .card:hover{
+      transform:translateY(-3px);
+      box-shadow:0 14px 34px rgba(23,34,53,.08);
+      border-color:#ccd5df;
+    }
+    .tag{
+      font-size:.71rem;
+      text-transform:uppercase;
+      letter-spacing:.095em;
+      font-weight:850;
+      color:var(--muted);
+    }
+    .card h3{
+      margin:17px 0 10px;
+      font-size:clamp(1.55rem,3vw,2rem);
+      line-height:1.05;
+      letter-spacing:-.04em;
+    }
+    .card p{
+      max-width:500px;
+      margin:0;
+      color:#566276;
+      font-size:.94rem;
+      line-height:1.55;
+    }
+    .cta{
+      margin-top:auto;
+      padding-top:24px;
+      font-size:.88rem;
+      font-weight:850;
+    }
+    .card.dark{
+      background:var(--navy);
+      color:#fff;
+      border-color:var(--navy);
+    }
+    .card.dark .tag,.card.dark p{color:rgba(255,255,255,.72)}
+    .card.teen{
+      background:#edf5f2;
+      border-color:#d7e7e1;
+    }
+    .card.teen .tag{color:var(--teen)}
+    .card.lab{
+      background:var(--navy);
+      color:#fff;
+      border-color:var(--navy);
+    }
+    .card.lab .tag,.card.lab p{color:rgba(255,255,255,.72)}
+    .new{
+      display:inline-block;
+      margin-left:7px;
+      padding:3px 7px;
+      border-radius:999px;
+      background:#e7ecef;
+      color:#4d5969;
+      font-size:.62rem;
+      letter-spacing:.08em;
+      vertical-align:1px;
+    }
+    .card.lab .new{background:rgba(255,255,255,.14);color:#fff}
+    .note{
+      margin-top:18px;
+      padding:18px 20px;
+      border-radius:17px;
+      background:#e9edf2;
+      color:#566276;
+      font-size:.8rem;
+      line-height:1.55;
+    }
+    footer{
+      padding:24px 0 34px;
+      background:#fff;
+      border-top:1px solid var(--line);
+      color:var(--muted);
+      font-size:.78rem;
+    }
+    @media(max-width:760px){
+      .hero{padding:48px 0 32px}
+      .grid{grid-template-columns:1fr}
+      .section-head{display:block}
+      .section-head p{margin-top:7px}
+      .card{min-height:205px}
+      .site-link{font-size:.78rem}
+    }
+  </style>
 </head>
 <body>
-<div class="page">
-  <div class="browserbar"><b>Luigi Mauri's Financial Home Page</b> &nbsp; | &nbsp; Location: <span style="background:#fff;border:1px inset #888;padding:1px 5px;">https://calcolatori.luigimauri.com/</span></div>
 
-  <div class="window">
-    <div class="titlebar">WELCOME TO THE WORLD WIDE WEB — FAI DUE CONTI</div>
-
-    <div class="center">
-      <div class="small"><b>LUIGI MAURI</b> · CONSULENTE DAL 1995</div>
-      <h1>FAI DUE CONTI</h1>
-      <div><b>Financial Calculators on the World Wide Web</b></div>
-      <p><i>Strumenti semplici per capire meglio i tuoi soldi.</i></p>
-      <p><b>Capire prima. Decidere dopo.</b></p>
-      <div class="small">Last updated: 15 September 2026</div>
-    </div>
-
-    <hr>
-    <div class="marquee"><span>*** WELCOME! *** Quattro calcolatori finanziari disponibili online *** Nessuna registrazione richiesta ***</span></div>
-    <div class="menu"><a href="https://www.luigimauri.com/">HOME PAGE</a> | <a href="#calculators">CALCOLATORI</a> | <a href="#whatsnew">WHAT'S NEW?</a> | <a href="#info">INFO</a></div>
-    <hr>
-
-    <a id="calculators"></a>
-    <div class="center"><h2>CALCOLATORI DISPONIBILI</h2><div class="small">Ogni calcolatore prova a rispondere a una sola domanda.</div></div>
-
-    <table class="calc" role="presentation">
-      <tr>
-        <td>
-          <span class="new blink">NEW!</span>
-          <div class="calc-title">INFLAZIONE</div>
-          <b>Quanto vale davvero il tuo denaro?</b>
-          <p>Confronta due mesi e scopri quanto una somma avrebbe dovuto crescere per mantenere lo stesso potere d'acquisto.</p>
-          <a class="go" href="/inflazione/">&gt;&gt; APRI IL CALCOLATORE &lt;&lt;</a>
-        </td>
-        <td>
-          <span class="new">NEW!</span>
-          <div class="calc-title">RENDIMENTO</div>
-          <b>Quanto mi ha reso?</b>
-          <p>Inserisci quanto hai investito, quanto vale oggi e il periodo: scopri rendimento complessivo e rendimento annualizzato.</p>
-          <a class="go" href="/quanto-mi-ha-reso/">&gt;&gt; APRI IL CALCOLATORE &lt;&lt;</a>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <div class="calc-title">OBIETTIVO</div>
-          <b>Quanto deve rendere il tuo piano?</b>
-          <p>Parti dal capitale che vuoi raggiungere, dal tempo disponibile, da ciò che hai già e dai versamenti: calcoliamo il rendimento necessario.</p>
-          <a class="go" href="/rendimento-obiettivo/">&gt;&gt; APRI IL CALCOLATORE &lt;&lt;</a>
-        </td>
-        <td>
-          <span class="new">NEW!</span>
-          <div class="calc-title">VIVERE DI RENDITA · FIRE</div>
-          <b>Quanto capitale ti serve per vivere di rendita?</b>
-          <p>Parti dalla spesa mensile che desideri sostenere e confronta diversi livelli di prudenza nel prelievo dal patrimonio.</p>
-          <a class="go" href="/fire-vivere-di-rendita/">&gt;&gt; APRI IL CALCOLATORE &lt;&lt;</a>
-        </td>
-      </tr>
-    </table>
-
-    <div class="tip"><b>FINANCIAL TIP OF THE DAY</b><br>Il tempo può essere più importante del rendimento. Prima di cercare il numero più alto, prova a capire per quanto tempo puoi lasciare lavorare il capitale.</div>
-
-    <hr>
-    <a id="whatsnew"></a>
-    <h3>WHAT'S NEW?</h3>
-    <table class="updates">
-      <tr><td width="105"><b>15/09/2026</b></td><td>Nuova home page in stile World Wide Web.</td></tr>
-      <tr><td><b>15/09/2026</b></td><td>Calcolatore FIRE · Vivere di rendita.</td></tr>
-      <tr><td><b>14/09/2026</b></td><td>Nuovi strumenti di educazione finanziaria.</td></tr>
-      <tr><td><b>11/09/2026</b></td><td>Calcolatore “Quanto mi ha reso?”.</td></tr>
-    </table>
-
-    <hr>
-    <a id="info"></a>
-    <div class="center">
-      <p><b>YOU ARE VISITOR NUMBER</b><br><span class="counter" id="counter">001995</span></p>
-      <p class="small">Grazie per aver visitato questa pagina Internet.</p>
-      <span class="badge">BEST VIEWED<br>800 × 600</span>
-      <span class="badge">HTML<br>ENABLED</span>
-      <span class="badge">Y2K<br>COMPLIANT ✓</span>
-      <span class="badge">WWW<br>SINCE 1995*</span>
-      <p class="tiny">*Riferimento all'attività professionale di Luigi Mauri dal 1995. Questo sottosito è naturalmente molto più recente.</p>
-    </div>
-
-    <hr>
-    <div class="disclaimer"><b>DISCLAIMER:</b> I calcolatori hanno finalità esclusivamente informative e didattiche. Utilizzano ipotesi e formule semplificate e non costituiscono consulenza, raccomandazione personalizzata, previsione o promessa di rendimento. I risultati devono essere letti come simulazioni e non come indicazioni su risultati futuri.</div>
-
-    <div class="footer">
-      <p><a href="https://www.luigimauri.com/">← Torna a www.luigimauri.com</a></p>
-      <p><b>Luigi Mauri</b><br>Investimenti · Previdenza · Patrimonio<br>Milano · Monza · Da te · Online</p>
-      <p>© 2026 Luigi Mauri · This page is Y2K compliant.</p>
-    </div>
+<header>
+  <div class="wrap topbar">
+    <a class="brand" href="https://www.luigimauri.com/">
+      Luigi Mauri
+      <small>Consulente dal 1995</small>
+    </a>
+    <a class="site-link" href="https://www.luigimauri.com/">← Torna a luigimauri.com</a>
   </div>
-</div>
-<script>
-(function(){
-  // Contatore volutamente "old web": locale al browser, non pretende di essere un dato reale di traffico.
-  try {
-    var key='lm-retro-counter';
-    var n=parseInt(localStorage.getItem(key)||'1994',10)+1;
-    localStorage.setItem(key,String(n));
-    document.getElementById('counter').textContent=String(n).padStart(6,'0');
-  } catch(e) {}
-})();
-</script>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <div class="eyebrow">Calcolatori finanziari</div>
+      <h1>Fai due conti.</h1>
+      <p class="lead">
+        Strumenti semplici per capire meglio alcuni concetti finanziari prima di prendere una decisione.
+        Pochi dati, un risultato leggibile e una spiegazione in italiano normale.
+      </p>
+      <div class="principle">Capire prima. Decidere dopo.</div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">Calcolatori</div>
+          <h2>Parti da una domanda</h2>
+        </div>
+        <p>Ogni calcolatore prova a rispondere a una domanda concreta.</p>
+      </div>
+
+      <div class="grid">
+        <a class="card dark" href="/inflazione/">
+          <div class="tag">Inflazione</div>
+          <h3>Quanto vale davvero il tuo denaro?</h3>
+          <p>Confronta due mesi e scopri quanto una somma avrebbe dovuto crescere per mantenere lo stesso potere d'acquisto.</p>
+          <div class="cta">Apri il calcolatore →</div>
+        </a>
+
+        <a class="card" href="/quanto-mi-ha-reso/">
+          <div class="tag">Rendimento</div>
+          <h3>Quanto mi ha reso?</h3>
+          <p>Inserisci quanto hai investito, quanto vale oggi e il periodo: scopri rendimento complessivo e rendimento annualizzato.</p>
+          <div class="cta">Apri il calcolatore →</div>
+        </a>
+
+        <a class="card" href="/rendimento-obiettivo/">
+          <div class="tag">Obiettivo</div>
+          <h3>Quanto deve rendere il tuo piano?</h3>
+          <p>Parti dal capitale che vuoi raggiungere, dal tempo disponibile, da ciò che hai già e dai versamenti: calcoliamo il rendimento necessario.</p>
+          <div class="cta">Apri il calcolatore →</div>
+        </a>
+
+        <a class="card" href="/fire-vivere-di-rendita/">
+          <div class="tag">Vivere di rendita · FIRE</div>
+          <h3>Quanto capitale ti serve per vivere di rendita?</h3>
+          <p>Parti dalla spesa mensile che desideri sostenere e confronta diversi livelli di prudenza nel prelievo dal patrimonio.</p>
+          <div class="cta">Apri il calcolatore →</div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">Esplora</div>
+          <h2>Per capire di più</h2>
+        </div>
+        <p>Due percorsi diversi: uno per imparare, uno per approfondire.</p>
+      </div>
+
+      <div class="grid">
+        <a class="card teen" href="/finance4teen/">
+          <div class="tag">Finance 4 Teen <span class="new">NUOVO</span></div>
+          <h3>I tuoi soldi. Le tue scelte.</h3>
+          <p>Cinque esperimenti interattivi per capire obiettivi, inflazione, interesse composto, rischio e diversificazione. Pensato per i teenager, utile anche agli adulti.</p>
+          <div class="cta">Inizia dagli esperimenti →</div>
+        </a>
+
+        <a class="card lab" href="/fire-lab/">
+          <div class="tag">FIRE Lab · Advanced <span class="new">NUOVO</span></div>
+          <h3>Quando puoi raggiungere l'indipendenza finanziaria?</h3>
+          <p>Accumulo, inflazione, pensione, costi, fiscalità, eventi straordinari, volatilità, rischio di sequenza e 5.000 scenari Monte Carlo in un unico modello.</p>
+          <div class="cta">Entra nel FIRE Lab →</div>
+        </a>
+      </div>
+
+      <div class="note">
+        I calcolatori hanno finalità esclusivamente informative e didattiche.
+        Utilizzano ipotesi e formule semplificate e non costituiscono consulenza,
+        raccomandazione personalizzata, previsione o promessa di rendimento.
+        Le simulazioni storiche o probabilistiche non rappresentano risultati futuri garantiti.
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    Luigi Mauri · Investimenti · Previdenza · Patrimonio · Milano · Monza · Da te · Online
+  </div>
+</footer>
+
 </body>
 </html>
