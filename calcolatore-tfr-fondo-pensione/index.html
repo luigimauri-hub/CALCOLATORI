@@ -397,14 +397,14 @@
           <div class="field">
             <label for="employerRate">Contributo datoriale sulla RAL</label>
             <div class="input-wrap">
-              <input id="employerRate" type="number" min="0" max="10" step="0.1" value="2" inputmode="decimal">
+              <input id="employerRate" type="number" min="0" max="10" step="0.1" value="1.5" inputmode="decimal">
               <span class="suffix">%</span>
             </div>
           </div>
           <div class="field">
             <label for="employeeRate">Contributo obbligatorio del dipendente sulla RAL</label>
             <div class="input-wrap">
-              <input id="employeeRate" type="number" min="0" max="10" step="0.1" value="1" inputmode="decimal">
+              <input id="employeeRate" type="number" min="0" max="10" step="0.1" value="0.5" inputmode="decimal">
               <span class="suffix">%</span>
             </div>
           </div>
@@ -455,8 +455,8 @@
           <select id="grossReturn">
             <option value="1">1%</option>
             <option value="2">2%</option>
-            <option value="3">3%</option>
-            <option value="4" selected>4%</option>
+            <option value="3" selected>3% · ipotesi conservativa</option>
+            <option value="4">4%</option>
             <option value="5">5%</option>
             <option value="6">6%</option>
             <option value="7">7%</option>
@@ -519,8 +519,8 @@
           </article>
         </div>
 
-        <h3 class="stage-title">1. Prima: le tasse sui rendimenti</h3>
-        <p class="stage-note">Sono pagate durante gli anni e quindi non vengono tassate nuovamente alla liquidazione.</p>
+        <h3 class="stage-title">1. Prima: le tasse sui rendimenti, anno dopo anno</h3>
+        <p class="stage-note">Il calcolatore parte dal rendimento lordo, calcola l’imposta annuale e accredita solo il rendimento netto.</p>
 
         <div class="comparison-grid">
           <article class="method-card fund">
@@ -530,11 +530,11 @@
             </header>
             <div class="method-body">
               <div class="line-item">
-                <span id="fundGrowthCaption">Rendimento ipotizzato: 4,00%</span>
+                <span id="fundGrowthCaption">Rendimento lordo annuo: 3,00%</span>
                 <strong id="fundGrossGains">€ 0</strong>
               </div>
               <div class="line-item">
-                <span id="fundGainTaxCaption">Imposta sui rendimenti: 20,00%</span>
+                <span id="fundGainTaxCaption">Imposta annua: 3,00% × 20,00% = 0,60%</span>
                 <strong id="returnTaxes">− € 0</strong>
               </div>
               <div class="line-item total">
@@ -551,11 +551,11 @@
             </header>
             <div class="method-body">
               <div class="line-item">
-                <span id="companyGrowthCaption">Rivalutazione: 3,00%</span>
+                <span id="companyGrowthCaption">Rivalutazione lorda: 1,50% + 75% × 2,00% = 3,00%</span>
                 <strong id="companyGrossGains">€ 0</strong>
               </div>
               <div class="line-item">
-                <span>Imposta sulle rivalutazioni: 17,00%</span>
+                <span id="companyGainTaxCaption">Imposta annua: 3,00% × 17,00% = 0,51%</span>
                 <strong id="companyReturnTaxes">− € 0</strong>
               </div>
               <div class="line-item total">
@@ -566,7 +566,7 @@
           </article>
         </div>
 
-        <h3 class="stage-title">2. Poi: le tasse sulla prestazione finale</h3>
+        <h3 class="stage-title">2. Poi: la tassa sulla prestazione finale</h3>
         <p class="stage-note">Il fondo usa l’aliquota previdenziale agevolata. Per il TFR in azienda viene stimata la tassazione separata sulla base della RAL.</p>
 
         <div class="comparison-grid">
@@ -673,7 +673,7 @@
       <summary>Come funziona il calcolo</summary>
       <ul>
         <li>La quota annua è stimata, in modo semplificato, dividendo la RAL per 13,5.</li>
-        <li>Nel fondo pensione il TFR viene simulato con accrediti mensili; il rendimento matura durante l’anno e l’imposta sui rendimenti viene prelevata a fine anno.</li>
+        <li>Nel fondo pensione il TFR viene simulato con accrediti mensili; il rendimento lordo predefinito è il 3%, come ipotesi conservativa modificabile. Il rendimento matura durante l’anno e l’imposta sui rendimenti viene prelevata a fine anno.</li>
         <li>Quando il flag è attivo, il fondo riceve anche il contributo datoriale e la quota obbligatoria del dipendente. Il confronto economico sottrae la quota pagata dal dipendente e aggiunge il relativo risparmio fiscale, così da non scambiare un versamento personale per un vantaggio gratuito.</li>
         <li>L’inflazione viene utilizzata esclusivamente per calcolare la rivalutazione annuale del TFR lasciato in azienda: 1,5% più il 75% dell’inflazione. Non viene applicata al fondo pensione né agli altri valori della simulazione. La quota TFR maturata nell’anno non viene rivalutata nello stesso anno.</li>
         <li>Sulla rivalutazione del TFR lasciato in azienda viene applicata l’imposta sostitutiva del 17%.</li>
@@ -894,13 +894,14 @@
         out.fundFinalRate.textContent = `${number2.format(finalRate * 100)}%`;
         out.companyFinalRate.textContent = `${number2.format(companyFinalRate * 100)}%`;
         out.finalTax.textContent = `− ${money0.format(finalTax)}`;
-        out.fundGrowthCaption.textContent = `Rendimento ipotizzato: ${number2.format(grossReturn * 100)}%`;
+        out.fundGrowthCaption.textContent = `Rendimento lordo annuo: ${number2.format(grossReturn * 100)}%`;
         out.fundGrossGains.textContent = money0.format(totalGrossReturns);
-        out.fundGainTaxCaption.textContent = `Imposta sui rendimenti: ${number2.format(returnTax * 100)}%`;
+        out.fundGainTaxCaption.textContent = `Imposta annua: ${number2.format(grossReturn * 100)}% × ${number2.format(returnTax * 100)}% = ${number2.format(grossReturn * returnTax * 100)}%`;
         out.returnTaxes.textContent = `− ${money0.format(totalReturnTaxes)}`;
         out.fundNetGains.textContent = money0.format(gainsAfterReturnTax);
-        out.companyGrowthCaption.textContent = `Rivalutazione: ${number2.format(companyGrossRate * 100)}%`;
+        out.companyGrowthCaption.textContent = `Rivalutazione lorda: 1,50% + 75% × ${number2.format(inflation * 100)}% = ${number2.format(companyGrossRate * 100)}%`;
         out.companyGrossGains.textContent = money0.format(totalCompanyGrossRevaluations);
+        out.companyGainTaxCaption.textContent = `Imposta annua: ${number2.format(companyGrossRate * 100)}% × ${number2.format(companyReturnTaxRate * 100)}% = ${number2.format(companyGrossRate * companyReturnTaxRate * 100)}%`;
         out.companyReturnTaxes.textContent = `− ${money0.format(totalCompanyReturnTaxes)}`;
         out.companyNetGains.textContent = money0.format(companyBalance - totalContributions);
         out.companyFinalTax.textContent = `− ${money0.format(companyFinalTax)}`;
