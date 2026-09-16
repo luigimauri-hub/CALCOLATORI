@@ -167,6 +167,38 @@
 
     .formula strong { display: block; color: var(--blue); font-size: 1.14rem; }
 
+    .contribution-toggle {
+      margin: 0 0 19px;
+      padding: 14px;
+      border: 1px solid #cfd3da;
+      border-radius: 13px;
+      background: #faf9f6;
+    }
+
+    .check-row {
+      display: flex;
+      gap: 11px;
+      align-items: flex-start;
+      cursor: pointer;
+    }
+
+    .check-row input {
+      width: 20px;
+      height: 20px;
+      margin: 2px 0 0;
+      accent-color: var(--blue);
+      flex: 0 0 auto;
+    }
+
+    .check-row strong { display: block; font-size: .9rem; }
+    .check-row small { display: block; margin-top: 3px; color: var(--muted); line-height: 1.35; }
+    #contributionOptions { margin-bottom: 20px; padding: 16px; border-radius: 14px; background: var(--green-soft); }
+    #contributionOptions .field:last-of-type { margin-bottom: 14px; }
+    .deduction-lines { display: grid; gap: 5px; margin-top: 9px; }
+    .deduction-lines span { display: flex; justify-content: space-between; gap: 12px; }
+    .deduction-lines b { color: var(--ink); }
+    [hidden] { display: none !important; }
+
     .error {
       display: none;
       margin: 0 0 16px;
@@ -301,6 +333,43 @@
           <strong id="annualTfrFormula">€ 3.555,56</strong>
         </div>
 
+        <div class="contribution-toggle">
+          <label class="check-row" for="hasEmployerContributions">
+            <input id="hasEmployerContributions" type="checkbox">
+            <span>
+              <strong>Il contratto prevede contributo datoriale e quota obbligatoria del dipendente</strong>
+              <small>Attiva il calcolo dei contributi contrattuali e dello spazio ancora deducibile.</small>
+            </span>
+          </label>
+        </div>
+
+        <div id="contributionOptions" hidden>
+          <div class="field">
+            <label for="employerRate">Contributo datoriale sulla RAL</label>
+            <div class="input-wrap">
+              <input id="employerRate" type="number" min="0" max="10" step="0.1" value="1" inputmode="decimal">
+              <span class="suffix">%</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="employeeRate">Contributo obbligatorio del dipendente sulla RAL</label>
+            <div class="input-wrap">
+              <input id="employeeRate" type="number" min="0" max="10" step="0.1" value="1" inputmode="decimal">
+              <span class="suffix">%</span>
+            </div>
+          </div>
+
+          <div class="formula" aria-live="polite">
+            Spazio per ulteriori versamenti volontari deducibili
+            <strong id="deductibleSpaceFormula">€ 5.300,00</strong>
+            <div class="deduction-lines">
+              <span>Contributo datoriale annuo <b id="employerContributionFormula">€ 0,00</b></span>
+              <span>Quota dipendente annua <b id="employeeContributionFormula">€ 0,00</b></span>
+            </div>
+          </div>
+        </div>
+
         <div class="field">
           <label for="currentAge">Età attuale</label>
           <div class="input-wrap">
@@ -362,6 +431,16 @@
             <small id="contributionYears">In 20 anni</small>
           </article>
           <article class="metric">
+            <span class="label">Contributi contrattuali annui</span>
+            <strong class="value" id="annualAdditionalContributions">€ 0</strong>
+            <small id="additionalContributionsCaption">Flag non attivo</small>
+          </article>
+          <article class="metric primary">
+            <span class="label">Ulteriore spazio deducibile</span>
+            <strong class="value" id="deductibleSpace">€ 5.300</strong>
+            <small id="deductibleSpaceCaption">5.300 € meno i contributi contrattuali</small>
+          </article>
+          <article class="metric">
             <span class="label">Valore maturato prima della tassa finale</span>
             <strong class="value" id="fundValue">€ 0</strong>
             <small>Rendimenti già al netto delle imposte simulate</small>
@@ -372,7 +451,7 @@
             <small id="returnTaxCaption">Calcolate al 20% durante gli anni</small>
           </article>
           <article class="metric">
-            <span class="label">Tassazione finale sulla quota TFR</span>
+            <span class="label">Tassazione finale sui versamenti</span>
             <strong class="value" id="finalTax">€ 0</strong>
             <small id="finalRateCaption">Aliquota finale: 13,50%</small>
           </article>
@@ -439,6 +518,7 @@
                   <th>Anno</th>
                   <th>Età</th>
                   <th>TFR versato</th>
+                  <th>Contributi contrattuali</th>
                   <th>Rendimento lordo</th>
                   <th>Tasse rendimenti</th>
                   <th>Valore fondo</th>
@@ -455,8 +535,8 @@
       <summary>Come funziona il calcolo</summary>
       <ul>
         <li>La quota annua è stimata, in modo semplificato, dividendo la RAL per 13,5.</li>
-        <li>Il TFR viene simulato con accrediti mensili; il rendimento e la relativa imposta sono calcolati mese per mese.</li>
-        <li>Non sono previsti versamenti volontari né contributi aggiuntivi del datore di lavoro: per questo il beneficio fiscale annuale è pari a zero.</li>
+        <li>Il TFR e, quando il flag è attivo, i contributi contrattuali vengono simulati con accrediti mensili; il rendimento e la relativa imposta sono calcolati mese per mese.</li>
+        <li>Il plafond ordinario di deducibilità è pari a 5.300 € annui. Vi concorrono il contributo datoriale e quello del dipendente; il TFR è escluso. Lo spazio residuo indicato non viene versato automaticamente nella simulazione.</li>
         <li>L’aliquota finale parte dal 15% e si riduce dello 0,30% per ogni anno di partecipazione successivo al quindicesimo, fino al minimo del 9%.</li>
         <li>Si presume che l’adesione al fondo inizi oggi e prosegua senza interruzioni fino alla pensione.</li>
         <li>La soglia per ottenere il 100% in capitale è selezionata dalla tabella allegata in base all’età intera al pensionamento e al sesso indicato.</li>
@@ -467,17 +547,21 @@
       <summary>Avvertenze importanti</summary>
       <p>Questa è una simulazione didattica, non una previsione né una proposta di investimento. Il rendimento è costante e puramente ipotetico; non considera costi del fondo, garanzie, andamento reale dei mercati, inflazione, variazioni della RAL, anticipazioni, riscatti, trasferimenti o regimi fiscali riferiti a montanti anteriori al 2007.</p>
       <p>La formula RAL ÷ 13,5 rappresenta la quota lorda civilistica. La quota effettivamente destinata al fondo può risultare inferiore, anche per il contributo aggiuntivo dello 0,50% e per le regole applicabili alla retribuzione utile. Per un calcolo personale vanno verificati busta paga, CCNL e documentazione del fondo.</p>
+      <p>Le percentuali dei contributi datoriale e obbligatorio del dipendente variano in base al CCNL, agli accordi aziendali e alla base retributiva prevista. In questa simulazione vengono applicate direttamente alla RAL e mantenute costanti per tutti gli anni.</p>
       <p>L’imposta sui rendimenti è impostata al 20% per rendere evidente il meccanismo. Nella realtà la quota riferibile a titoli di Stato e assimilati beneficia del 12,5% e, dal 1° luglio 2026, la disciplina può riconoscere ulteriori riduzioni legate agli anni di permanenza. La tassazione effettiva dipende dalla normativa vigente e dalla situazione individuale.</p>
       <p>Le soglie sono indicative, riferite alle età intere da 57 a 70 anni e possono essere aggiornate nel tempo. Età in anni e mesi, data della domanda, coefficienti di conversione, tipologia e frequenza della rendita possono modificare il risultato effettivo. La verifica definitiva spetta al fondo pensione. Restano inoltre ferme le eccezioni previste per i cosiddetti “vecchi iscritti”.</p>
     </details>
 
-    <p class="footer-note">Riferimenti informativi: <a href="https://www.gazzettaufficiale.it/atto/serie_generale/caricaArticolo?art.codiceRedazionale=042U0262&art.dataPubblicazioneGazzetta=1942-04-04&art.flagTipoArticolo=2&art.idArticolo=2120&art.idGruppo=267&art.idSottoArticolo=1&art.idSottoArticolo1=10&art.progressivo=0&art.versione=5" target="_blank" rel="noopener">art. 2120 del Codice civile</a>, <a href="https://www.covip.it/per-il-cittadino/educazione-previdenziale/glossario/prestazione-pensionistica-complementare" target="_blank" rel="noopener">COVIP – Prestazione pensionistica complementare</a> e <a href="https://www.fondapi.it/come-funziona/adesione-lavoratori/riscatto-fondo-pensione/tabella-soglie-riscatto-per-pensionamento/" target="_blank" rel="noopener">tabella delle soglie Fondapi</a>. Ultimo aggiornamento: settembre 2026.</p>
+    <p class="footer-note">Riferimenti informativi: <a href="https://www.gazzettaufficiale.it/atto/serie_generale/caricaArticolo?art.codiceRedazionale=042U0262&art.dataPubblicazioneGazzetta=1942-04-04&art.flagTipoArticolo=2&art.idArticolo=2120&art.idGruppo=267&art.idSottoArticolo=1&art.idSottoArticolo1=10&art.progressivo=0&art.versione=5" target="_blank" rel="noopener">art. 2120 del Codice civile</a>, <a href="https://www.covip.it/per-il-cittadino/educazione-previdenziale/glossario/prestazione-pensionistica-complementare" target="_blank" rel="noopener">COVIP – Prestazione pensionistica complementare</a>, <a href="https://www.laborfonds.it/it/novita-e-info/fondi-pensione-novita-normative-con-la-legge-di-bilancio-2026" target="_blank" rel="noopener">Laborfonds – novità fiscali 2026</a> e <a href="https://www.fondapi.it/come-funziona/adesione-lavoratori/riscatto-fondo-pensione/tabella-soglie-riscatto-per-pensionamento/" target="_blank" rel="noopener">tabella delle soglie Fondapi</a>. Ultimo aggiornamento: settembre 2026.</p>
   </main>
 
   <script>
     (() => {
       const fields = {
         ral: document.querySelector('#ral'),
+        hasEmployerContributions: document.querySelector('#hasEmployerContributions'),
+        employerRate: document.querySelector('#employerRate'),
+        employeeRate: document.querySelector('#employeeRate'),
         currentAge: document.querySelector('#currentAge'),
         sex: document.querySelector('#sex'),
         retirementAge: document.querySelector('#retirementAge'),
@@ -526,6 +610,11 @@
 
       function calculate() {
         const ral = value('ral');
+        const hasEmployerContributions = fields.hasEmployerContributions.checked;
+        const employerRateInput = value('employerRate');
+        const employeeRateInput = value('employeeRate');
+        const employerRate = hasEmployerContributions ? employerRateInput / 100 : 0;
+        const employeeRate = hasEmployerContributions ? employeeRateInput / 100 : 0;
         const currentAge = value('currentAge');
         const retirementAge = value('retirementAge');
         const sex = fields.sex.value;
@@ -536,19 +625,32 @@
         const thresholdAge = Math.trunc(retirementAge);
         const threshold = capitalThresholds[thresholdAge]?.[sex];
         const invalid = [ral, currentAge, retirementAge, grossReturn, returnTax].some((n) => !Number.isFinite(n));
-        if (invalid || ral <= 0 || years <= 0 || grossReturn < 0 || returnTax < 0 || returnTax > 1 || !threshold) {
+        const invalidContributionRates = hasEmployerContributions && (
+          !Number.isFinite(employerRateInput) || !Number.isFinite(employeeRateInput) ||
+          employerRateInput < 0 || employerRateInput > 10 || employeeRateInput < 0 || employeeRateInput > 10
+        );
+        if (invalid || invalidContributionRates || ral <= 0 || years <= 0 || grossReturn < 0 || returnTax < 0 || returnTax > 1 || !threshold) {
           out.errorMessage.textContent = years <= 0
             ? 'L’età prevista per la pensione deve essere superiore all’età attuale.'
             : !threshold
               ? 'Per applicare la tabella delle soglie, indica un’età di pensionamento compresa tra 57 e 70 anni.'
+              : invalidContributionRates
+                ? 'Controlla le percentuali dei contributi: devono essere comprese tra 0% e 10%.'
               : 'Controlla i valori inseriti.';
           out.errorMessage.style.display = 'block';
           return;
         }
         out.errorMessage.style.display = 'none';
+        out.contributionOptions.hidden = !hasEmployerContributions;
 
         const annualTfr = ral / 13.5;
-        const monthlyTfr = annualTfr / 12;
+        const annualEmployerContribution = ral * employerRate;
+        const annualEmployeeContribution = ral * employeeRate;
+        const annualContractualContributions = annualEmployerContribution + annualEmployeeContribution;
+        const deductibleLimit = 5300;
+        const deductibleSpace = Math.max(0, deductibleLimit - annualContractualContributions);
+        const annualDeductibleContractualContributions = Math.min(deductibleLimit, annualContractualContributions);
+        const monthlyFundPayment = (annualTfr + annualContractualContributions) / 12;
         const monthlyGrossRate = Math.pow(1 + grossReturn, 1 / 12) - 1;
         let balance = 0;
         let totalReturnTaxes = 0;
@@ -559,7 +661,7 @@
           let yearReturnTax = 0;
 
           for (let month = 1; month <= 12; month += 1) {
-            balance += monthlyTfr;
+            balance += monthlyFundPayment;
             const grossGain = balance * monthlyGrossRate;
             const tax = grossGain * returnTax;
             balance += grossGain - tax;
@@ -572,6 +674,7 @@
             year,
             age: currentAge + year,
             contribution: annualTfr,
+            contractualContribution: annualContractualContributions,
             grossReturn: yearGrossReturn,
             returnTax: yearReturnTax,
             balance
@@ -579,17 +682,31 @@
         }
 
         const totalContributions = annualTfr * years;
+        const totalContractualContributions = annualContractualContributions * years;
+        const totalFundContributions = totalContributions + totalContractualContributions;
+        const finalTaxableContributions = totalContributions + annualDeductibleContractualContributions * years;
         const finalRate = finalBenefitRate(years) / 100;
-        const finalTax = totalContributions * finalRate;
+        const finalTax = finalTaxableContributions * finalRate;
         const netCapital = balance - finalTax;
-        const gainsAfterReturnTax = balance - totalContributions;
+        const gainsAfterReturnTax = balance - totalFundContributions;
         const fullCapitalAvailable = balance < threshold;
 
         out.annualTfrFormula.textContent = money2.format(annualTfr);
+        out.employerContributionFormula.textContent = money2.format(annualEmployerContribution);
+        out.employeeContributionFormula.textContent = money2.format(annualEmployeeContribution);
+        out.deductibleSpaceFormula.textContent = money2.format(deductibleSpace);
         out.scenarioText.textContent = `Da ${number2.format(currentAge).replace(',00', '')} a ${number2.format(retirementAge).replace(',00', '')} anni: ${years} anni di versamenti.`;
         out.annualTfr.textContent = money0.format(annualTfr);
         out.totalContributions.textContent = money0.format(totalContributions);
         out.contributionYears.textContent = `In ${years} anni`;
+        out.annualAdditionalContributions.textContent = money0.format(annualContractualContributions);
+        out.additionalContributionsCaption.textContent = hasEmployerContributions
+          ? `${money0.format(annualEmployerContribution)} datore + ${money0.format(annualEmployeeContribution)} dipendente`
+          : 'Flag non attivo';
+        out.deductibleSpace.textContent = money0.format(deductibleSpace);
+        out.deductibleSpaceCaption.textContent = annualContractualContributions > deductibleLimit
+          ? `Plafond superato di ${money0.format(annualContractualContributions - deductibleLimit)}`
+          : `5.300 € − ${money0.format(annualEmployerContribution)} − ${money0.format(annualEmployeeContribution)}`;
         out.fundValue.textContent = money0.format(balance);
         out.returnTaxes.textContent = money0.format(totalReturnTaxes);
         out.returnTaxCaption.textContent = `Calcolate al ${number2.format(returnTax * 100)}% durante gli anni`;
@@ -603,7 +720,7 @@
           ? 'Montante inferiore alla soglia indicativa'
           : 'Montante pari o superiore alla soglia indicativa';
         out.capitalDecisionCard.classList.toggle('final', fullCapitalAvailable);
-        out.keyMessage.textContent = `La tassazione finale del ${number2.format(finalRate * 100)}% si applica a ${money0.format(totalContributions)} di TFR versato, non al valore complessivo di ${money0.format(balance)}. I ${money0.format(gainsAfterReturnTax)} di rendimenti netti restano esclusi perché il fondo ha già tassato i rendimenti durante gli anni.`;
+        out.keyMessage.textContent = `La tassazione finale del ${number2.format(finalRate * 100)}% si applica ai versamenti fiscalmente imponibili, stimati in ${money0.format(finalTaxableContributions)}, non al valore complessivo di ${money0.format(balance)}. I ${money0.format(gainsAfterReturnTax)} di rendimenti netti restano esclusi perché il fondo ha già tassato i rendimenti durante gli anni.`;
         out.payoutText.textContent = fullCapitalAvailable
           ? `Il montante finale stimato di ${money0.format(balance)} è inferiore alla soglia indicativa di ${money0.format(threshold)} prevista per ${sex === 'male' ? 'un uomo' : 'una donna'} di ${thresholdAge} anni: il 100% in capitale potrebbe essere consentito, previa verifica del fondo pensione.`
           : `Il montante finale stimato di ${money0.format(balance)} raggiunge o supera la soglia indicativa di ${money0.format(threshold)} prevista per ${sex === 'male' ? 'un uomo' : 'una donna'} di ${thresholdAge} anni: in via ordinaria, al massimo il 50% può essere liquidato in capitale e il restante deve essere convertito in rendita.`;
@@ -613,6 +730,7 @@
             <td>${row.year}</td>
             <td>${number2.format(row.age).replace(',00', '')}</td>
             <td>${money0.format(row.contribution)}</td>
+            <td>${money0.format(row.contractualContribution)}</td>
             <td>${money0.format(row.grossReturn)}</td>
             <td>${money0.format(row.returnTax)}</td>
             <td>${money0.format(row.balance)}</td>
