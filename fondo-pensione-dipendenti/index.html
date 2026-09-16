@@ -65,6 +65,21 @@
       font-size: clamp(1rem, 2vw, 1.18rem);
     }
 
+    .fiscal-visual {
+      margin: 30px 0;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: var(--card);
+      box-shadow: var(--shadow);
+    }
+
+    .fiscal-visual img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
     .moments {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -249,6 +264,7 @@
 
     @media (max-width: 500px) {
       .panel, .moment { border-radius: 16px; }
+      .fiscal-visual { margin: 22px 0; border-radius: 16px; }
       .controls, .results { padding: 17px; }
       .summary-grid { grid-template-columns: 1fr; }
       .metric { min-height: 104px; }
@@ -260,26 +276,12 @@
 <body>
   <main class="page">
     <p class="eyebrow">Fai due conti · Previdenza</p>
-    <h1>Versare il TFR annuake nel fondo pensione, senza confusione.</h1>
+    <h1>Versare il TFR annuale nel fondo pensione, senza confusione.</h1>
     <p class="intro">Un esempio semplice per vedere quanto viene versato, come vengono tassati i rendimenti e su quale parte si applicano le imposte quando si arriva alla pensione.</p>
 
-    <section class="moments" aria-label="I tre momenti fiscali">
-      <article class="moment">
-        <span class="number">1</span>
-        <strong>Quando versi</strong>
-        <p>In questo esempio versi soltanto il TFR. Il TFR non dà diritto alla deduzione fiscale annuale.</p>
-      </article>
-      <article class="moment">
-        <span class="number">2</span>
-        <strong>Durante gli anni</strong>
-        <p>Il fondo trattiene le imposte sui rendimenti e le versa annualmente allo stato. Il calcolatore parte dal 20%, modificabile.</p>
-      </article>
-      <article class="moment">
-        <span class="number">3</span>
-        <strong>Alla pensione</strong>
-        <p>La tassazione  della prestazione finale dal 15% al 9%(a seconda della anzianità di iscrizione al fondo) si applica a tutti i versamenti nel fondo, non ai rendimenti che sono già stati tassati anno per anno.<br> Non e' un punto semplice da capire, tante perosne ancora confondo la tassazionedelle plusvalenze che e' annuale con la tassazione della prestazione che avviene al momento del riscatto all'etaà pensionabile</p>
-      </article>
-    </section>
+    <figure class="fiscal-visual">
+      <img src="tre-momenti-fiscali.webp" width="1536" height="1024" alt="I tre momenti fiscali del TFR nel fondo pensione: versamenti, tassazione annuale dei rendimenti e tassazione della prestazione finale." decoding="async">
+    </figure>
 
     <section class="calculator">
       <form class="panel controls" id="calculatorForm" novalidate>
