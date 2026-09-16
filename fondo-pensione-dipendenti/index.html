@@ -1,0 +1,626 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Un esempio semplice per capire i tre momenti fiscali del TFR versato nel fondo pensione.">
+  <title>TFR nel fondo pensione: un esempio semplice | Luigi Mauri</title>
+  <style>
+    :root {
+      --ink: #17233c;
+      --muted: #667085;
+      --paper: #f6f3ed;
+      --card: #ffffff;
+      --line: #ded9cf;
+      --blue: #173f74;
+      --blue-soft: #eaf0f7;
+      --green: #176b55;
+      --green-soft: #e7f3ee;
+      --sand: #f2e7d5;
+      --red: #a13c35;
+      --shadow: 0 14px 42px rgba(23, 35, 60, .09);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+
+    button, input, select { font: inherit; }
+
+    .page {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 34px 0 64px;
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--blue);
+      font-size: .78rem;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 790px;
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(2.2rem, 6vw, 4.7rem);
+      font-weight: 500;
+      line-height: .98;
+      letter-spacing: -.045em;
+    }
+
+    .intro {
+      max-width: 760px;
+      margin: 22px 0 0;
+      color: #465267;
+      font-size: clamp(1rem, 2vw, 1.18rem);
+    }
+
+    .moments {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin: 30px 0;
+    }
+
+    .moment {
+      min-height: 154px;
+      padding: 21px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, .6);
+    }
+
+    .moment .number {
+      display: inline-grid;
+      width: 31px;
+      height: 31px;
+      place-items: center;
+      margin-bottom: 12px;
+      border-radius: 50%;
+      color: white;
+      background: var(--blue);
+      font-size: .88rem;
+      font-weight: 800;
+    }
+
+    .moment strong { display: block; margin-bottom: 5px; }
+    .moment p { margin: 0; color: var(--muted); font-size: .94rem; }
+
+    .calculator {
+      display: grid;
+      grid-template-columns: minmax(280px, .78fr) minmax(0, 1.52fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: var(--card);
+      box-shadow: var(--shadow);
+    }
+
+    .controls { padding: 24px; position: sticky; top: 16px; }
+    .results { padding: 24px; }
+
+    h2 {
+      margin: 0 0 7px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.65rem;
+      font-weight: 500;
+    }
+
+    .subtle { margin: 0 0 22px; color: var(--muted); font-size: .9rem; }
+
+    .field { margin: 0 0 19px; }
+    .field label { display: block; margin-bottom: 7px; font-size: .89rem; font-weight: 750; }
+    .input-wrap { position: relative; }
+    .input-wrap input,
+    .input-wrap select {
+      width: 100%;
+      min-height: 48px;
+      padding: 10px 52px 10px 13px;
+      border: 1px solid #cfd3da;
+      border-radius: 11px;
+      color: var(--ink);
+      background: #fff;
+      font-weight: 700;
+      outline: none;
+    }
+    .input-wrap select { padding-right: 13px; }
+    .input-wrap input:focus,
+    .input-wrap select:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(23, 63, 116, .12); }
+    .suffix { position: absolute; top: 50%; right: 13px; color: var(--muted); transform: translateY(-50%); }
+
+    .formula {
+      margin: 5px 0 20px;
+      padding: 14px;
+      border-radius: 13px;
+      background: var(--blue-soft);
+      font-size: .88rem;
+    }
+
+    .formula strong { display: block; color: var(--blue); font-size: 1.14rem; }
+
+    .error {
+      display: none;
+      margin: 0 0 16px;
+      padding: 11px 13px;
+      border-radius: 10px;
+      color: var(--red);
+      background: #fbefed;
+      font-size: .88rem;
+      font-weight: 700;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 11px;
+    }
+
+    .metric {
+      min-height: 118px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fff;
+    }
+
+    .metric.primary { border-color: #aec4df; background: var(--blue-soft); }
+    .metric.final { border-color: #abd3c4; background: var(--green-soft); }
+    .metric.decision .value { font-size: clamp(1.35rem, 3.4vw, 1.9rem); }
+    .metric .label { display: block; margin-bottom: 8px; color: var(--muted); font-size: .78rem; font-weight: 750; line-height: 1.25; text-transform: uppercase; letter-spacing: .045em; }
+    .metric .value { display: block; font-family: Georgia, "Times New Roman", serif; font-size: clamp(1.55rem, 4vw, 2.2rem); line-height: 1; }
+    .metric small { display: block; margin-top: 8px; color: var(--muted); }
+
+    .key-message {
+      margin-top: 17px;
+      padding: 20px;
+      border-left: 5px solid var(--green);
+      border-radius: 0 14px 14px 0;
+      background: var(--green-soft);
+    }
+
+    .key-message strong { display: block; margin-bottom: 4px; color: var(--green); font-size: 1.08rem; }
+    .key-message p { margin: 0; }
+
+    .payout-message {
+      margin-top: 13px;
+      padding: 20px;
+      border: 1px solid #d7c49e;
+      border-radius: 14px;
+      background: #fff8ea;
+    }
+
+    .payout-message strong { display: block; margin-bottom: 5px; color: #795716; font-size: 1.08rem; }
+    .payout-message p { margin: 0; }
+
+    .comparison { margin-top: 27px; }
+    .comparison h2 { margin-bottom: 11px; }
+    .comparison table { min-width: 620px; }
+    .comparison th, .comparison td { text-align: left; white-space: normal; vertical-align: top; }
+    .comparison th:first-child, .comparison td:first-child { width: 31%; }
+
+    .table-block { margin-top: 27px; }
+    .table-head { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 11px; }
+    .table-head h2 { margin: 0; }
+    .table-head p { margin: 0; color: var(--muted); font-size: .82rem; }
+    .table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; }
+    table { width: 100%; min-width: 690px; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+    th, td { padding: 12px 13px; border-bottom: 1px solid #ebe7df; text-align: right; white-space: nowrap; }
+    th:first-child, td:first-child { text-align: left; }
+    th { color: #536078; background: #faf9f6; font-size: .73rem; letter-spacing: .025em; text-transform: uppercase; }
+    td { font-size: .86rem; }
+    tbody tr:last-child td { border-bottom: 0; font-weight: 800; }
+
+    details {
+      margin-top: 18px;
+      padding: 15px 17px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: rgba(255,255,255,.55);
+    }
+
+    summary { cursor: pointer; font-weight: 800; }
+    details p, details li { color: var(--muted); font-size: .85rem; }
+    details ul { padding-left: 20px; }
+
+    .footer-note { margin: 24px 0 0; color: var(--muted); font-size: .76rem; }
+    .footer-note a { color: var(--blue); }
+
+    @media (max-width: 820px) {
+      .page { width: min(100% - 22px, 680px); padding-top: 22px; }
+      .moments { grid-template-columns: 1fr; }
+      .moment { min-height: 0; }
+      .calculator { grid-template-columns: 1fr; }
+      .controls { position: static; }
+    }
+
+    @media (max-width: 500px) {
+      .panel, .moment { border-radius: 16px; }
+      .controls, .results { padding: 17px; }
+      .summary-grid { grid-template-columns: 1fr; }
+      .metric { min-height: 104px; }
+      .table-head { display: block; }
+      .table-head p { margin-top: 3px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <p class="eyebrow">Fai due conti · Previdenza</p>
+    <h1>Il TFR nel fondo pensione, senza confusione.</h1>
+    <p class="intro">Un esempio semplice per vedere quanto viene versato, come vengono tassati i rendimenti e su quale parte si applicano le imposte quando si arriva alla pensione.</p>
+
+    <section class="moments" aria-label="I tre momenti fiscali">
+      <article class="moment">
+        <span class="number">1</span>
+        <strong>Quando versi</strong>
+        <p>In questo esempio versi soltanto il TFR. Il TFR non dà diritto alla deduzione fiscale annuale.</p>
+      </article>
+      <article class="moment">
+        <span class="number">2</span>
+        <strong>Durante gli anni</strong>
+        <p>Il fondo trattiene le imposte sui rendimenti. Il calcolatore parte dal 20%, modificabile.</p>
+      </article>
+      <article class="moment">
+        <span class="number">3</span>
+        <strong>Alla pensione</strong>
+        <p>La tassazione finale si applica alla quota TFR versata, non ai rendimenti già tassati.</p>
+      </article>
+    </section>
+
+    <section class="calculator">
+      <form class="panel controls" id="calculatorForm" novalidate>
+        <h2>I dati dell’esempio</h2>
+        <p class="subtle">Modifica i valori: il risultato si aggiorna subito.</p>
+
+        <div class="field">
+          <label for="ral">Retribuzione annua lorda (RAL)</label>
+          <div class="input-wrap">
+            <input id="ral" type="number" min="10000" max="300000" step="500" value="48000" inputmode="decimal">
+            <span class="suffix">€</span>
+          </div>
+        </div>
+
+        <div class="formula" aria-live="polite">
+          TFR annuo stimato: RAL ÷ 13,5
+          <strong id="annualTfrFormula">€ 3.555,56</strong>
+        </div>
+
+        <div class="field">
+          <label for="currentAge">Età attuale</label>
+          <div class="input-wrap">
+            <input id="currentAge" type="number" min="18" max="74" step="1" value="48" inputmode="numeric">
+            <span class="suffix">anni</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="sex">Sesso ai fini della soglia di rendita</label>
+          <div class="input-wrap">
+            <select id="sex">
+              <option value="male" selected>Uomo</option>
+              <option value="female">Donna</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="retirementAge">Età prevista per la pensione</label>
+          <div class="input-wrap">
+            <input id="retirementAge" type="number" min="57" max="70" step="1" value="68" inputmode="numeric">
+            <span class="suffix">anni</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="grossReturn">Rendimento medio annuo lordo ipotizzato</label>
+          <div class="input-wrap">
+            <input id="grossReturn" type="number" min="0" max="12" step="0.1" value="4" inputmode="decimal">
+            <span class="suffix">%</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="returnTax">Imposta ipotizzata sui rendimenti</label>
+          <div class="input-wrap">
+            <input id="returnTax" type="number" min="0" max="26" step="0.25" value="20" inputmode="decimal">
+            <span class="suffix">%</span>
+          </div>
+        </div>
+
+        <p class="error" id="errorMessage" role="alert"></p>
+      </form>
+
+      <section class="panel results" aria-live="polite">
+        <h2>Il risultato</h2>
+        <p class="subtle" id="scenarioText">Da 48 a 68 anni: 20 anni di versamenti.</p>
+
+        <div class="summary-grid">
+          <article class="metric primary">
+            <span class="label">TFR versato ogni anno</span>
+            <strong class="value" id="annualTfr">€ 3.556</strong>
+            <small>Nessuna deduzione fiscale in questo esempio</small>
+          </article>
+          <article class="metric">
+            <span class="label">TFR complessivamente versato</span>
+            <strong class="value" id="totalContributions">€ 71.111</strong>
+            <small id="contributionYears">In 20 anni</small>
+          </article>
+          <article class="metric">
+            <span class="label">Valore maturato prima della tassa finale</span>
+            <strong class="value" id="fundValue">€ 0</strong>
+            <small>Rendimenti già al netto delle imposte simulate</small>
+          </article>
+          <article class="metric">
+            <span class="label">Imposte sui rendimenti già versate dal fondo</span>
+            <strong class="value" id="returnTaxes">€ 0</strong>
+            <small id="returnTaxCaption">Calcolate al 20% durante gli anni</small>
+          </article>
+          <article class="metric">
+            <span class="label">Tassazione finale sulla quota TFR</span>
+            <strong class="value" id="finalTax">€ 0</strong>
+            <small id="finalRateCaption">Aliquota finale: 13,50%</small>
+          </article>
+          <article class="metric final">
+            <span class="label">Valore netto stimato della posizione</span>
+            <strong class="value" id="netCapital">€ 0</strong>
+            <small>Dopo la tassazione finale simulata</small>
+          </article>
+          <article class="metric">
+            <span class="label">Soglia per il 100% in capitale</span>
+            <strong class="value" id="capitalThreshold">€ 0</strong>
+            <small id="thresholdCaption">In base a età e sesso</small>
+          </article>
+          <article class="metric decision" id="capitalDecisionCard">
+            <span class="label">Liquidazione stimata</span>
+            <strong class="value" id="capitalDecision">—</strong>
+            <small id="capitalDecisionCaption">Confronto con il montante finale</small>
+          </article>
+        </div>
+
+        <div class="key-message">
+          <strong>La distinzione che conta</strong>
+          <p id="keyMessage">L’aliquota finale si applica al TFR versato, non al valore complessivo del fondo. I rendimenti sono esclusi perché sono già stati tassati anno per anno.</p>
+        </div>
+
+        <div class="payout-message" id="payoutMessage">
+          <strong>Capitale o rendita?</strong>
+          <p id="payoutText">Il calcolo confronta il montante finale con la soglia prevista per età e sesso.</p>
+        </div>
+
+        <section class="comparison" aria-labelledby="tfrComparisonTitle">
+          <h2 id="tfrComparisonTitle">TFR in Azienda o INPS vs. Fondo Pensione</h2>
+          <div class="table-scroll" tabindex="0" aria-label="Confronto delle modalità di liquidazione del TFR alla pensione">
+            <table>
+              <thead>
+                <tr>
+                  <th>Destinazione del TFR</th>
+                  <th>Modalità di liquidazione alla pensione</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Azienda / INPS</strong></td>
+                  <td><strong>100% in capitale</strong> (tutto subito, senza alcun limite).</td>
+                </tr>
+                <tr>
+                  <td><strong>Fondo Pensione</strong></td>
+                  <td><strong>Massimo 50% in capitale</strong> e il restante in rendita. Puoi prendere il 100% in capitale solo se la rendita vitalizia derivante dalla conversione di almeno il 70% del montante finale è inferiore al 50% dell’assegno sociale.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="table-block">
+          <div class="table-head">
+            <h2>Anno per anno</h2>
+            <p>Importi arrotondati all’euro</p>
+          </div>
+          <div class="table-scroll" tabindex="0" aria-label="Tabella della simulazione annuale">
+            <table>
+              <thead>
+                <tr>
+                  <th>Anno</th>
+                  <th>Età</th>
+                  <th>TFR versato</th>
+                  <th>Rendimento lordo</th>
+                  <th>Tasse rendimenti</th>
+                  <th>Valore fondo</th>
+                </tr>
+              </thead>
+              <tbody id="yearRows"></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+    </section>
+
+    <details>
+      <summary>Come funziona il calcolo</summary>
+      <ul>
+        <li>La quota annua è stimata, in modo semplificato, dividendo la RAL per 13,5.</li>
+        <li>Il TFR viene simulato con accrediti mensili; il rendimento e la relativa imposta sono calcolati mese per mese.</li>
+        <li>Non sono previsti versamenti volontari né contributi aggiuntivi del datore di lavoro: per questo il beneficio fiscale annuale è pari a zero.</li>
+        <li>L’aliquota finale parte dal 15% e si riduce dello 0,30% per ogni anno di partecipazione successivo al quindicesimo, fino al minimo del 9%.</li>
+        <li>Si presume che l’adesione al fondo inizi oggi e prosegua senza interruzioni fino alla pensione.</li>
+        <li>La soglia per ottenere il 100% in capitale è selezionata dalla tabella allegata in base all’età intera al pensionamento e al sesso indicato.</li>
+      </ul>
+    </details>
+
+    <details>
+      <summary>Avvertenze importanti</summary>
+      <p>Questa è una simulazione didattica, non una previsione né una proposta di investimento. Il rendimento è costante e puramente ipotetico; non considera costi del fondo, garanzie, andamento reale dei mercati, inflazione, variazioni della RAL, anticipazioni, riscatti, trasferimenti o regimi fiscali riferiti a montanti anteriori al 2007.</p>
+      <p>La formula RAL ÷ 13,5 rappresenta la quota lorda civilistica. La quota effettivamente destinata al fondo può risultare inferiore, anche per il contributo aggiuntivo dello 0,50% e per le regole applicabili alla retribuzione utile. Per un calcolo personale vanno verificati busta paga, CCNL e documentazione del fondo.</p>
+      <p>L’imposta sui rendimenti è impostata al 20% per rendere evidente il meccanismo. Nella realtà la quota riferibile a titoli di Stato e assimilati beneficia del 12,5% e, dal 1° luglio 2026, la disciplina può riconoscere ulteriori riduzioni legate agli anni di permanenza. La tassazione effettiva dipende dalla normativa vigente e dalla situazione individuale.</p>
+      <p>Le soglie sono indicative, riferite alle età intere da 57 a 70 anni e possono essere aggiornate nel tempo. Età in anni e mesi, data della domanda, coefficienti di conversione, tipologia e frequenza della rendita possono modificare il risultato effettivo. La verifica definitiva spetta al fondo pensione. Restano inoltre ferme le eccezioni previste per i cosiddetti “vecchi iscritti”.</p>
+    </details>
+
+    <p class="footer-note">Riferimenti informativi: <a href="https://www.gazzettaufficiale.it/atto/serie_generale/caricaArticolo?art.codiceRedazionale=042U0262&art.dataPubblicazioneGazzetta=1942-04-04&art.flagTipoArticolo=2&art.idArticolo=2120&art.idGruppo=267&art.idSottoArticolo=1&art.idSottoArticolo1=10&art.progressivo=0&art.versione=5" target="_blank" rel="noopener">art. 2120 del Codice civile</a>, <a href="https://www.covip.it/per-il-cittadino/educazione-previdenziale/glossario/prestazione-pensionistica-complementare" target="_blank" rel="noopener">COVIP – Prestazione pensionistica complementare</a> e <a href="https://www.fondapi.it/come-funziona/adesione-lavoratori/riscatto-fondo-pensione/tabella-soglie-riscatto-per-pensionamento/" target="_blank" rel="noopener">tabella delle soglie Fondapi</a>. Ultimo aggiornamento: settembre 2026.</p>
+  </main>
+
+  <script>
+    (() => {
+      const fields = {
+        ral: document.querySelector('#ral'),
+        currentAge: document.querySelector('#currentAge'),
+        sex: document.querySelector('#sex'),
+        retirementAge: document.querySelector('#retirementAge'),
+        grossReturn: document.querySelector('#grossReturn'),
+        returnTax: document.querySelector('#returnTax')
+      };
+
+      const out = Object.fromEntries(
+        [...document.querySelectorAll('[id]')].map((el) => [el.id, el])
+      );
+
+      const money0 = new Intl.NumberFormat('it-IT', {
+        style: 'currency', currency: 'EUR', maximumFractionDigits: 0
+      });
+      const money2 = new Intl.NumberFormat('it-IT', {
+        style: 'currency', currency: 'EUR', minimumFractionDigits: 2, maximumFractionDigits: 2
+      });
+      const number2 = new Intl.NumberFormat('it-IT', {
+        minimumFractionDigits: 2, maximumFractionDigits: 2
+      });
+
+      const capitalThresholds = {
+        57: { male: 165659, female: 185984 },
+        58: { male: 160880, female: 181121 },
+        59: { male: 156118, female: 176259 },
+        60: { male: 146645, female: 166534 },
+        61: { male: 141941, female: 161673 },
+        62: { male: 137273, female: 156806 },
+        63: { male: 132645, female: 151934 },
+        64: { male: 128063, female: 147062 },
+        65: { male: 123507, female: 142194 },
+        66: { male: 118968, female: 137329 },
+        67: { male: 114452, female: 132472 },
+        68: { male: 109961, female: 127622 },
+        69: { male: 101058, female: 117964 },
+        70: { male: 96656, female: 113164 }
+      };
+
+      function value(name) {
+        return Number.parseFloat(fields[name].value);
+      }
+
+      function finalBenefitRate(years) {
+        return Math.max(9, 15 - Math.max(0, years - 15) * 0.3);
+      }
+
+      function calculate() {
+        const ral = value('ral');
+        const currentAge = value('currentAge');
+        const retirementAge = value('retirementAge');
+        const sex = fields.sex.value;
+        const grossReturn = value('grossReturn') / 100;
+        const returnTax = value('returnTax') / 100;
+        const years = Math.trunc(retirementAge - currentAge);
+
+        const thresholdAge = Math.trunc(retirementAge);
+        const threshold = capitalThresholds[thresholdAge]?.[sex];
+        const invalid = [ral, currentAge, retirementAge, grossReturn, returnTax].some((n) => !Number.isFinite(n));
+        if (invalid || ral <= 0 || years <= 0 || grossReturn < 0 || returnTax < 0 || returnTax > 1 || !threshold) {
+          out.errorMessage.textContent = years <= 0
+            ? 'L’età prevista per la pensione deve essere superiore all’età attuale.'
+            : !threshold
+              ? 'Per applicare la tabella delle soglie, indica un’età di pensionamento compresa tra 57 e 70 anni.'
+              : 'Controlla i valori inseriti.';
+          out.errorMessage.style.display = 'block';
+          return;
+        }
+        out.errorMessage.style.display = 'none';
+
+        const annualTfr = ral / 13.5;
+        const monthlyTfr = annualTfr / 12;
+        const monthlyGrossRate = Math.pow(1 + grossReturn, 1 / 12) - 1;
+        let balance = 0;
+        let totalReturnTaxes = 0;
+        const rows = [];
+
+        for (let year = 1; year <= years; year += 1) {
+          let yearGrossReturn = 0;
+          let yearReturnTax = 0;
+
+          for (let month = 1; month <= 12; month += 1) {
+            balance += monthlyTfr;
+            const grossGain = balance * monthlyGrossRate;
+            const tax = grossGain * returnTax;
+            balance += grossGain - tax;
+            yearGrossReturn += grossGain;
+            yearReturnTax += tax;
+          }
+
+          totalReturnTaxes += yearReturnTax;
+          rows.push({
+            year,
+            age: currentAge + year,
+            contribution: annualTfr,
+            grossReturn: yearGrossReturn,
+            returnTax: yearReturnTax,
+            balance
+          });
+        }
+
+        const totalContributions = annualTfr * years;
+        const finalRate = finalBenefitRate(years) / 100;
+        const finalTax = totalContributions * finalRate;
+        const netCapital = balance - finalTax;
+        const gainsAfterReturnTax = balance - totalContributions;
+        const fullCapitalAvailable = balance < threshold;
+
+        out.annualTfrFormula.textContent = money2.format(annualTfr);
+        out.scenarioText.textContent = `Da ${number2.format(currentAge).replace(',00', '')} a ${number2.format(retirementAge).replace(',00', '')} anni: ${years} anni di versamenti.`;
+        out.annualTfr.textContent = money0.format(annualTfr);
+        out.totalContributions.textContent = money0.format(totalContributions);
+        out.contributionYears.textContent = `In ${years} anni`;
+        out.fundValue.textContent = money0.format(balance);
+        out.returnTaxes.textContent = money0.format(totalReturnTaxes);
+        out.returnTaxCaption.textContent = `Calcolate al ${number2.format(returnTax * 100)}% durante gli anni`;
+        out.finalTax.textContent = money0.format(finalTax);
+        out.finalRateCaption.textContent = `Aliquota finale: ${number2.format(finalRate * 100)}%`;
+        out.netCapital.textContent = money0.format(netCapital);
+        out.capitalThreshold.textContent = money0.format(threshold);
+        out.thresholdCaption.textContent = `${sex === 'male' ? 'Uomo' : 'Donna'}, ${thresholdAge} anni`;
+        out.capitalDecision.textContent = fullCapitalAvailable ? '100% possibile' : 'Massimo 50%';
+        out.capitalDecisionCaption.textContent = fullCapitalAvailable
+          ? 'Montante inferiore alla soglia indicativa'
+          : 'Montante pari o superiore alla soglia indicativa';
+        out.capitalDecisionCard.classList.toggle('final', fullCapitalAvailable);
+        out.keyMessage.textContent = `La tassazione finale del ${number2.format(finalRate * 100)}% si applica a ${money0.format(totalContributions)} di TFR versato, non al valore complessivo di ${money0.format(balance)}. I ${money0.format(gainsAfterReturnTax)} di rendimenti netti restano esclusi perché il fondo ha già tassato i rendimenti durante gli anni.`;
+        out.payoutText.textContent = fullCapitalAvailable
+          ? `Il montante finale stimato di ${money0.format(balance)} è inferiore alla soglia indicativa di ${money0.format(threshold)} prevista per ${sex === 'male' ? 'un uomo' : 'una donna'} di ${thresholdAge} anni: il 100% in capitale potrebbe essere consentito, previa verifica del fondo pensione.`
+          : `Il montante finale stimato di ${money0.format(balance)} raggiunge o supera la soglia indicativa di ${money0.format(threshold)} prevista per ${sex === 'male' ? 'un uomo' : 'una donna'} di ${thresholdAge} anni: in via ordinaria, al massimo il 50% può essere liquidato in capitale e il restante deve essere convertito in rendita.`;
+
+        out.yearRows.innerHTML = rows.map((row) => `
+          <tr>
+            <td>${row.year}</td>
+            <td>${number2.format(row.age).replace(',00', '')}</td>
+            <td>${money0.format(row.contribution)}</td>
+            <td>${money0.format(row.grossReturn)}</td>
+            <td>${money0.format(row.returnTax)}</td>
+            <td>${money0.format(row.balance)}</td>
+          </tr>
+        `).join('');
+      }
+
+      Object.values(fields).forEach((field) => field.addEventListener('input', calculate));
+      calculate();
+    })();
+  </script>
+</body>
+</html>
