@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Confronta in modo semplice il TFR nel fondo pensione e il TFR lasciato in azienda.">
-  <title>Fondo pensione o TFR lasciato in azienda? | Luigi Mauri</title>
+  <meta name="description" content="Calcolatore didattico per comprendere le differenze tra TFR nel fondo pensione e TFR lasciato in azienda.">
+  <title>Meglio versare le quote annuali di TFR nel fondo pensione o lasciarle in azienda? | Luigi Mauri</title>
   <style>
     :root {
       --ink: #17233c;
@@ -180,6 +180,16 @@
     .contribution-summary { display: grid; gap: 5px; margin-top: 8px; }
     .contribution-summary span { display: flex; justify-content: space-between; gap: 10px; color: var(--muted); }
     .contribution-summary b { color: var(--blue); }
+    .employer-note {
+      margin: 0 0 19px;
+      padding: 16px;
+      border-left: 4px solid var(--green);
+      border-radius: 0 12px 12px 0;
+      background: var(--green-soft);
+    }
+    .employer-note strong { display: block; margin-bottom: 5px; color: var(--green); }
+    .employer-note p { margin: 0; color: #355c50; font-size: .84rem; }
+    .employer-note p + p { margin-top: 8px; }
 
     .error {
       display: none;
@@ -198,18 +208,38 @@
       gap: 11px;
     }
 
-    .verdict {
-      margin: 0 0 20px;
-      padding: 22px;
-      border: 1px solid #abd3c4;
-      border-radius: 18px;
+    .teaching-note {
+      max-width: 880px;
+      margin: 24px 0 30px;
+      padding: 20px 22px;
+      border-left: 5px solid var(--green);
+      border-radius: 0 16px 16px 0;
       background: var(--green-soft);
     }
-    .verdict .kicker { display: block; color: var(--green); font-size: .78rem; font-weight: 850; letter-spacing: .07em; text-transform: uppercase; }
-    .verdict strong { display: block; margin: 4px 0; font-family: Georgia, "Times New Roman", serif; font-size: clamp(1.65rem, 4vw, 2.45rem); font-weight: 500; line-height: 1.08; }
-    .verdict p { margin: 6px 0 0; color: #355c50; }
-    .verdict.company-win { border-color: #d8c2a0; background: var(--sand); }
-    .verdict.company-win .kicker, .verdict.company-win p { color: #705934; }
+    .teaching-note strong { display: block; margin-bottom: 6px; color: var(--green); font-size: 1.08rem; }
+    .teaching-note p { margin: 0; color: #355c50; }
+    .teaching-note p + p { margin-top: 9px; }
+    .teaching-note small { display: block; margin-top: 10px; color: var(--muted); }
+
+    .intro-cta {
+      margin-top: 12px;
+      padding: 14px 16px;
+      border-left: 4px solid var(--blue);
+      border-radius: 0 12px 12px 0;
+      background: var(--blue-soft);
+      font-size: 1rem;
+    }
+
+    .disclaimer {
+      max-width: 880px;
+      margin: -12px 0 30px;
+      padding: 16px 18px;
+      border: 1px solid #d8c2a0;
+      border-radius: 14px;
+      background: #fff9ef;
+    }
+    .disclaimer strong { display: block; margin-bottom: 4px; color: #76501e; }
+    .disclaimer p { margin: 0; color: #62533f; font-size: .84rem; }
 
     .threshold-box {
       margin-top: 16px;
@@ -220,6 +250,19 @@
     }
     .threshold-box strong { display: block; color: var(--blue); font-size: 1.08rem; }
     .threshold-box p { margin: 5px 0 0; color: #465267; font-size: .9rem; }
+    .threshold-result { margin-top: 15px; padding-top: 15px; border-top: 1px solid #c8d7e8; }
+    .threshold-base { padding: 10px 12px; border-radius: 10px; background: rgba(255,255,255,.62); font-weight: 750; }
+
+    .capital-alert { margin-top: 16px; padding: 19px; border: 2px solid #bd3f37; border-radius: 16px; color: #76241f; background: #fff0ee; }
+    .capital-alert strong { display: block; margin-bottom: 6px; color: #9b2f29; font-size: 1.08rem; }
+    .capital-alert p { margin: 0; }
+    .capital-alert p + p { margin-top: 8px; }
+    .capital-ok { margin-top: 16px; padding: 19px; border: 1px solid #abd3c4; border-radius: 16px; color: #355c50; background: var(--green-soft); }
+    .capital-ok strong { display: block; margin-bottom: 6px; color: var(--green); font-size: 1.08rem; }
+    .capital-ok p { margin: 0; }
+    .final-equation { font-variant-numeric: tabular-nums; }
+    .final-equation .line-item.total strong { color: var(--blue); }
+    .company.final-equation .line-item.total strong { color: #76501e; }
 
     .metric {
       min-height: 118px;
@@ -344,8 +387,23 @@
 <body>
   <main class="page">
     <p class="eyebrow">Fai due conti · Previdenza</p>
-    <h1>Fondo pensione o TFR lasciato in azienda?</h1>
-    <p class="intro">Inserisci pochi dati e scopri subito quale scelta produce il maggior vantaggio economico netto: lasciare il TFR in azienda oppure destinarlo a un fondo pensione.</p>
+    <h1>Meglio versare le quote annuali di TFR nel fondo pensione o lasciarle in azienda?</h1>
+    <p class="intro"><strong>Questo è un calcolatore a fini didattici.</strong> L’ho realizzato per cercare di semplificare la comprensione dell’argomento. È una questione non banale, che merita particolare attenzione e che la variabile fiscale rende ancora più complessa.</p>
+    <p class="intro intro-cta">Sono disponibile per una videocall o un incontro in ufficio dedicato al confronto tra TFR e fondo pensione, senza alcun impegno da parte tua.</p>
+
+    <section class="teaching-note" aria-label="Gli elementi del confronto">
+      <strong>Il vantaggio fiscale del fondo pensione è importante, ma non è l’unico elemento da valutare</strong>
+      <p>Il TFR lasciato in azienda viene rivalutato ogni anno applicando un tasso dell’1,5% più il 75% dell’inflazione. Il rendimento del fondo pensione dipende invece dall’andamento degli investimenti e dal comparto scelto: non esiste un rendimento minimo garantito, salvo che sia prevista una specifica linea garantita. Il fondo pensione consente però una maggiore diversificazione degli investimenti.</p>
+      <p>Il fondo pensione negoziale di categoria può inoltre prevedere un contributo del datore di lavoro. Si tratta di una percentuale della retribuzione annua lorda versata dall’azienda, normalmente subordinata all’impegno del lavoratore a versare la quota minima stabilita dagli accordi collettivi.</p>
+      <p>Alla cessazione del rapporto di lavoro, il TFR può essere incassato integralmente in capitale, al netto della tassazione separata. Il datore di lavoro applica una prima tassazione; successivamente l’Agenzia delle Entrate determina l’imposta definitiva sulla base della tassazione media prevista dalla normativa. La tassazione separata del TFR risulta generalmente più elevata dell’aliquota agevolata applicata dal fondo pensione.</p>
+      <p>Il fondo pensione applica alla prestazione imponibile un’aliquota agevolata dal 15% al 9%, in funzione degli anni di partecipazione. In linea generale, la posizione accumulata viene trasformata in rendita vitalizia, con la possibilità di richiederne una parte in capitale. L’intera liquidazione in capitale è consentita soltanto nei casi previsti dalla normativa; possono inoltre essere disponibili altre modalità di erogazione previste dalla legge e dal regolamento del fondo.</p>
+      <p><b>Adesso fai due conti.</b> Il calcolatore confronta rivalutazione, rendimenti, imposte annuali e tassazione finale, mostrando separatamente l’eventuale limite alla liquidazione in capitale nel fondo pensione. La materia è complessa e la destinazione del TFR rappresenta una scelta importante, da valutare considerando insieme numeri, esigenze personali e possibilità di accesso al capitale.</p>
+    </section>
+
+    <aside class="disclaimer" aria-label="Avvertenza importante">
+      <strong>Avvertenza</strong>
+      <p>Il calcolatore fornisce una simulazione puramente indicativa e non costituisce consulenza finanziaria, previdenziale, fiscale o legale. I risultati dipendono dalle ipotesi inserite e non rappresentano una previsione né una garanzia. Regole fiscali, requisiti, coefficienti, costi, rendimenti e condizioni del fondo possono cambiare. Prima di decidere, verifica la tua posizione personale, il CCNL applicato, la documentazione del fondo pensione e la normativa vigente con soggetti qualificati.</p>
+    </aside>
 
     <section class="moments" aria-label="I tre momenti fiscali">
       <article class="moment">
@@ -355,13 +413,13 @@
       </article>
       <article class="moment">
         <span class="number">2</span>
-        <strong>Prima, le tasse sui rendimenti</strong>
-        <p>Il fondo tassa i rendimenti; il TFR in azienda tassa la rivalutazione. Entrambe le imposte vengono conteggiate durante gli anni.</p>
+        <strong>Annualmente: le imposte su rendimenti o rivalutazione</strong>
+        <p>Il fondo tassa i rendimenti; il TFR in azienda tassa la rivalutazione. Entrambe le imposte vengono conteggiate durante gli anni e versate annualmente dal fondo o dall’azienda.</p>
       </article>
       <article class="moment">
         <span class="number">3</span>
-        <strong>Poi, le tasse alla liquidazione</strong>
-        <p>Il fondo applica l’aliquota agevolata. Per il TFR in azienda il calcolatore stima la tassazione separata in funzione della RAL.</p>
+        <strong>Poi: le imposte sulla prestazione a scadenza</strong>
+        <p>Il fondo applica l’aliquota agevolata dal 15% al 9%, in base agli anni di partecipazione. Per il TFR in azienda il calcolatore stima la tassazione separata in funzione della RAL; il calcolo definitivo è effettuato dall’Agenzia delle Entrate sulla base della storia reddituale prevista dalla normativa.</p>
       </article>
     </section>
 
@@ -394,6 +452,12 @@
         </div>
 
         <div id="contributionOptions" hidden>
+          <div class="employer-note">
+            <strong>Il contributo datoriale è denaro aggiuntivo versato dall’azienda</strong>
+            <p>In pratica sono soldi “gratuiti” per il dipendente: non vengono sottratti dalla sua retribuzione, ma sono versati dall’azienda al fondo pensione, oltre al TFR, in base al CCNL e agli accordi previsti dal fondo di categoria. Di norma, per ottenerli, il dipendente deve versare almeno la quota obbligatoria prevista.</p>
+            <p>Le percentuali cambiano in base al contratto e agli accordi applicabili. Questo calcolatore serve a fini didattici per comprenderne il funzionamento. Per una stima precisa, verifica con il fondo pensione di categoria, l’ufficio del personale della tua azienda o un consulente preparato.</p>
+          </div>
+
           <div class="field">
             <label for="employerRate">Contributo datoriale sulla RAL</label>
             <div class="input-wrap">
@@ -450,6 +514,16 @@
           </select>
         </div>
 
+        <div class="contribution-toggle">
+          <label class="check-row" for="oldMember">
+            <input id="oldMember" type="checkbox">
+            <span>
+              <strong>Iscritto alla previdenza complementare prima del 29 aprile 1993</strong>
+              <small>I cosiddetti “vecchi iscritti” possono richiedere il 100% in capitale. Il trattamento fiscale specifico va verificato con il fondo.</small>
+            </span>
+          </label>
+        </div>
+
         <div class="field">
           <label for="grossReturn">Rendimento medio annuo lordo del fondo</label>
           <select id="grossReturn">
@@ -487,40 +561,34 @@
       </form>
 
       <section class="panel results" aria-live="polite">
-        <h2>Il risultato</h2>
+        <h2>I risultati della simulazione</h2>
         <p class="subtle" id="scenarioText">Da 48 a 68 anni: 20 anni di versamenti.</p>
-
-        <div class="verdict" id="verdictBox">
-          <span class="kicker">Risposta immediata</span>
-          <strong id="verdictTitle">Nelle ipotesi inserite conviene il fondo pensione</strong>
-          <p id="verdictText">Vantaggio economico netto stimato: € 0.</p>
-        </div>
 
         <div class="summary-grid">
           <article class="metric primary">
-            <span class="label">TFR versato ogni anno</span>
-            <strong class="value" id="annualTfr">€ 3.556</strong>
-            <small>Nessuna deduzione fiscale in questo esempio</small>
+            <span class="label">Fondo pensione · somma versata ogni anno</span>
+            <strong class="value" id="annualFundTotal">€ 3.556</strong>
+            <small id="annualFundBreakdown">TFR, più eventuali contributi del datore e del dipendente</small>
+          </article>
+          <article class="metric primary">
+            <span class="label">Fondo pensione · totale dei versamenti</span>
+            <strong class="value" id="totalFundPaid">€ 71.111</strong>
+            <small id="fundContributionYears">In 20 anni</small>
           </article>
           <article class="metric">
-            <span class="label">TFR complessivamente versato</span>
+            <span class="label">TFR in azienda · somma accantonata ogni anno</span>
+            <strong class="value" id="annualTfr">€ 3.556</strong>
+            <small>Quota TFR stimata: RAL ÷ 13,5</small>
+          </article>
+          <article class="metric">
+            <span class="label">TFR in azienda · totale accantonato</span>
             <strong class="value" id="totalContributions">€ 71.111</strong>
             <small id="contributionYears">In 20 anni</small>
           </article>
-          <article class="metric">
-            <span class="label">Contributo datoriale annuo</span>
-            <strong class="value" id="annualEmployerContribution">€ 0</strong>
-            <small id="employerContributionCaption">Flag non attivo</small>
-          </article>
-          <article class="metric">
-            <span class="label">Risparmio fiscale annuo stimato</span>
-            <strong class="value" id="annualTaxSaving">€ 0</strong>
-            <small id="taxSavingCaption">Sulla quota del dipendente</small>
-          </article>
         </div>
 
-        <h3 class="stage-title">1. Prima: le tasse sui rendimenti, anno dopo anno</h3>
-        <p class="stage-note">Il calcolatore parte dal rendimento lordo, calcola l’imposta annuale e accredita solo il rendimento netto.</p>
+        <h3 class="stage-title">1. Annualmente vengono pagate le imposte su rendimenti o rivalutazione</h3>
+        <p class="stage-note">Il fondo tassa i rendimenti; il TFR in azienda tassa la rivalutazione. Le imposte vengono conteggiate durante gli anni e versate annualmente dal fondo o dall’azienda.</p>
 
         <div class="comparison-grid">
           <article class="method-card fund">
@@ -538,7 +606,7 @@
                 <strong id="returnTaxes">− € 0</strong>
               </div>
               <div class="line-item total">
-                <span>Rendimenti netti accumulati</span>
+                <span id="fundNetRateCaption">Rendimenti netti accumulati · tasso netto 2,40%</span>
                 <strong id="fundNetGains">€ 0</strong>
               </div>
             </div>
@@ -559,90 +627,89 @@
                 <strong id="companyReturnTaxes">− € 0</strong>
               </div>
               <div class="line-item total">
-                <span>Rivalutazioni nette accumulate</span>
+                <span id="companyNetRateCaption">Rivalutazioni nette accumulate · tasso netto 2,49%</span>
                 <strong id="companyNetGains">€ 0</strong>
               </div>
             </div>
           </article>
         </div>
 
-        <h3 class="stage-title">2. Poi: la tassa sulla prestazione finale</h3>
-        <p class="stage-note">Il fondo usa l’aliquota previdenziale agevolata. Per il TFR in azienda viene stimata la tassazione separata sulla base della RAL.</p>
+        <h3 class="stage-title">2. Totale versato + rendimenti netti = prestazione finale</h3>
+        <p class="stage-note">I rendimenti e le rivalutazioni qui indicati sono già al netto delle imposte pagate ogni anno.</p>
+
+        <div class="comparison-grid">
+          <article class="method-card fund final-equation">
+            <header class="method-head"><span>Posizione maturata</span><h3>Fondo pensione</h3></header>
+            <div class="method-body">
+              <div class="line-item"><span>Totale versato al fondo</span><strong id="fundFinalContributions">€ 0</strong></div>
+              <div class="line-item"><span>+ Rendimenti netti già tassati</span><strong id="fundFinalNetReturns">€ 0</strong></div>
+              <div class="line-item total"><span>= Prestazione finale prima dell’imposta a scadenza</span><strong id="fundFinalPosition">€ 0</strong></div>
+            </div>
+          </article>
+
+          <article class="method-card company final-equation">
+            <header class="method-head"><span>Liquidazione maturata</span><h3>TFR lasciato in azienda</h3></header>
+            <div class="method-body">
+              <div class="line-item"><span>Totale TFR accantonato</span><strong id="companyFinalContributions">€ 0</strong></div>
+              <div class="line-item"><span>+ Rivalutazioni nette già tassate</span><strong id="companyFinalNetReturns">€ 0</strong></div>
+              <div class="line-item total"><span>= Prestazione finale prima dell’imposta a scadenza</span><strong id="companyFinalPosition">€ 0</strong></div>
+            </div>
+          </article>
+        </div>
+
+        <div class="threshold-box">
+          <strong>Quando è possibile ritirare il 100% in capitale?</strong>
+          <p><b>Regola della piccola rendita:</b> la rendita annua derivante dalla conversione del <b>70% della posizione finale</b> deve essere inferiore al <b>50% dell’assegno sociale</b>. Nel 2026 l’assegno sociale annuo è pari a 7.101,12 €; il 50% è 3.550,56 €.</p>
+          <p><b>Altri casi:</b> vecchi iscritti alla previdenza complementare prima del 29 aprile 1993 oppure mancanza dei requisiti minimi per la prestazione pensionistica, inclusi almeno 5 anni di partecipazione.</p>
+          <div class="threshold-result">
+            <strong id="thresholdTitle">Verifica sui dati inseriti</strong>
+            <p class="threshold-base" id="thresholdBaseText">Versamenti al fondo + rendimenti netti = posizione utilizzata per la verifica.</p>
+            <p id="thresholdText">Soglia in elaborazione.</p>
+          </div>
+        </div>
+
+        <div class="capital-alert" id="capitalAlert" hidden role="alert">
+          <strong>Attenzione: soltanto il 50% è liquidabile subito in capitale</strong>
+          <p id="capitalAlertText"></p>
+          <p id="capitalAlertTax"></p>
+        </div>
+
+        <div class="capital-ok" id="capitalOk" hidden>
+          <strong>Il 100% può essere richiesto in capitale</strong>
+          <p id="capitalOkText"></p>
+        </div>
+
+        <h3 class="stage-title">3. Poi: le imposte sulla prestazione a scadenza</h3>
+        <p class="stage-note">Per il fondo l’imposta è calcolata soltanto sulla quota effettivamente liquidata in capitale. La rendita residua sarà tassata quando verrà erogata.</p>
 
         <div class="comparison-grid">
           <article class="method-card fund">
-            <header class="method-head">
-              <span>Tassazione alla pensione</span>
-              <h3>Fondo pensione</h3>
-            </header>
+            <header class="method-head"><span>Quota in capitale alla pensione</span><h3>Fondo pensione</h3></header>
             <div class="method-body">
-              <div class="line-item">
-                <span>Versamenti imponibili stimati</span>
-                <strong id="fundTaxBase">€ 0</strong>
-              </div>
-              <div class="line-item">
-                <span>Aliquota agevolata applicata</span>
-                <strong id="fundFinalRate">13,50%</strong>
-              </div>
-              <div class="line-item total">
-                <span>Imposta finale stimata</span>
-                <strong id="finalTax">− € 0</strong>
-              </div>
+              <div class="line-item"><span>Capitale lordo liquidabile</span><strong id="fundCapitalGross">€ 0</strong></div>
+              <div class="line-item"><span>Base imponibile della quota capitale</span><strong id="fundTaxBase">€ 0</strong></div>
+              <div class="line-item"><span>Aliquota agevolata stimata</span><strong id="fundFinalRate">13,50%</strong></div>
+              <div class="line-item"><span>Imposta sulla quota capitale</span><strong id="finalTax">− € 0</strong></div>
+              <div class="line-item"><span>Quota destinata alla rendita</span><strong id="fundAnnuityGross">€ 0</strong></div>
+              <div class="line-item total"><span>Capitale netto disponibile</span><strong id="netCapital">€ 0</strong></div>
             </div>
           </article>
 
           <article class="method-card company">
-            <header class="method-head">
-              <span>Tassazione alla liquidazione</span>
-              <h3>TFR lasciato in azienda</h3>
-            </header>
+            <header class="method-head"><span>Intera liquidazione in capitale</span><h3>TFR lasciato in azienda</h3></header>
             <div class="method-body">
-              <div class="line-item">
-                <span>Base imponibile stimata</span>
-                <strong id="companyTaxBase">€ 0</strong>
-              </div>
-              <div class="line-item">
-                <span>Aliquota separata stimata dalla RAL</span>
-                <strong id="companyFinalRate">0,00%</strong>
-              </div>
-              <div class="line-item total">
-                <span>Imposta finale stimata</span>
-                <strong id="companyFinalTax">− € 0</strong>
-              </div>
+              <div class="line-item"><span>Liquidazione lorda</span><strong id="companyCapitalGross">€ 0</strong></div>
+              <div class="line-item"><span>Base imponibile stimata</span><strong id="companyTaxBase">€ 0</strong></div>
+              <div class="line-item"><span>Aliquota separata stimata dalla RAL</span><strong id="companyFinalRate">0,00%</strong></div>
+              <div class="line-item"><span>Imposta finale stimata</span><strong id="companyFinalTax">− € 0</strong></div>
+              <div class="line-item total"><span>Liquidazione netta stimata</span><strong id="companyNetCapital">€ 0</strong></div>
             </div>
           </article>
         </div>
 
-        <h3 class="stage-title">3. Infine: quanto resta</h3>
-        <p class="stage-note">TFR versato più guadagni netti, meno la tassazione finale sulla quota versata.</p>
-
-        <div class="summary-grid">
-          <article class="metric final">
-            <span class="label">Fondo pensione · capitale netto</span>
-            <strong class="value" id="netCapital">€ 0</strong>
-            <small id="fundValueCaption">Valore prima della tassa finale: € 0</small>
-          </article>
-          <article class="metric final">
-            <span class="label">TFR lasciato in azienda · capitale netto</span>
-            <strong class="value" id="companyNetCapital">€ 0</strong>
-            <small id="companyValueCaption">Valore prima della tassa finale: € 0</small>
-          </article>
-        </div>
-
-        <div class="difference">
-          <span>Vantaggio economico netto confrontabile</span>
-          <strong id="differenceValue">€ 0</strong>
-          <small id="differenceCaption">a favore del fondo pensione</small>
-        </div>
-
-        <div class="threshold-box">
-          <strong id="thresholdTitle">Verifica del 100% in capitale</strong>
-          <p id="thresholdText">Soglia in elaborazione.</p>
-        </div>
-
         <div class="key-message">
-          <strong>La distinzione che conta</strong>
-          <p id="keyMessage">Il confronto separa le imposte pagate durante l’accumulo da quelle dovute alla liquidazione finale.</p>
+          <strong>TFR in azienda: nessun limite del 50%</strong>
+          <p id="keyMessage">La liquidazione può essere corrisposta interamente in capitale, al netto della tassazione separata.</p>
         </div>
 
         <section class="table-block">
@@ -659,7 +726,7 @@
                   <th>TFR versato</th>
                   <th>Valore fondo</th>
                   <th>TFR lasciato in azienda</th>
-                  <th>Differenza montanti</th>
+                  <th>Scelta avanti</th>
                 </tr>
               </thead>
               <tbody id="yearRows"></tbody>
@@ -673,28 +740,32 @@
       <summary>Come funziona il calcolo</summary>
       <ul>
         <li>La quota annua è stimata, in modo semplificato, dividendo la RAL per 13,5.</li>
-        <li>Nel fondo pensione il TFR viene simulato con accrediti mensili; il rendimento lordo predefinito è il 3%, come ipotesi conservativa modificabile. Il rendimento matura durante l’anno e l’imposta sui rendimenti viene prelevata a fine anno.</li>
+        <li>Per rendere confrontabili i due percorsi, il TFR annuale viene aggiunto a entrambi i montanti alla fine di ciascun anno. In questo modo la tabella confronta le diverse rivalutazioni senza attribuire a una scelta un vantaggio dovuto soltanto al momento del versamento.</li>
+        <li>Nel fondo pensione il rendimento lordo predefinito è il 3%, come ipotesi conservativa modificabile. L’imposta sui rendimenti viene prelevata alla fine di ogni anno.</li>
         <li>Quando il flag è attivo, il fondo riceve anche il contributo datoriale e la quota obbligatoria del dipendente. Il confronto economico sottrae la quota pagata dal dipendente e aggiunge il relativo risparmio fiscale, così da non scambiare un versamento personale per un vantaggio gratuito.</li>
         <li>L’inflazione viene utilizzata esclusivamente per calcolare la rivalutazione annuale del TFR lasciato in azienda: 1,5% più il 75% dell’inflazione. Non viene applicata al fondo pensione né agli altri valori della simulazione. La quota TFR maturata nell’anno non viene rivalutata nello stesso anno.</li>
         <li>Sulla rivalutazione del TFR lasciato in azienda viene applicata l’imposta sostitutiva del 17%.</li>
         <li>Il contributo datoriale e quello del dipendente concorrono al limite annuo deducibile di 5.300 €; il TFR è escluso.</li>
         <li>Nel fondo pensione l’aliquota finale parte dal 15% e si riduce dello 0,30% per ogni anno di partecipazione successivo al quindicesimo, fino al minimo del 9%.</li>
         <li>Per il TFR lasciato in azienda l’aliquota separata è stimata applicando gli scaglioni IRPEF nazionali 2026 (23%, 33% e 43%) al reddito di riferimento ottenuto dal TFR maturato e dagli anni di servizio. La riliquidazione effettiva dell’Agenzia delle Entrate può essere diversa.</li>
-        <li>La possibilità di ricevere il 100% del fondo in capitale viene verificata confrontando il montante lordo stimato con la soglia del foglio fornito, in base a sesso ed età al pensionamento.</li>
+        <li>Il 100% in capitale è possibile se la rendita annua ottenibile convertendo il 70% della posizione finale è inferiore al 50% dell’assegno sociale. La verifica considera tutti i versamenti destinati al fondo e i rendimenti già al netto delle imposte annuali, confrontandoli con la soglia indicativa prevista per sesso ed età al pensionamento.</li>
+        <li>Il 100% può essere richiesto anche dai vecchi iscritti alla previdenza complementare prima del 29 aprile 1993 o in mancanza dei requisiti minimi della prestazione pensionistica complementare. La simulazione usa gli anni tra l’età attuale e quella di pensionamento come anni di partecipazione al fondo.</li>
         <li>Si presume che l’adesione al fondo inizi oggi e prosegua senza interruzioni fino alla pensione.</li>
       </ul>
     </details>
 
     <details>
       <summary>Avvertenze importanti</summary>
-      <p>Questa è una simulazione didattica, non una previsione, una consulenza fiscale né una proposta di investimento. Il rendimento del fondo e l’inflazione sono costanti e puramente ipotetici; non considera costi del fondo, garanzie, andamento reale dei mercati, variazioni della RAL, anticipazioni, riscatti, trasferimenti o regimi fiscali riferiti a montanti anteriori al 2007.</p>
+      <p>Questo calcolatore ha finalità esclusivamente didattiche: serve a comprendere il funzionamento del confronto e non costituisce una previsione, una consulenza fiscale o una proposta di investimento. Per stime precise occorre rivolgersi al fondo pensione di categoria, all’ufficio del personale della propria azienda o a un consulente preparato.</p>
+      <p>Il rendimento del fondo e l’inflazione sono costanti e puramente ipotetici; il calcolo non considera costi del fondo, garanzie, andamento reale dei mercati, variazioni della RAL, anticipazioni, riscatti, trasferimenti o regimi fiscali riferiti a montanti anteriori al 2007.</p>
+      <p>Il versamento annuale simultaneo è una convenzione didattica adottata per confrontare correttamente i due tassi netti. Nella realtà, tempi di conferimento al fondo e modalità di rivalutazione del TFR possono produrre differenze temporali.</p>
       <p>La formula RAL ÷ 13,5 rappresenta la quota lorda civilistica. La quota effettivamente destinata al fondo può risultare inferiore, anche per il contributo aggiuntivo dello 0,50% e per le regole applicabili alla retribuzione utile. Per un calcolo personale vanno verificati busta paga, CCNL e documentazione del fondo.</p>
       <p>L’imposta sui rendimenti è impostata al 20% per rendere evidente il meccanismo. Nella realtà la quota riferibile a titoli di Stato e assimilati beneficia del 12,5%. La tassazione effettiva dipende dalla composizione degli investimenti e dalla normativa vigente.</p>
       <p>La tassazione separata del TFR in azienda è una stima basata sulla RAL costante, senza detrazioni né addizionali. L’Agenzia delle Entrate riliquida l’imposta sulla base dei dati fiscali previsti dalla normativa; l’aliquota reale può quindi essere diversa.</p>
-      <p>La soglia per il 100% in capitale deriva dalla tabella fornita e costituisce una verifica indicativa. Regolamento del fondo, coefficienti di conversione, valore dell’assegno sociale e normativa vigente alla pensione possono modificare l’esito. Se la soglia è superata, il valore netto mostrato resta il valore complessivo della posizione, ma non è interamente liquidabile subito in capitale.</p>
+      <p>La soglia per il 100% in capitale deriva dalla tabella fornita e costituisce una verifica indicativa. Regolamento del fondo, coefficienti di conversione, valore dell’assegno sociale e normativa vigente alla pensione possono modificare l’esito. Se la soglia è superata e non ricorrono altre eccezioni, il calcolatore tassa subito soltanto il 50% liquidabile in capitale; il restante 50% è indicato come quota destinata alla rendita e sarà tassato durante l’erogazione.</p>
     </details>
 
-    <p class="footer-note">Riferimenti informativi: <a href="https://www.gazzettaufficiale.it/atto/serie_generale/caricaArticolo?art.codiceRedazionale=042U0262&art.dataPubblicazioneGazzetta=1942-04-04&art.flagTipoArticolo=2&art.idArticolo=2120&art.idGruppo=267&art.idSottoArticolo=1&art.idSottoArticolo1=10&art.progressivo=0&art.versione=5" target="_blank" rel="noopener">art. 2120 del Codice civile</a>, <a href="https://www.fiscooggi.it/portale/-/la-disciplina-del-trattamento-di-fine-rapporto-7-" target="_blank" rel="noopener">FiscoOggi – tassazione separata del TFR</a>, <a href="https://lavoro.gov.it/previdenza-complementare/glossario-e-faq/faq" target="_blank" rel="noopener">Ministero del Lavoro – previdenza complementare</a> e tabella “Soglie riscatto per pensionamento” fornita. Ultimo aggiornamento: settembre 2026.</p>
+    <p class="footer-note">Riferimenti informativi: <a href="https://www.gazzettaufficiale.it/atto/serie_generale/caricaArticolo?art.codiceRedazionale=042U0262&art.dataPubblicazioneGazzetta=1942-04-04&art.flagTipoArticolo=2&art.idArticolo=2120&art.idGruppo=267&art.idSottoArticolo=1&art.idSottoArticolo1=10&art.progressivo=0&art.versione=5" target="_blank" rel="noopener">art. 2120 del Codice civile</a>, <a href="https://www.fiscooggi.it/portale/-/la-disciplina-del-trattamento-di-fine-rapporto-7-" target="_blank" rel="noopener">FiscoOggi – tassazione separata del TFR</a>, <a href="https://lavoro.gov.it/previdenza-complementare/glossario-e-faq/faq" target="_blank" rel="noopener">Ministero del Lavoro – previdenza complementare</a>, <a href="https://www.fondenergia.it/site/come-funziona/prestazioni-pensionamento" target="_blank" rel="noopener">Fondenergia – prestazioni al pensionamento</a> e tabella “Soglie riscatto per pensionamento” fornita. Ultimo aggiornamento: settembre 2026.</p>
   </main>
 
   <script>
@@ -708,6 +779,7 @@
         currentAge: document.querySelector('#currentAge'),
         retirementAge: document.querySelector('#retirementAge'),
         sex: document.querySelector('#sex'),
+        oldMember: document.querySelector('#oldMember'),
         grossReturn: document.querySelector('#grossReturn'),
         returnTax: document.querySelector('#returnTax'),
         inflation: document.querySelector('#inflation')
@@ -770,6 +842,7 @@
         const currentAge = value('currentAge');
         const retirementAge = value('retirementAge');
         const sex = fields.sex.value;
+        const oldMember = fields.oldMember.checked;
         const grossReturn = value('grossReturn') / 100;
         const returnTax = value('returnTax') / 100;
         const inflation = value('inflation') / 100;
@@ -806,8 +879,7 @@
           Math.max(0, deductibleLimit - annualEmployerContribution)
         );
         const annualTaxSaving = deductibleEmployeeContribution * marginalTaxRate;
-        const monthlyFundPayment = (annualTfr + annualContractualContributions) / 12;
-        const monthlyGrossRate = Math.pow(1 + grossReturn, 1 / 12) - 1;
+        const annualFundContribution = annualTfr + annualContractualContributions;
         let balance = 0;
         let totalReturnTaxes = 0;
         let totalGrossReturns = 0;
@@ -819,17 +891,9 @@
         const rows = [];
 
         for (let year = 1; year <= years; year += 1) {
-          let yearGrossReturn = 0;
-
-          for (let month = 1; month <= 12; month += 1) {
-            balance += monthlyFundPayment;
-            const grossGain = balance * monthlyGrossRate;
-            balance += grossGain;
-            yearGrossReturn += grossGain;
-          }
-
+          const yearGrossReturn = balance * grossReturn;
           const yearReturnTax = yearGrossReturn * returnTax;
-          balance -= yearReturnTax;
+          balance += yearGrossReturn - yearReturnTax + annualFundContribution;
 
           totalReturnTaxes += yearReturnTax;
           totalGrossReturns += yearGrossReturn;
@@ -861,35 +925,37 @@
         const finalTaxableContributions = totalContributions + Math.min(deductibleLimit, annualContractualContributions) * years;
         const totalTaxSavings = annualTaxSaving * years;
         const finalRate = finalBenefitRate(years) / 100;
-        const finalTax = finalTaxableContributions * finalRate;
-        const netCapital = balance - finalTax;
         const gainsAfterReturnTax = balance - totalFundContributions;
         const referenceIncome = totalContributions * 12 / years;
         const companyFinalRate = irpef2026(referenceIncome) / referenceIncome;
         const companyFinalTax = totalContributions * companyFinalRate;
         const companyNetCapital = companyBalance - companyFinalTax;
-        const fundComparableValue = netCapital - totalEmployeeContributions + totalTaxSavings;
-        const difference = fundComparableValue - companyNetCapital;
         const threshold = capitalThresholds[Math.trunc(retirementAge)][sex];
-        const canTakeAllCapital = balance <= threshold;
+        const thresholdAllowsAll = balance <= threshold;
+        const lacksMinimumParticipation = years < 5;
+        const canTakeAllCapital = thresholdAllowsAll || oldMember || lacksMinimumParticipation;
+        const capitalShareRate = canTakeAllCapital ? 1 : 0.5;
+        const capitalGross = balance * capitalShareRate;
+        const capitalTaxBase = finalTaxableContributions * capitalShareRate;
+        const finalTax = capitalTaxBase * finalRate;
+        const netCapital = capitalGross - finalTax;
+        const annuityGross = balance - capitalGross;
 
         out.annualTfrFormula.textContent = money2.format(annualTfr);
         out.employerContributionFormula.textContent = money2.format(annualEmployerContribution);
         out.employeeContributionFormula.textContent = money2.format(annualEmployeeContribution);
         out.annualTaxSavingFormula.textContent = money2.format(annualTaxSaving);
         out.scenarioText.textContent = `Da ${number2.format(currentAge).replace(',00', '')} a ${number2.format(retirementAge).replace(',00', '')} anni: ${years} anni di versamenti.`;
+        out.annualFundTotal.textContent = money0.format(annualFundContribution);
+        out.annualFundBreakdown.textContent = hasContractualContributions
+          ? `TFR ${money0.format(annualTfr)} + datore ${money0.format(annualEmployerContribution)} + dipendente ${money0.format(annualEmployeeContribution)}`
+          : `Solo TFR ${money0.format(annualTfr)} · contributi contrattuali non attivi`;
+        out.totalFundPaid.textContent = money0.format(totalFundContributions);
+        out.fundContributionYears.textContent = `In ${years} anni`;
         out.annualTfr.textContent = money0.format(annualTfr);
         out.totalContributions.textContent = money0.format(totalContributions);
         out.contributionYears.textContent = `In ${years} anni`;
-        out.annualEmployerContribution.textContent = money0.format(annualEmployerContribution);
-        out.employerContributionCaption.textContent = hasContractualContributions
-          ? `${number2.format(employerRateInput)}% della RAL · ${money0.format(totalEmployerContributions)} complessivi`
-          : 'Flag non attivo';
-        out.annualTaxSaving.textContent = money0.format(annualTaxSaving);
-        out.taxSavingCaption.textContent = hasContractualContributions
-          ? `${money0.format(totalTaxSavings)} complessivi in ${years} anni`
-          : 'Sulla quota del dipendente';
-        out.fundTaxBase.textContent = money0.format(finalTaxableContributions);
+        out.fundTaxBase.textContent = money0.format(capitalTaxBase);
         out.companyTaxBase.textContent = money0.format(totalContributions);
         out.fundFinalRate.textContent = `${number2.format(finalRate * 100)}%`;
         out.companyFinalRate.textContent = `${number2.format(companyFinalRate * 100)}%`;
@@ -898,47 +964,69 @@
         out.fundGrossGains.textContent = money0.format(totalGrossReturns);
         out.fundGainTaxCaption.textContent = `Imposta annua: ${number2.format(grossReturn * 100)}% × ${number2.format(returnTax * 100)}% = ${number2.format(grossReturn * returnTax * 100)}%`;
         out.returnTaxes.textContent = `− ${money0.format(totalReturnTaxes)}`;
+        out.fundNetRateCaption.textContent = `Rendimenti netti accumulati · tasso netto ${number2.format(grossReturn * (1 - returnTax) * 100)}%`;
         out.fundNetGains.textContent = money0.format(gainsAfterReturnTax);
         out.companyGrowthCaption.textContent = `Rivalutazione lorda: 1,50% + 75% × ${number2.format(inflation * 100)}% = ${number2.format(companyGrossRate * 100)}%`;
         out.companyGrossGains.textContent = money0.format(totalCompanyGrossRevaluations);
         out.companyGainTaxCaption.textContent = `Imposta annua: ${number2.format(companyGrossRate * 100)}% × ${number2.format(companyReturnTaxRate * 100)}% = ${number2.format(companyGrossRate * companyReturnTaxRate * 100)}%`;
         out.companyReturnTaxes.textContent = `− ${money0.format(totalCompanyReturnTaxes)}`;
+        out.companyNetRateCaption.textContent = `Rivalutazioni nette accumulate · tasso netto ${number2.format(companyGrossRate * (1 - companyReturnTaxRate) * 100)}%`;
         out.companyNetGains.textContent = money0.format(companyBalance - totalContributions);
+        out.fundFinalContributions.textContent = money0.format(totalFundContributions);
+        out.fundFinalNetReturns.textContent = money0.format(gainsAfterReturnTax);
+        out.fundFinalPosition.textContent = money0.format(balance);
+        out.companyFinalContributions.textContent = money0.format(totalContributions);
+        out.companyFinalNetReturns.textContent = money0.format(companyBalance - totalContributions);
+        out.companyFinalPosition.textContent = money0.format(companyBalance);
+        out.fundCapitalGross.textContent = money0.format(capitalGross);
+        out.fundAnnuityGross.textContent = money0.format(annuityGross);
+        out.companyCapitalGross.textContent = money0.format(companyBalance);
         out.companyFinalTax.textContent = `− ${money0.format(companyFinalTax)}`;
         out.netCapital.textContent = money0.format(netCapital);
         out.companyNetCapital.textContent = money0.format(companyNetCapital);
-        out.fundValueCaption.textContent = `Valore prima della tassa finale: ${money0.format(balance)}`;
-        out.companyValueCaption.textContent = `Valore prima della tassa finale: ${money0.format(companyBalance)}`;
-        out.differenceValue.textContent = money0.format(Math.abs(difference));
-        out.differenceCaption.textContent = difference >= 0
-          ? 'a favore del fondo pensione, dopo aver sottratto i versamenti del dipendente e aggiunto il risparmio fiscale'
-          : 'a favore del TFR lasciato in azienda, nelle ipotesi selezionate';
-
-        out.verdictBox.classList.toggle('company-win', difference < 0);
-        out.verdictTitle.textContent = difference >= 0
-          ? 'Nelle ipotesi inserite conviene il fondo pensione'
-          : 'Nelle ipotesi inserite conviene lasciare il TFR in azienda';
-        out.verdictText.textContent = `${money0.format(Math.abs(difference))} di vantaggio economico netto stimato. Il calcolo considera ${money0.format(totalEmployerContributions)} versati dal datore, sottrae ${money0.format(totalEmployeeContributions)} pagati dal dipendente e aggiunge ${money0.format(totalTaxSavings)} di risparmio fiscale.`;
 
         out.thresholdTitle.textContent = canTakeAllCapital
-          ? 'Puoi stimare il 100% in capitale'
-          : 'La soglia per il 100% in capitale è superata';
-        out.thresholdText.textContent = canTakeAllCapital
-          ? `Montante lordo stimato ${money0.format(balance)}, sotto la soglia di ${money0.format(threshold)} prevista per ${sex === 'M' ? 'un uomo' : 'una donna'} di ${Math.trunc(retirementAge)} anni.`
-          : `Montante lordo stimato ${money0.format(balance)}, superiore alla soglia di ${money0.format(threshold)} prevista per ${sex === 'M' ? 'un uomo' : 'una donna'} di ${Math.trunc(retirementAge)} anni. In via ordinaria, massimo 50% in capitale e parte restante in rendita.`;
+          ? 'Con i dati inseriti: 100% in capitale'
+          : 'Con i dati inseriti: massimo 50% in capitale';
+        out.thresholdBaseText.textContent = `Versamenti complessivi al fondo ${money0.format(totalFundContributions)} + rendimenti già netti delle imposte annuali ${money0.format(gainsAfterReturnTax)} = posizione finale verificata ${money0.format(balance)}.`;
+        if (oldMember) {
+          out.thresholdText.textContent = 'Il 100% in capitale è ammesso perché hai indicato l’iscrizione alla previdenza complementare prima del 29 aprile 1993. Il trattamento fiscale dei vecchi iscritti deve essere verificato con il fondo.';
+        } else if (lacksMinimumParticipation) {
+          out.thresholdText.textContent = `Il 100% in capitale è ammesso perché la simulazione considera ${years} ${years === 1 ? 'anno' : 'anni'} di partecipazione, meno dei 5 anni richiesti per la prestazione pensionistica complementare.`;
+        } else if (thresholdAllowsAll) {
+          out.thresholdText.textContent = `La posizione finale è inferiore alla soglia indicativa di ${money0.format(threshold)} prevista per ${sex === 'M' ? 'un uomo' : 'una donna'} di ${Math.trunc(retirementAge)} anni.`;
+        } else {
+          out.thresholdText.textContent = `La posizione finale supera la soglia indicativa di ${money0.format(threshold)} prevista per ${sex === 'M' ? 'un uomo' : 'una donna'} di ${Math.trunc(retirementAge)} anni.`;
+        }
 
-        out.keyMessage.textContent = `Durante gli anni: ${money0.format(totalReturnTaxes)} di imposte sui rendimenti del fondo e ${money0.format(totalCompanyReturnTaxes)} sulle rivalutazioni del TFR. Alla fine: aliquota fondo ${number2.format(finalRate * 100)}%; tassazione separata TFR stimata dalla RAL ${number2.format(companyFinalRate * 100)}%.`;
+        out.capitalAlert.hidden = canTakeAllCapital;
+        out.capitalOk.hidden = !canTakeAllCapital;
+        out.capitalAlertText.textContent = `Della prestazione finale di ${money0.format(balance)}, al massimo ${money0.format(capitalGross)} (50%) può essere richiesto in capitale; i restanti ${money0.format(annuityGross)} sono destinati alla rendita.`;
+        out.capitalAlertTax.textContent = `Imposta agevolata stimata sulla sola quota capitale: ${money0.format(finalTax)}. Capitale netto subito disponibile: ${money0.format(netCapital)}. La rendita sarà tassata al momento dell’erogazione.`;
+        out.capitalOkText.textContent = oldMember
+          ? `Capitale lordo ${money0.format(capitalGross)}. La stima fiscale di ${money0.format(finalTax)} usa per finalità didattiche l’aliquota agevolata ordinaria; per un vecchio iscritto il regime effettivo deve essere verificato con il fondo.`
+          : `Capitale lordo ${money0.format(capitalGross)}; imposta agevolata stimata ${money0.format(finalTax)}; capitale netto stimato ${money0.format(netCapital)}.`;
 
-        out.yearRows.innerHTML = rows.map((row) => `
+        out.keyMessage.textContent = `La prestazione di ${money0.format(companyBalance)} può essere liquidata interamente in capitale. Dopo la tassazione separata stimata di ${money0.format(companyFinalTax)}, il netto indicativo è ${money0.format(companyNetCapital)}.`;
+
+        out.yearRows.innerHTML = rows.map((row) => {
+          const yearDifference = row.balance - row.companyBalance;
+          const leader = Math.abs(yearDifference) < 0.5
+            ? 'Pari'
+            : yearDifference > 0
+              ? `Fondo + ${money0.format(Math.abs(yearDifference))}`
+              : `TFR azienda + ${money0.format(Math.abs(yearDifference))}`;
+          return `
           <tr>
             <td>${row.year}</td>
             <td>${number2.format(row.age).replace(',00', '')}</td>
             <td>${money0.format(row.contribution)}</td>
             <td>${money0.format(row.balance)}</td>
             <td>${money0.format(row.companyBalance)}</td>
-            <td>${money0.format(row.balance - row.companyBalance)}</td>
+            <td>${leader}</td>
           </tr>
-        `).join('');
+        `;
+        }).join('');
       }
 
       Object.values(fields).forEach((field) => field.addEventListener('input', calculate));
